@@ -65,3 +65,11 @@ DustKey::DustKey() {
 bool DustKey::operator<(const DustKey& k) const {
     return keyId < k.keyId;
 }
+
+DustChangeListener::~DustChangeListener()
+{
+}
+
+void DustChangeListener::processChange()
+{
+}

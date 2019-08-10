@@ -63,6 +63,13 @@ public:
     size_t getRaw(void* r, const size_t size) const;
 };
 
+class DUSTSHARED_EXPORT DustChangeListener
+{
+public:
+    virtual ~DustChangeListener();
+    virtual void processChange();
+};
+
 enum DustAccessCommand {
     read, write, visit
 };

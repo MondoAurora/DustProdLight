@@ -1,6 +1,11 @@
 #include <iostream>
+#include <set>
+
 
 #include "dustprodlight.h"
+
+
+using namespace std;
 
 DustProdLight::DustProdLight()
 {
@@ -12,7 +17,32 @@ DustProdLight::~DustProdLight()
 
 
 void DustProdLight::init() {
-    Dust::initKernel(new DustProdLight);
+    Dust::initKernel(&self);
+}
+
+set<DustChangeListener*> changeListeners;
+
+void DustProdLight::registerChangeListener(DustChangeListener *pListener)
+{
+    changeListeners.insert(pListener);
+}
+
+
+void DustProdLight::optPush() {
+}
+
+
+void DustProdLight::optPull() {
+}
+
+
+void DustProdLight::optNotify() {
+    set<DustChangeListener*>::iterator it;
+    for (it = changeListeners.begin(); it != changeListeners.end(); ++it)
+    {
+        DustChangeListener *l = *it;
+        l->processChange();
+    }
 }
 
 using namespace std;
@@ -35,6 +65,8 @@ void DustProdLight::accessImpl(DustAccessCommand cmd, DustKey entity, DustKey me
 void DustProdLight::dumpImpl() {
     cout << ctx;
 }
+
+DustProdLight DustProdLight::self;
 
 
 //DustKey DustProdLight::getKeyImpl(const char* metaId) {

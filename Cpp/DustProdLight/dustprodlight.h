@@ -20,6 +20,12 @@ class DUSTPRODLIGHTSHARED_EXPORT DustProdLight : public Dust
 public:
     static void init();
 
+    static void registerChangeListener(DustChangeListener *pListener);
+
+    static void optPush();
+    static void optPull();
+    static void optNotify();
+
 protected:
     DustProdLight();
     ~DustProdLight();
@@ -30,6 +36,7 @@ protected:
 
 private:
     DPLEntity ctx;
+    static DustProdLight self;
 //    MapIdToKey mapIdToKey;
 //    MapKeyToId mapKeyToId;
 };
