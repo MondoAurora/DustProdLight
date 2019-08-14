@@ -2,13 +2,22 @@
 #include <stdlib.h>
 #include <string>
 #include <map>
+#include <iostream>
+
+#include <cstdarg>
 
 using namespace std;
 
-typedef map<DustKey, string> MapKeyToId;
-typedef map<string, DustKey> MapIdToKey;
+static map<string, DustMetaType> mapTypeNames;
 
+typedef map<DustKey, DustKeyInfo*> MapKeyToId;
+typedef map<string, DustKeyInfo*> MapIdToKeyInfo;
 
+DustKeyInfo::DustKeyInfo(const char* name)
+{
+    this->name = name;
+    valType = dvtUnset;
+}
 
 Dust::Dust()
 {
@@ -24,6 +33,15 @@ void Dust::initKernel(Dust *pKernel) {
     }
 
     pDust = pKernel;
+
+    mapTypeNames["dvtBool"] = dvtBool;
+    mapTypeNames["dvtLong"] = dvtLong;
+    mapTypeNames["dvtDouble"] = dvtDouble;
+    mapTypeNames["dvtRaw"] = dvtRaw;
+    mapTypeNames["dvtRefSingle"] = dvtRefSingle;
+    mapTypeNames["dvtRefSet"] = dvtRefSet;
+    mapTypeNames["dvtRef]Array"] = dvtRefArray;
+    mapTypeNames["dvtRefMap"] = dvtRefMap;
 }
 
 void Dust::dump() {
@@ -34,19 +52,55 @@ void Dust::access(DustAccessCommand cmd, DustKey entity, DustKey member, DustVar
     pDust->accessImpl(cmd, entity, member, var);
 }
 
-static MapIdToKey mapIdToKey;
+static MapIdToKeyInfo mapIdToKey;
 static MapKeyToId mapKeyToId;
 
-DustKey Dust::getKey(const char* metaId) {
-    MapIdToKey::iterator it = mapIdToKey.find(metaId);
+DustKeyInfo * Dust::getKeyInfo(const char* metaId) {
+    MapIdToKeyInfo::iterator it = mapIdToKey.find(metaId);
 
-    DustKey k = mapIdToKey[metaId];
+    DustKeyInfo *pki;
 
     if (it == mapIdToKey.end()) {
-        mapKeyToId.insert(MapKeyToId::value_type(k, metaId));
+        pki = new DustKeyInfo(metaId);
+
+        mapIdToKey.insert(MapIdToKeyInfo::value_type(metaId, pki));
+        mapKeyToId.insert(MapKeyToId::value_type(pki->key, pki));
+    } else {
+        pki = it->second;
     }
 
-    return k;
+    return pki;
+}
+
+DustKey Dust::getKey(const char* metaId) {
+    return getKeyInfo(metaId)->key;
+}
+
+void Dust::initKey(const char* metaId, const char *valTypeName, const char *parentTypeName) {
+    DustMetaType vt = mapTypeNames[valTypeName];
+    DustKeyInfo *pkiParent = getKeyInfo(parentTypeName);
+
+    switch (pkiParent -> valType) {
+    case dvtUnset:
+        pkiParent->valType = dmtType;
+        break;
+    case dmtType:
+        // that is OK
+        break;
+    default:
+        exit(3);
+    }
+
+    DustKeyInfo *pki = getKeyInfo(metaId);
+
+    pki->valType = vt;
+    pki->pParentType = &pkiParent->key;
+
+    cout << "initKey " << metaId << " valType " << valTypeName << " parentType " << parentTypeName << endl;
+}
+
+DustMetaType Dust::getKeyType(const char *metaId) {
+    return getKeyInfo(metaId)->valType;
 }
 
 Dust* Dust::pDust;

@@ -3,9 +3,9 @@
 
 #include <dust.h>
 
-//#include <map>
+#include <dpljsonqt.h>
 
-//#include "lazymap.hpp"
+#include <QCoreApplication>
 
 #include "dustprodlight_global.h"
 #include "dplentity.h"
@@ -17,8 +17,11 @@ using namespace std;
 
 class DUSTPRODLIGHTSHARED_EXPORT DustProdLight : public Dust
 {
+    friend class DPLJSONProcKernelLoader;
+
 public:
-    static void init();
+    static void init(const char* metaVersion);
+    static void init(QCoreApplication &app, const char* metaVersion);
 
     static void registerChangeListener(DustChangeListener *pListener);
 
@@ -32,13 +35,14 @@ protected:
 
     void accessImpl(DustAccessCommand cmd, DustKey entity, DustKey member, DustVariant &var);
     void dumpImpl();
-//    DustKey getKeyImpl(const char* metaId);
+
+    void loadMeta();
 
 private:
     DPLEntity ctx;
     static DustProdLight self;
-//    MapIdToKey mapIdToKey;
-//    MapKeyToId mapKeyToId;
+
+    const char* dustPath;
 };
 
 #endif // DUSTPRODLIGHT_H

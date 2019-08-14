@@ -15,17 +15,32 @@ private:
     static int nextKeyId;
 
     int keyId;
+
     friend DUSTSHARED_EXPORT std::ostream& operator<<(std::ostream&, const DustKey&);
 };
 
-enum DustValueType {
+enum DustMetaType {
     dvtUnset, dvtBool, dvtLong, dvtDouble, dvtRaw
+    , dvtRefSingle, dvtRefSet, dvtRefArray, dvtRefMap
+
+    , dmtType
+};
+
+class DustKeyInfo
+{
+public:
+    const char* name;
+    DustKey key;
+    DustMetaType valType;
+    DustKey *pParentType;
+
+    DustKeyInfo(const char* name);
 };
 
 class DUSTSHARED_EXPORT DustVariant
 {
 private:
-    DustValueType valType = dvtUnset;
+    DustMetaType valType = dvtUnset;
 
     union {
         bool valBool;
@@ -36,8 +51,8 @@ private:
 
     size_t dataSize;
 
-    void initType(DustValueType vtNew);
-    void verifyType(DustValueType vt) const;
+    void initType(DustMetaType vtNew);
+    void verifyType(DustMetaType vt) const;
 
     friend DUSTSHARED_EXPORT std::ostream& operator<<(std::ostream&, const DustVariant&);
 
@@ -46,7 +61,7 @@ public:
 
     static void set(DustVariant &target, const DustVariant &src);
 
-    DustValueType getType() const;
+    DustMetaType getType() const;
     size_t getSize() const;
 
     void reset();
@@ -74,10 +89,17 @@ enum DustAccessCommand {
     read, write, visit
 };
 
+//class DUSTSHARED_EXPORT DustKernelLoader
+//{
+//};
+
 class DUSTSHARED_EXPORT Dust
 {
+//    friend class DustKernelLoader;
 private:
     static Dust* pDust;
+
+    static DustKeyInfo* getKeyInfo(const char* metaId);
 
 protected:
     Dust();
@@ -85,9 +107,11 @@ protected:
 
     virtual void accessImpl(DustAccessCommand cmd, DustKey entity, DustKey member, DustVariant &var) = 0;
     virtual void dumpImpl() = 0;
-//    virtual DustKey getKeyImpl(const char* metaId) = 0;
 
     static void initKernel(Dust* pKernel);
+
+    static void initKey(const char* metaId, const char *valTypeName, const char *parentTypeName);
+    static DustMetaType getKeyType(const char *metaId);
 
 public:
     static void access(DustAccessCommand cmd, DustKey entity, DustKey member, DustVariant &var);

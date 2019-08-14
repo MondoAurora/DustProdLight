@@ -1,6 +1,7 @@
 #include <iostream>
 #include <set>
 
+#include <QCommandLineParser>
 
 #include "dustprodlight.h"
 
@@ -16,8 +17,16 @@ DustProdLight::~DustProdLight()
 }
 
 
-void DustProdLight::init() {
-    Dust::initKernel(&self);
+void DustProdLight::init(const char* metaVersion) {
+    Dust::initKernel(&self);    
+
+    self.dustPath = "Q:\\LightIPS\\LightIPS\\wdir";
+
+    DPLJsonQt::loadKernelConfig(metaVersion, self.dustPath);
+}
+
+void DustProdLight::init(QCoreApplication &app, const char* metaVersion) {
+    init(metaVersion);
 }
 
 set<DustChangeListener*> changeListeners;
@@ -68,15 +77,3 @@ void DustProdLight::dumpImpl() {
 
 DustProdLight DustProdLight::self;
 
-
-//DustKey DustProdLight::getKeyImpl(const char* metaId) {
-//    MapIdToKey::iterator it = mapIdToKey.find(metaId);
-
-//    DustKey k = mapIdToKey[metaId];
-
-//    if (it == mapIdToKey.end()) {
-//        mapKeyToId.insert(MapKeyToId::value_type(k, metaId));
-//    }
-
-//    return k;
-//}
