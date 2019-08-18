@@ -1,5 +1,4 @@
 #include <iostream>
-#include <set>
 
 #include <QCommandLineParser>
 
@@ -29,13 +28,23 @@ void DustProdLight::init(QCoreApplication &app, const char* metaVersion) {
     init(metaVersion);
 }
 
-set<DustChangeListener*> changeListeners;
-
 void DustProdLight::registerChangeListener(DustChangeListener *pListener)
 {
-    changeListeners.insert(pListener);
+    self.changeListeners.insert(pListener);
 }
 
+DPLEntity* DustProdLight::getEntity(const QString &globalId) {
+    DPLEntity* ret;
+
+    if ( DPLJsonQt::EMPTY_STRING == globalId ) {
+        ret = new DPLEntity();
+    } else {
+        ret = self.globalEntities[globalId];
+    }
+    self.allEntities.insert(ret);
+
+    return ret;
+}
 
 void DustProdLight::optPush() {
 }
@@ -47,7 +56,7 @@ void DustProdLight::optPull() {
 
 void DustProdLight::optNotify() {
     set<DustChangeListener*>::iterator it;
-    for (it = changeListeners.begin(); it != changeListeners.end(); ++it)
+    for (it = self.changeListeners.begin(); it != self.changeListeners.end(); ++it)
     {
         DustChangeListener *l = *it;
         l->processChange();

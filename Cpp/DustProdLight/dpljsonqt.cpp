@@ -80,8 +80,62 @@ bool DPLJSONProcKernelLoader::procKernelInfo(QJsonObject &o) {
 
 DPLJSONProcCloudLoader::~DPLJSONProcCloudLoader() {};
 
+DPLEntity* DPLJSONProcCloudLoader::getLocalEntity(const QString &locId) {
+    DPLEntity *pe;
+    if (localEntities.find( locId ) == localEntities.end() ) {
+        pe = DustProdLight::getEntity(locId);
+        localEntities.insert(MapLocalEntities::value_type(locId, pe));
+    } else {
+        pe = localEntities[locId];
+    }
+
+    return pe;
+}
+
 bool DPLJSONProcCloudLoader::process(QJsonDocument &doc)
 {
+    QJsonObject entities = doc.object().value(JSONKEY_ENTITIES).toObject();
+    DustVariant var;
+
+    for ( const auto& locId : entities.keys()  )
+    {
+        DPLEntity *pe = getLocalEntity( locId );
+
+        QJsonObject data = entities.value(locId).toObject();
+
+        for ( const auto& keyId : data.keys()  ) {
+            QJsonValue jsonVal = data.value(keyId);
+            const char *ck = qPrintable(keyId);
+            DustMetaType mt = DustProdLight::getKeyType(ck);
+            var.reset();
+
+            switch (mt) {
+            case dvtUnset:
+                continue;
+            case dvtBool:
+                var.setBool(jsonVal.toBool());
+                break;
+            case dvtLong:
+                var.setLong(jsonVal.toInt());
+                break;
+            case dvtDouble:
+                var.setDouble(jsonVal.toDouble());
+                break;
+            case dvtRaw:
+                var.setRaw(qPrintable(jsonVal.toString()));
+                break;
+            case dvtRefSingle:
+            case dvtRefSet:
+            case dvtRefArray:
+            case dvtRefMap:
+                break;
+            }
+
+            DustKey k = Dust::getKey(ck);
+            pe->set(k, var);
+        }
+    }
+
     return true;
 }
 
@@ -136,3 +190,4 @@ void DPLJsonQt::saveEntities(const char *jsonFile)
 }
 
 QString DPLJsonQt::metaVer;
+QString DPLJsonQt::EMPTY_STRING = "@@@NOSTRING@@@";

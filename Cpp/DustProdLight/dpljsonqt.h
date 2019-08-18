@@ -4,10 +4,12 @@
 #include <dust.h>
 
 #include <map>
-
 #include <QJsonDocument>
 
+#include <dplentity.h>
+
 typedef bool (*arrayProc)(QJsonObject &ob);
+typedef std::map<QString, DPLEntity*> MapLocalEntities;
 
 class DPLJSONProc {
 private:
@@ -27,7 +29,6 @@ class DPLJSONProcKernelLoader : public DPLJSONProc {
 public:
     DPLJSONProcKernelLoader();
     virtual ~DPLJSONProcKernelLoader();
-//    virtual bool process(QJsonDocument &doc);
 
 private:
     static bool procKernelInfo(QJsonObject &o);
@@ -37,6 +38,10 @@ class DPLJSONProcCloudLoader : public DPLJSONProc {
 public:
     virtual ~DPLJSONProcCloudLoader();
     virtual bool process(QJsonDocument &doc);
+
+private:
+    DPLEntity *getLocalEntity(const QString &localId);
+    MapLocalEntities localEntities;
 };
 
 
@@ -52,6 +57,8 @@ public:
 
     static void loadEntities(const char *jsonFile);
     static void saveEntities(const char *jsonFile);
+
+    static QString EMPTY_STRING;
 };
 
 #endif // DPLJSONQT_H

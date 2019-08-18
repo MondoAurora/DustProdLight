@@ -6,6 +6,9 @@
 #include <dpljsonqt.h>
 
 #include <QCoreApplication>
+#include <set>
+#include <map>
+
 
 #include "dustprodlight_global.h"
 #include "dplentity.h"
@@ -18,6 +21,7 @@ using namespace std;
 class DUSTPRODLIGHTSHARED_EXPORT DustProdLight : public Dust
 {
     friend class DPLJSONProcKernelLoader;
+    friend class DPLJSONProcCloudLoader;
 
 public:
     static void init(const char* metaVersion);
@@ -38,11 +42,19 @@ protected:
 
     void loadMeta();
 
+    static DPLEntity* getEntity(const QString &globalId);
+
 private:
-    DPLEntity ctx;
     static DustProdLight self;
 
     const char* dustPath;
+    DPLEntity ctx;
+
+    set<DPLEntity*> allEntities;
+    map<QString, DPLEntity*> globalEntities;
+
+    set<DustChangeListener*> changeListeners;
+
 };
 
 #endif // DUSTPRODLIGHT_H
