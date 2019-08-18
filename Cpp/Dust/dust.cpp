@@ -107,7 +107,7 @@ Dust* Dust::pDust;
 
 
 std::ostream& operator<<(std::ostream& stream, const DustKey& key) {
-    return stream << mapKeyToId[key];
+    return stream << mapKeyToId[key]->name;
 }
 
 int DustKey::nextKeyId = 0;

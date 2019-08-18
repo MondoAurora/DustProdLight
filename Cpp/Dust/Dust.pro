@@ -24,11 +24,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         dust.cpp \
+        dustmeta.cpp \
         dustvariant.cpp
 
 HEADERS += \
         dust.h \
-        dust_global.h 
+        dust_global.h  \
+        dustmeta.h
 
 unix {
     target.path = /usr/lib
