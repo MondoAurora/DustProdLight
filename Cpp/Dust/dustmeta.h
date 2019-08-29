@@ -5,9 +5,20 @@
 
 namespace DustMeta {
 
+
+//class DUSTSHARED_EXPORT DustConsts
+//{
+//public:
+//    static const DustKey PATH_END;
+//};
+
 class DUSTSHARED_EXPORT DustTypes
 {
 public:
+    static const char VERSION[];
+
+    static const DustKey Unit;
+
     static const DustKey RootKey;
     static const DustKey Identifier;
     static const DustKey Entity;

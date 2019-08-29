@@ -27,7 +27,7 @@ void DustVariant::reset() {
     initType(dvtUnset);
 }
 
-DustMetaType DustVariant::getType() const {
+DustValueType DustVariant::getType() const {
     return valType;
 }
 
@@ -35,14 +35,14 @@ size_t DustVariant::getSize() const {
     return dataSize;
 }
 
-void DustVariant::verifyType(DustMetaType vt) const {
+void DustVariant::verifyType(DustValueType vt) const {
     if ( valType != vt ) {
         exit(2);
     }
 }
 
-void DustVariant::initType(DustMetaType vtNew) {
-    if ( DustMetaType::dvtRaw == valType ) {
+void DustVariant::initType(DustValueType vtNew) {
+    if ( DustValueType::dvtRaw == valType ) {
         if ( nullptr != valRaw ) {
             free(valRaw);
             valRaw = nullptr;

@@ -3,13 +3,12 @@
 
 #include <dust.h>
 
-#include <map>
+#include <QMap>
 #include <QJsonDocument>
 
 #include <dplentity.h>
 
 typedef bool (*arrayProc)(QJsonObject &ob);
-typedef std::map<QString, DPLEntity*> MapLocalEntities;
 
 class DPLJSONProc {
 private:
@@ -25,14 +24,14 @@ public:
     virtual bool process(QJsonDocument &doc);
 };
 
-class DPLJSONProcKernelLoader : public DPLJSONProc {
-public:
-    DPLJSONProcKernelLoader();
-    virtual ~DPLJSONProcKernelLoader();
+//class DPLJSONProcKernelLoader : public DPLJSONProc {
+//public:
+//    DPLJSONProcKernelLoader();
+//    virtual ~DPLJSONProcKernelLoader();
 
-private:
-    static bool procKernelInfo(QJsonObject &o);
-};
+//private:
+//    static bool procKernelInfo(QJsonObject &o);
+//};
 
 class DPLJSONProcCloudLoader : public DPLJSONProc {
 public:
@@ -40,23 +39,25 @@ public:
     virtual bool process(QJsonDocument &doc);
 
 private:
-    DPLEntity *getLocalEntity(const QString &localId);
-    MapLocalEntities localEntities;
+    QMap<QString, DustKey> units;
+    QMap<QString, DPLEntity*> localEntities;
+
+    DPLEntity *getLocalEntity(QJsonObject &entities, const QString &localId);
 };
 
 
 class DPLJsonQt //: public DustKernelLoader
 {
 private:
-    static QString metaVer;
+//    static QString metaVer;
 
 public:
     static bool processJsonFile(const char *jsonFile, DPLJSONProc &proc);
 
-    static void loadKernelConfig(const char *metaVer, const char *dustPath);
+//    static void loadKernelConfig(const char *metaVer, const char *dustPath, const char *fileName);
 
-    static void loadEntities(const char *jsonFile);
-    static void saveEntities(const char *jsonFile);
+    static void loadEntities(const char *path, const char *fileName);
+    static void saveEntities(const char *path, const char *fileName);
 
     static QString EMPTY_STRING;
 };
