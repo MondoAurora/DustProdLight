@@ -9,6 +9,7 @@
 #include <QList>
 #include <QSet>
 #include <QMap>
+#include <QString>
 
 #include "dustprodlight_global.h"
 #include "dplentity.h"
@@ -48,7 +49,7 @@ public:
     static void init(QCoreApplication &app);
 
     static void loadMeta(const char* metaVersion, const char* fileName);
-    static void loadData(const char* fileName);
+    static bool loadData(const char* fileName);
 
     static void registerChangeListener(DustChangeListener *pListener);
 
@@ -57,6 +58,8 @@ public:
 
     static void setDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val);
     static double getDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val);
+
+    static bool getString(DustKey keyCtxTarget, DustKey keyRef, QString &str);
 
     static void optPush();
     static void optPull();

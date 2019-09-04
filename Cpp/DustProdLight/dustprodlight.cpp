@@ -5,7 +5,6 @@
 #include "dustprodlight.h"
 #include <dustmeta.h>
 
-
 using namespace std;
 
 DustProdLight::DustProdLight()
@@ -32,8 +31,8 @@ DustKeyInfo* DustProdLight::getKeyInfo(const QString metaId) {
 //    DPLJsonQt::loadKernelConfig(metaVersion, self.dustPath, fileName);
 //}
 
-void DustProdLight::loadData(const char* fileName) {
-    DPLJsonQt::loadEntities(self.dustPath, fileName);
+bool DustProdLight::loadData(const char* fileName) {
+    return DPLJsonQt::loadEntities(self.dustPath, fileName);
 }
 
 void DustProdLight::init(QCoreApplication &) {
@@ -99,6 +98,26 @@ double DustProdLight::getDouble(DustKey keyCtxTarget, DustKey keyRef, const doub
     }
 
     return val;
+}
+
+bool DustProdLight::getString(DustKey keyCtxTarget, DustKey keyRef, QString &qs) {
+    qs.clear();
+
+    DPLEntity *pe = self.getSel(keyCtxTarget)->getCurrent();
+    if ( pe ) {
+        DustVariant *pv = pe->accessVar(keyRef);
+        if ( pv && (pv->getType() == dvtRaw) ) {
+            size_t l = pv->getSize();
+            char* str = new char[l];
+            pv->getRaw(str, l);
+            qs.append(str);
+            delete[] str;
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
@@ -188,14 +207,14 @@ bool DPLEntitySel::stepInto(DustKey refKey) {
                     delete itSet;
                 }
                 itSet = new QSetIterator<DPLRefSet*>(*((DPLRefSet*)pRef)->setRef);
-                pCurrent = (DPLEntity*) itSet->next()->getEntity();
+//                pCurrent = (DPLEntity*) itSet->next()->getEntity();
                 break;
             case drtArray:
                 if ( itVec ) {
                     delete itVec;
                 }
                 itVec = new QVectorIterator<DPLRefArr*>(*((DPLRefArr*)pRef)->vecRef);
-                pCurrent = (DPLEntity*) itVec->next()->getEntity();
+//                pCurrent = (DPLEntity*) itVec->next()->getEntity();
                 break;
             default:
                 break;

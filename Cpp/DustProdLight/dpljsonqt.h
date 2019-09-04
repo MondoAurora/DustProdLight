@@ -56,7 +56,7 @@ public:
 
 //    static void loadKernelConfig(const char *metaVer, const char *dustPath, const char *fileName);
 
-    static void loadEntities(const char *path, const char *fileName);
+    static bool loadEntities(const char *path, const char *fileName);
     static void saveEntities(const char *path, const char *fileName);
 
     static QString EMPTY_STRING;

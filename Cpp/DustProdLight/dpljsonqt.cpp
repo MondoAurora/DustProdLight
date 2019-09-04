@@ -211,11 +211,11 @@ bool DPLJsonQt::processJsonFile(const char *jsonFile, DPLJSONProc &proc) {
 //    processJsonFile(qPrintable(kp), kl);
 //}
 
-void DPLJsonQt::loadEntities(const char *path, const char *fileName)
+bool DPLJsonQt::loadEntities(const char *path, const char *fileName)
 {
     DPLJSONProcCloudLoader cl;
     QString kp = QString(path).append("\\").append(fileName);
-    processJsonFile(qPrintable(kp), cl);
+    return processJsonFile(qPrintable(kp), cl);
 }
 
 void DPLJsonQt::saveEntities(const char *path, const char *fileName)

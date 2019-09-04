@@ -38,7 +38,7 @@ unix {
     INSTALLS += target
 }
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Dust-Desktop_Qt_5_13_0_MSVC2015_64bit-Debug/release/ -lDust
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Dust-Desktop_Qt_5_13_0_MSVC2015_64bit-Release/release/ -lDust
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Dust-Desktop_Qt_5_13_0_MSVC2015_64bit-Debug/debug/ -lDust
 else:unix: LIBS += -L$$PWD/../build-Dust-Desktop_Qt_5_13_0_MSVC2015_64bit-Debug/ -lDust
 
