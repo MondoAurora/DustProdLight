@@ -6,12 +6,6 @@
 namespace DustMeta {
 
 
-//class DUSTSHARED_EXPORT DustConsts
-//{
-//public:
-//    static const DustKey PATH_END;
-//};
-
 class DUSTSHARED_EXPORT DustTypes
 {
 public:

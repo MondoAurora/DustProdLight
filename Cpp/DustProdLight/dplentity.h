@@ -83,7 +83,7 @@ public:
     void set(DustKey key, const DustVariant &val);
     void get(DustKey key, DustVariant &val);
 
-    DPLRef * getRef(DustKey key, DustRefType refType = drtUnknown, DPLEntity *pParam = nullptr);
+    DPLRef * getRef(DustKey key, DustRefType refType = drtUnset, DPLEntity *pParam = nullptr);
     bool accessRefImpl(DustKey key, DustRefType refType, DustRefCommand cmd, DPLEntity *pParam, int optIdx = -1);
 };
 

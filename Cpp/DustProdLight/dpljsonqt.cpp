@@ -102,7 +102,6 @@ bool DPLJSONProcCloudLoader::process(QJsonDocument &doc)
     QJsonObject entities = doc.object().value(JSONKEY_ENTITIES).toObject();
     DustVariant var;
     DPLEntity *pe, *pp;
-    DPLRef *pRef;
     DustKey k;
 
     for ( const auto& locId : entities.keys()  )
@@ -125,6 +124,9 @@ bool DPLJSONProcCloudLoader::process(QJsonDocument &doc)
                 var.reset();
 
                 switch ( pki->valType ) {
+                case dvtUnset:
+                    // should not be here
+                    exit(3);
                 case dvtBool:
                     var.setBool(jsonVal.toBool());
                     break;
@@ -146,12 +148,14 @@ bool DPLJSONProcCloudLoader::process(QJsonDocument &doc)
                 break;
             case DKT_Ref:
                 switch ( pki->refType ) {
+                case drtUnset:
+                    // should not be here
+                    exit(3);
                 case drtSingle:
                     pp = getLocalEntity(entities, jsonVal.toString());
                     pe->accessRefImpl(pki->key, drtSingle, DustRefAdd, pp);
                     break;
                 case drtSet:
-                    [[clang::fallthrough]];
                 case drtArray:
                     QJsonArray ja = jsonVal.toArray();
                     int l = ja.size();
@@ -218,7 +222,7 @@ bool DPLJsonQt::loadEntities(const char *path, const char *fileName)
     return processJsonFile(qPrintable(kp), cl);
 }
 
-void DPLJsonQt::saveEntities(const char *path, const char *fileName)
+void DPLJsonQt::saveEntities(const char *, const char *)
 {
 
 }

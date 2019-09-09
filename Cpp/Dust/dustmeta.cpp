@@ -18,5 +18,3 @@ const DustKey Identifier::Global = Dust::registerKey("Global", DustTypes::Identi
 
 const DustKey Entity::PrimaryType = Dust::registerKey("PrimaryType", DustTypes::Entity, DKT_Ref, drtSingle);
 const DustKey Entity::Types = Dust::registerKey("Types", DustTypes::Entity, DKT_Ref, drtSet);
-
-// const DustKey DustConsts::PATH_END = Dust::registerKey("$$$", DustTypes::Unit);

@@ -50,7 +50,7 @@ DPLRef * DPLEntity::getRef(DustKey key, DustRefType refType, DPLEntity *pParam)
     DPLRef *pr = nullptr;
 
     if ( refs.find( key ) == refs.end() ) {
-        if ( pParam && (drtUnknown != refType) ) {
+        if ( pParam && (drtUnset != refType) ) {
             pr = DPLRef::createRef(refType, pParam);
             refs.insert(key, pr);
         }
@@ -138,6 +138,8 @@ bool DPLRef::setEntity(void *pE) {
         pEntity = pE;
         ((DPLEntity*)pEntity)->addRef();
     }
+
+    return true;
 }
 
 
@@ -268,6 +270,9 @@ bool DPLRefArr::access(DustRefCommand cmd, void *pParam, DPLRef *& currRef, int 
 
     if ( !vecRef ) {
         switch ( cmd ) {
+        case DustRefAdd:
+            // already handled above
+            return false;
         case DustRefClear:
             currRef = nullptr;
             return setEntity(nullptr);
@@ -282,6 +287,9 @@ bool DPLRefArr::access(DustRefCommand cmd, void *pParam, DPLRef *& currRef, int 
         QMutableVectorIterator<DPLRefArr*> qit(*vecRef);
 
         switch ( cmd ) {
+        case DustRefAdd:
+            // already handled above
+            return false;
         case DustRefClear:
             for ( ; qit.hasNext(); ) {
                 delete qit.next();
@@ -316,6 +324,8 @@ bool DPLRefArr::access(DustRefCommand cmd, void *pParam, DPLRef *& currRef, int 
 
         return false;
     }
+
+    return true;
 }
 
 
