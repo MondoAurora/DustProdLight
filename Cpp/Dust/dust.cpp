@@ -82,7 +82,6 @@ void DustKeyInfo::regInfo()
     mapKeyToId.insert(MapKeyToId::value_type(key, this));
 }
 
-
 Dust::Dust()
 {
 }
@@ -146,6 +145,24 @@ DustKeyInfo * Dust::getKeyInfo(const char* metaId) {
 void Dust::accessValue(DustKey keyCtxTarget, DustKey keyRef, DustValueCommand cmd, DustVariant &var) {
     pDust->accessValueImpl(keyCtxTarget, keyRef, cmd, var);
 }
+
+void Dust::setDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val) {
+    DustVariant v(val);
+    pDust->accessValueImpl(keyCtxTarget, keyRef, DustValueCommand::write, v);
+}
+
+double Dust::getDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val) {
+    DustVariant v(val);
+    pDust->accessValueImpl(keyCtxTarget, keyRef, DustValueCommand::read, v);
+
+    double ret;
+    v.getDouble(ret);
+
+    return ret;
+}
+
+
+
 void Dust::selectEntity(DustKey keyCtxTarget, DustKey keyCtxSource, int count, ...) {
     va_list args;
     va_start(args, count);
@@ -160,13 +177,34 @@ bool Dust::accessRef(DustKey keyCtxTarget, DustKey keyRef, DustRefCommand cmd, D
 bool Dust::nextRef(DustKey keyCtxTarget)  {
     return pDust->nextRefImpl(keyCtxTarget);
 }
-
+bool Dust::commSignal(DustCommSignal dcs) {
+    return pDust->commSignalImpl(dcs);
+}
 
 void Dust::dump() {
     pDust->dumpImpl();
 }
 
 Dust* Dust::pDust;
+
+
+
+static double EPSILON = 1E-10;
+
+bool defDoubleEquals(const double &d1, const double &d2) {
+    double diff = std::fabs(d1 - d2);
+    return  (diff <= EPSILON);
+}
+
+dustDoubleEquals Dust::dblEquals = defDoubleEquals;
+
+void Dust::setDoubleEquals(dustDoubleEquals de) {
+    Dust::dblEquals = de;
+}
+
+bool Dust::doubleEquals(const double &d1, const double &d2) {
+    return dblEquals(d1, d2);
+}
 
 
 std::ostream& operator<<(std::ostream& stream, const DustKey& key) {

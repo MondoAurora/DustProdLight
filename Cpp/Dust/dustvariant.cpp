@@ -3,21 +3,44 @@
 #include <string>
 #include <memory>
 
-std::ostream& operator<<(std::ostream &strm, const DustVariant &var) {
+
+DustVariant::DustVariant() {}
+
+DustVariant::DustVariant(const DustVariant& var) {
     switch (var.valType) {
     case dvtBool:
-        return strm << (var.valBool ? "true" : "false");
+        setBool(var.valBool);
+        break;
     case dvtLong:
-        return strm << var.valLong;
+        setLong(var.valLong);
+        break;
     case dvtDouble:
-        return strm << var.valDouble;
+        setDouble(var.valDouble);
+        break;
     case dvtRaw:
-        strm.write((char*) var.valRaw, var.dataSize);
-        return strm;
-    default:
-        return strm << "oops";
+        setRaw(var.valRaw, var.dataSize);
+        break;
+    case dvtUnset:
+        break;
     }
 }
+
+DustVariant::DustVariant(const bool b) {
+    setBool(b);
+}
+DustVariant::DustVariant(const long& l)  {
+    setLong(l);
+}
+DustVariant::DustVariant(const double& d)  {
+    setDouble(d);
+}
+DustVariant::DustVariant(const char* s) {
+    setRaw(s);
+}
+DustVariant::DustVariant(const void* r, const size_t size) {
+    setRaw(r, size);
+}
+
 
 DustVariant::~DustVariant() {
     reset();
@@ -70,7 +93,13 @@ void DustVariant::initType(DustValueType vtNew) {
     }
 }
 
-void DustVariant::set(DustVariant &target, const DustVariant &src) {
+void DustVariant::set(DustVariant &target, const DustVariant &src, dustVarChgListener listener, const void *pHint) {
+    if ( listener ) {
+        if ( ! (target == src) ) {
+            listener(target, src, pHint);
+        }
+    }
+
     switch (src.valType) {
     case dvtBool:
         target.setBool(src.valBool);
@@ -89,6 +118,40 @@ void DustVariant::set(DustVariant &target, const DustVariant &src) {
         break;
     }
 }
+
+bool DustVariant::operator == (const DustVariant& var) {
+    if ( valType == var.valType ) {
+        switch (valType) {
+        case dvtBool:
+            return valBool == var.valBool;
+        case dvtLong:
+            return valLong == var.valLong;
+        case dvtDouble:
+            return Dust::doubleEquals(valDouble, var.valDouble);
+        case dvtRaw:
+            return (dataSize == var.dataSize) && !memcmp(valRaw, var.valRaw, dataSize);
+        case dvtUnset:
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool DustVariant::operator == (const bool b) {
+    return (dvtBool == valType) && (valBool == b);
+}
+bool DustVariant::operator == (const long& l) {
+    return (dvtLong == valType) && (valLong == l);
+}
+bool DustVariant::operator == (const double& d) {
+    return (dvtDouble == valType) && Dust::doubleEquals(valDouble, d);
+}
+bool DustVariant::operator == (const char* s) {
+    return (dvtRaw == valType) && !strcmp(s, (char*) valRaw);
+}
+
+
 
 void DustVariant::setBool(bool b) {
     initType(dvtBool);
@@ -120,6 +183,8 @@ void DustVariant::setRaw(const void* r, const size_t size) {
     }
 }
 
+
+
 void DustVariant::getBool(bool &b) const {
     verifyType(dvtBool);
     b = valBool;
@@ -143,4 +208,22 @@ size_t DustVariant::getRaw(void* r, const size_t size) const {
     memcpy(r, valRaw, s);
 
     return dataSize;
+}
+
+
+
+std::ostream& operator<<(std::ostream &strm, const DustVariant &var) {
+    switch (var.valType) {
+    case dvtBool:
+        return strm << (var.valBool ? "true" : "false");
+    case dvtLong:
+        return strm << var.valLong;
+    case dvtDouble:
+        return strm << var.valDouble;
+    case dvtRaw:
+        strm.write((char*) var.valRaw, var.dataSize);
+        return strm;
+    default:
+        return strm << "oops";
+    }
 }

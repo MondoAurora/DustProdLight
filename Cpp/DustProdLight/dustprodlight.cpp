@@ -5,6 +5,8 @@
 #include "dustprodlight.h"
 #include <dustmeta.h>
 
+#include "dplchangetransmitterfile.h"
+
 using namespace std;
 
 DustProdLight::DustProdLight()
@@ -16,27 +18,31 @@ DustProdLight::~DustProdLight()
 }
 
 
-void DustProdLight::init() {
+void DustProdLight::init(const QString &dustDir) {
     Dust::initKernel(&self);    
 
-    self.dustPath = "Q:\\LightIPS\\LightIPS\\wdir";
+    self.dustPath = dustDir;
 }
 
 DustKeyInfo* DustProdLight::getKeyInfo(const QString metaId) {
     return Dust::getKeyInfo(qPrintable(metaId));
 }
 
-
-//void DustProdLight::loadMeta(const char* metaVersion, const char* fileName) {
-//    DPLJsonQt::loadKernelConfig(metaVersion, self.dustPath, fileName);
-//}
-
-bool DustProdLight::loadData(const char* fileName) {
-    return DPLJsonQt::loadEntities(self.dustPath, fileName);
+void DustProdLight::setTransmitter(DPLChangeTransmitter* t) {
+    self.chgTransmitter = t;
 }
 
-void DustProdLight::init(QCoreApplication &) {
-    init();
+bool DustProdLight::loadData(const QString &fileName) {
+    QFile inFile(self.dustPath + "\\" + fileName);
+    return loadData(inFile);
+}
+
+bool DustProdLight::loadData(QFile &inFile) {
+    return DPLJsonQt::loadEntities(inFile);
+}
+
+void DustProdLight::init(const QString &dustDir, QCoreApplication &) {
+    init(dustDir);
 }
 
 void DustProdLight::registerChangeListener(DustChangeListener *pListener)
@@ -74,31 +80,31 @@ DPLEntitySel* DustProdLight::getSel(DustKey key) {
     return ret;
 }
 
-void DustProdLight::setDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val) {
-    DPLEntity *pe = self.getSel(keyCtxTarget)->getCurrent();
+//void DustProdLight::setDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val) {
+//    DPLEntity *pe = self.getSel(keyCtxTarget)->getCurrent();
 
-    if ( pe ) {
-        DustVariant *pv = pe->accessVar(keyRef);
-        if ( pv ) {
-            pv->setDouble(val);
-        }
-    }
-}
+//    if ( pe ) {
+//        DustVariant *pv = pe->accessVar(keyRef);
+//        if ( pv ) {
+//            pv->setDouble(val);
+//        }
+//    }
+//}
 
-double DustProdLight::getDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val) {
-    DPLEntity *pe = self.getSel(keyCtxTarget)->getCurrent();
+//double DustProdLight::getDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val) {
+//    DPLEntity *pe = self.getSel(keyCtxTarget)->getCurrent();
 
-    if ( pe ) {
-        DustVariant *pv = pe->accessVar(keyRef);
-        if ( pv && (pv->getType() == dvtDouble) ) {
-            double d;
-            pv->getDouble(d);
-            return d;
-        }
-    }
+//    if ( pe ) {
+//        DustVariant *pv = pe->accessVar(keyRef);
+//        if ( pv && (pv->getType() == dvtDouble) ) {
+//            double d;
+//            pv->getDouble(d);
+//            return d;
+//        }
+//    }
 
-    return val;
-}
+//    return val;
+//}
 
 bool DustProdLight::getString(DustKey keyCtxTarget, DustKey keyRef, QString &qs) {
     qs.clear();
@@ -120,22 +126,49 @@ bool DustProdLight::getString(DustKey keyCtxTarget, DustKey keyRef, QString &qs)
     return false;
 }
 
+DPLChange* DustProdLight::getCurrentTransaction() {
+    DPLChange* ret = self.currTransaction;
 
-void DustProdLight::optPush() {
-}
-
-
-void DustProdLight::optPull() {
-}
-
-
-void DustProdLight::optNotify() {
-    QSet<DustChangeListener*>::iterator it;
-    for (it = self.changeListeners.begin(); it != self.changeListeners.end(); ++it)
-    {
-        DustChangeListener *l = *it;
-        l->processChange();
+    if ( !ret ) {
+        ret = new DPLChange();
+        self.transactions.append(ret);
     }
+
+    return ret;
+}
+
+void DustProdLight::varChangeLogger(const DustVariant &varOld, const DustVariant &varNew, const void *pHint) {
+    DPLChangeHint *pCH = (DPLChangeHint*) pHint;
+    getCurrentTransaction()->chgValue(pCH->pEntity, pCH->key, varOld, varNew);
+}
+
+
+bool DustProdLight::commSignalImpl(DustCommSignal dcs) {
+    bool ret = false;
+
+    switch ( dcs ) {
+    case dcsOver:
+    {
+        QSet<DustChangeListener*>::iterator it;
+        for (it = self.changeListeners.begin(); it != self.changeListeners.end(); ++it)
+        {
+            DustChangeListener *l = *it;
+            l->processChange();
+            ret = true;
+        }
+    }
+        break;
+
+    case dcsOut:
+        if ( chgTransmitter ) {
+            chgTransmitter->transmit(transactions);
+        }
+        currTransaction = nullptr;
+
+        break;
+    }
+
+    return ret;
 }
 
 using namespace std;
@@ -153,7 +186,10 @@ void DustProdLight::accessValueImpl(DustKey keyCtxTarget, DustKey keyRef, DustVa
         e->get(keyRef, var);
         break;
     case write:
-        e->set(keyRef, var);
+    {
+        DPLChangeHint h(e, keyRef);
+        e->set(keyRef, var, &h);
+    }
         break;
     }
 }
@@ -173,12 +209,6 @@ bool DustProdLight::accessRefImpl(DustKey keyCtxTarget, DustKey keyRef, DustRefC
 bool DustProdLight::nextRefImpl(DustKey keyCtxTarget)  {
     return getSel(keyCtxTarget)->next();
 }
-
-
-//DPLEntitySel::DPLEntitySel(DPLEntity *pE, DustKey path...)
-//{
-//    init(pE, path);
-//}
 
 DPLEntitySel::DPLEntitySel()
     :pCurrent(nullptr), pRef(nullptr)

@@ -75,6 +75,12 @@ private:
     void regInfo();
 };
 
+typedef bool (*dustDoubleEquals)(const double &d1, const double &d2);
+
+class DustVariant;
+
+typedef void (*dustVarChgListener)(const DustVariant &varOld, const DustVariant &varNew, const void *pHint);
+
 class DUSTSHARED_EXPORT DustVariant
 {
 private:
@@ -84,25 +90,42 @@ private:
         bool valBool;
         long valLong;
         double valDouble;
-        void* valRaw;
+        void* valRaw = nullptr;
     };
 
-    size_t dataSize;
+    size_t dataSize = 0;
 
     void initType(DustValueType vtNew);
     void verifyType(DustValueType vt) const;
 
     friend DUSTSHARED_EXPORT std::ostream& operator<<(std::ostream&, const DustVariant&);
+    friend class Dust;
 
 public:
-    ~DustVariant();
+    DustVariant();
+    DustVariant(const DustVariant& var);
 
-    static void set(DustVariant &target, const DustVariant &src);
+    DustVariant(const bool b);
+    DustVariant(const long& l);
+    DustVariant(const double& d);
+    DustVariant(const char* s);
+    DustVariant(const void* r, const size_t size);
+
+    ~DustVariant();
 
     DustValueType getType() const;
     size_t getSize() const;
 
     void reset();
+
+    bool operator == (const DustVariant &var);
+
+    bool operator == (const bool b);
+    bool operator == (const long& l);
+    bool operator == (const double& d);
+    bool operator == (const char* s);
+
+    static void set(DustVariant &target, const DustVariant &src, dustVarChgListener listener = nullptr, const void *pHint = nullptr);
 
     void setBool(bool b);
     void setLong(long l);
@@ -123,6 +146,10 @@ public:
     virtual void processChange();
 };
 
+enum DustEntityCommand {
+    decDelete = 0, decCreate = 1, decChange = 2
+};
+
 enum DustValueCommand {
     read, write
 };
@@ -131,10 +158,15 @@ enum DustRefCommand {
     DustRefClear, DustRefAdd, DustRefRemove
 };
 
+enum DustCommSignal {
+    dcsOver, dcsOut
+};
+
 class DUSTSHARED_EXPORT Dust
 {
 private:
     static Dust* pDust;
+    static dustDoubleEquals dblEquals;
 
 protected:
     Dust();
@@ -145,12 +177,17 @@ protected:
     virtual bool accessRefImpl(DustKey keyCtxTarget, DustKey keyRef, DustRefCommand cmd, DustKey keyCtxParam, int optIdx = -1) = 0;
     virtual bool nextRefImpl(DustKey keyCtxTarget) = 0;
 
+    virtual bool commSignalImpl(DustCommSignal dcs) = 0;
+
     virtual void dumpImpl() = 0;
 
     static void initKernel(Dust* pKernel);
     static DustKeyInfo* getKeyInfo(const char* metaId);
 
 public:
+    static void setDoubleEquals(dustDoubleEquals de);
+    static bool doubleEquals(const double &d1, const double &d2);
+
     static DustKey registerUnit(const char* unitId, const char* version);
     static DustKey registerKey(const char* id, const DustKey parent, DustKeyType = DKT_Type, const int contentType = 0);
 
@@ -159,6 +196,11 @@ public:
     static void accessValue(DustKey keyCtxTarget, DustKey keyRef, DustValueCommand cmd, DustVariant &var);
     static bool accessRef(DustKey keyCtxTarget, DustKey keyRef, DustRefCommand cmd, DustKey keyCtxParam, int optIdx = -1);
     static bool nextRef(DustKey keyCtxTarget);
+
+    static void setDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val);
+    static double getDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val);
+
+    static bool commSignal(DustCommSignal dcs);
 
     static void dump();
 };

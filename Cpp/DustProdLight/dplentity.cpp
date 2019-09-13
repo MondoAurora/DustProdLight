@@ -5,6 +5,8 @@
 
 #include <QMapIterator>
 
+#include <dustprodlight.h>
+
 //using namespace std;
 
 DPLEntity::DPLEntity(bool global)
@@ -37,8 +39,8 @@ DustVariant* DPLEntity::accessVar(DustKey key) {
     return &data[key];
 }
 
-void DPLEntity::set(DustKey key, const DustVariant &val) {
-    DustVariant::set(data[key], val);
+void DPLEntity::set(DustKey key, const DustVariant &val, void* pChgHint) {
+    DustVariant::set(data[key], val, pChgHint ? DustProdLight::varChangeLogger : nullptr, pChgHint);
 }
 
 void DPLEntity::get(DustKey key, DustVariant &val) {

@@ -56,29 +56,6 @@ bool DPLJSONProc::process(QJsonDocument &doc)
     return true;
 };
 
-
-
-//DPLJSONProcKernelLoader::~DPLJSONProcKernelLoader(){}
-
-//DPLJSONProcKernelLoader::DPLJSONProcKernelLoader()
-//    :DPLJSONProc (JSONKEY_ATTDEFS, DPLJSONProcKernelLoader::procKernelInfo)
-//{}
-
-//bool DPLJSONProcKernelLoader::procKernelInfo(QJsonObject &o) {
-//    QString attParent = o.value(JSONKEY_TYPENAME).toString();
-//    QString attName = o.value(JSONKEY_NAME).toString();
-//    QString attType = o.value(JSONKEY_VALTYPE).toString();
-
-//    attName.insert(0, ".");
-//    attName.insert(0, attParent);
-
-//    DustProdLight::initKey(qPrintable(attName), qPrintable(attType), qPrintable(attParent));
-
-//    return true;
-//}
-
-
-
 DPLJSONProcCloudLoader::~DPLJSONProcCloudLoader() {};
 
 DPLEntity* DPLJSONProcCloudLoader::getLocalEntity(QJsonObject &entities, const QString &locId) {
@@ -176,8 +153,7 @@ bool DPLJSONProcCloudLoader::process(QJsonDocument &doc)
 }
 
 
-bool DPLJsonQt::processJsonFile(const char *jsonFile, DPLJSONProc &proc) {
-    QFile file(jsonFile);
+bool DPLJsonQt::processJsonFile(QFile &file, DPLJSONProc &proc) {
     file.open(QFile::ReadOnly);
     if (file.isOpen()) {
         QByteArray inputData = file.readAll();
@@ -206,26 +182,20 @@ bool DPLJsonQt::processJsonFile(const char *jsonFile, DPLJSONProc &proc) {
     return false;
 };
 
-
-//void DPLJsonQt::loadKernelConfig(const char* metaVer, const char *path, const char *fileName) {
-//    DPLJsonQt::metaVer = metaVer;
-
-//    DPLJSONProcKernelLoader kl;
-//    QString kp = QString(path).append("\\").append(fileName);
-//    processJsonFile(qPrintable(kp), kl);
-//}
-
-bool DPLJsonQt::loadEntities(const char *path, const char *fileName)
+bool DPLJsonQt::loadEntities(QFile &file)
 {
     DPLJSONProcCloudLoader cl;
-    QString kp = QString(path).append("\\").append(fileName);
-    return processJsonFile(qPrintable(kp), cl);
+    return processJsonFile(file, cl);
 }
 
-void DPLJsonQt::saveEntities(const char *, const char *)
+bool DPLJsonQt::saveEntities(QFile &file)
 {
-
+    return false;
 }
 
-//QString DPLJsonQt::metaVer;
+bool DPLJsonQt::saveChanges(QFile &file, const QVector<void*> &transactions) {
+    return false;
+}
+
+
 QString DPLJsonQt::EMPTY_STRING = "@@@NOSTRING@@@";

@@ -24,12 +24,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         dplchange.cpp \
+        dplchangetransmitterfile.cpp \
         dplentity.cpp \
         dpljsonqt.cpp \
         dustprodlight.cpp
 
 HEADERS += \
         dplchange.h \
+        dplchangetransmitterfile.h \
         dplentity.h \
         dpljsonqt.h \
         dustprodlight.h \

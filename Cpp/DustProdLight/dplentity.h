@@ -80,7 +80,7 @@ public:
 
     DustVariant * accessVar(DustKey key);
 
-    void set(DustKey key, const DustVariant &val);
+    void set(DustKey key, const DustVariant &val, void* pChgHint = nullptr);
     void get(DustKey key, DustVariant &val);
 
     DPLRef * getRef(DustKey key, DustRefType refType = drtUnset, DPLEntity *pParam = nullptr);

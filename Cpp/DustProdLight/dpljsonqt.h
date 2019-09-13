@@ -3,10 +3,12 @@
 
 #include <dust.h>
 
+#include <QFile>
 #include <QMap>
 #include <QJsonDocument>
 
 #include <dplentity.h>
+#include <dplchange.h>
 
 typedef bool (*arrayProc)(QJsonObject &ob);
 
@@ -24,15 +26,6 @@ public:
     virtual bool process(QJsonDocument &doc);
 };
 
-//class DPLJSONProcKernelLoader : public DPLJSONProc {
-//public:
-//    DPLJSONProcKernelLoader();
-//    virtual ~DPLJSONProcKernelLoader();
-
-//private:
-//    static bool procKernelInfo(QJsonObject &o);
-//};
-
 class DPLJSONProcCloudLoader : public DPLJSONProc {
 public:
     virtual ~DPLJSONProcCloudLoader();
@@ -48,16 +41,12 @@ private:
 
 class DPLJsonQt //: public DustKernelLoader
 {
-private:
-//    static QString metaVer;
-
 public:
-    static bool processJsonFile(const char *jsonFile, DPLJSONProc &proc);
+    static bool processJsonFile(QFile &file, DPLJSONProc &proc);
 
-//    static void loadKernelConfig(const char *metaVer, const char *dustPath, const char *fileName);
-
-    static bool loadEntities(const char *path, const char *fileName);
-    static void saveEntities(const char *path, const char *fileName);
+    static bool loadEntities(QFile &file);
+    static bool saveEntities(QFile &file);
+    static bool saveChanges(QFile &file, const QVector<void*> &transactions);
 
     static QString EMPTY_STRING;
 };

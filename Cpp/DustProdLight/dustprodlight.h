@@ -4,6 +4,7 @@
 #include <dust.h>
 
 #include <dpljsonqt.h>
+#include <dplchange.h>
 
 #include <QCoreApplication>
 #include <QList>
@@ -41,29 +42,28 @@ public:
 
 class DUSTPRODLIGHTSHARED_EXPORT DustProdLight : public Dust
 {
-    friend class DPLJSONProcKernelLoader;
+    friend class DPLJsonQt;
     friend class DPLJSONProcCloudLoader;
+    friend class DPLEntity;
 
 public:
-    static void init();
-    static void init(QCoreApplication &app);
+    static void init(const QString &dustDir);
+    static void init(const QString &dustDir, QCoreApplication &app);
 
-    static void loadMeta(const char* metaVersion, const char* fileName);
-    static bool loadData(const char* fileName);
+    static void setTransmitter(DPLChangeTransmitter* t);
+
+    static bool loadData(const QString &fileName);
+    static bool loadData(QFile &inFile);
 
     static void registerChangeListener(DustChangeListener *pListener);
 
     static void selectEntityById(DustKey keyCtxTarget, const QString &globalId);
 
 
-    static void setDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val);
-    static double getDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val);
+//    static void setDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val);
+//    static double getDouble(DustKey keyCtxTarget, DustKey keyRef, const double &val);
 
     static bool getString(DustKey keyCtxTarget, DustKey keyRef, QString &str);
-
-    static void optPush();
-    static void optPull();
-    static void optNotify();
 
 protected:
     DustProdLight();
@@ -75,20 +75,29 @@ protected:
     virtual void selectEntityImpl(DustKey keyCtxTarget, DustKey keyCtxSource, int count, va_list &args);
     virtual bool accessRefImpl(DustKey keyCtxTarget, DustKey keyRef, DustRefCommand cmd, DustKey keyCtxParam, int optIdx = -1);
     virtual bool nextRefImpl(DustKey keyCtxTarget);
+    virtual bool commSignalImpl(DustCommSignal dcs);
+
     void dumpImpl();
 
-//    void loadMeta();
-
     static DPLEntity* getEntity(const QString &globalId);
+
+    static DPLChange* getCurrentTransaction();
+    static bool processTransactions(DPLChangeReceiver *preceiver);
+    static void varChangeLogger(const DustVariant &varOld, const DustVariant &varNew, const void *pHint);
 
 private:
     static DustProdLight self;
 
-    const char* dustPath;
+    QString dustPath;
     QMap<DustKey, DPLEntitySel*> ctx;
 
     QSet<DPLEntity*> allEntities;
     QMap<QString, DPLEntity*> globalEntities;
+
+
+    DPLChangeTransmitter *chgTransmitter = nullptr;
+    DPLChange* currTransaction = nullptr;
+    QVector<void*> transactions;
 
     QSet<DustChangeListener*> changeListeners;
 
