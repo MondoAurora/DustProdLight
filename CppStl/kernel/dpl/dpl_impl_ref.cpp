@@ -1,28 +1,30 @@
 /*
- * fleetmandata.cpp
+ * dpl_impl_ref.cpp
+ *
+ *	Entity reference implementation (quite complicated, got a separate file)
  *
  *  Created on: Feb 12, 2020
- *      Author: loran
+ *      Author: Lorand Kedves
  */
 
 #include "dpl_impl.h"
 
-DustProdLightRef::DustProdLightRef(DPLToken ptoken, DPLValType preftype, DPLEntity psource, DPLEntity ptarget,
+DustProdLightRef::DustProdLightRef(DPLToken ptoken, DPLTokenType ptokentype, DPLEntity psource, DPLEntity ptarget,
 		int pkey) :
-		token(ptoken), refType(preftype), source(psource), target(ptarget) {
-	if (fmd_valtype_ref_map == refType) {
+		token(ptoken), tokenType(ptokentype), source(psource), target(ptarget) {
+	if (dpl_token_ref_map == tokenType) {
 		mapKey = pkey;
 	}
 
-	DustProdLightStore::store.refs.insert(this);
+	DustProdLightStore::store->refs.insert(this);
 }
 
 DustProdLightRef::DustProdLightRef(DustProdLightToken* ptoken, DPLEntity psource, DPLEntity ptarget, int pkey) :
-		DustProdLightRef(ptoken->id, ptoken->valType, psource, ptarget, pkey) {
+		DustProdLightRef(ptoken->id, ptoken->tokenType, psource, ptarget, pkey) {
 }
 
 DustProdLightRef::DustProdLightRef(DustProdLightRef *porig, DPLEntity ptarget, int pkey) :
-		DustProdLightRef(porig->token, porig->refType, porig->source, ptarget, pkey) {
+		DustProdLightRef(porig->token, porig->tokenType, porig->source, ptarget, pkey) {
 
 	porig->append(this, pkey);
 }
@@ -31,7 +33,7 @@ DustProdLightRef::~DustProdLightRef() {
 	if (collection) {
 		if (1 == collection->size()) {
 			delete collection;
-			DustProdLightStore::store.dataLocal[source].refs.erase(token);
+			DustProdLightStore::store->dataLocal[source].refs.erase(token);
 		} else {
 			for (RefVectorIterator it = collection->begin(); it != collection->end(); ++it) {
 				DustProdLightRef* pl = *it;
@@ -41,15 +43,15 @@ DustProdLightRef::~DustProdLightRef() {
 				}
 			}
 
-			DustProdLightRef *pEntry = DustProdLightStore::store.dataLocal[source].refs[token];
+			DustProdLightRef *pEntry = DustProdLightStore::store->dataLocal[source].refs[token];
 			if (pEntry == this) {
 				pEntry = *collection->begin();
-				DustProdLightStore::store.dataLocal[source].refs[token] = pEntry;
+				DustProdLightStore::store->dataLocal[source].refs[token] = pEntry;
 			}
 		}
 	}
 
-	DustProdLightStore::store.refs.erase(this);
+	DustProdLightStore::store->refs.erase(this);
 }
 
 void DustProdLightRef::append(DustProdLightRef* pRef, int key) {
@@ -59,7 +61,7 @@ void DustProdLightRef::append(DustProdLightRef* pRef, int key) {
 	}
 
 	pRef->collection = collection;
-	if ((fmd_valtype_ref_array == refType) && (0 <= key) && (key < (int) collection->size())) {
+	if ((dpl_token_ref_array == tokenType) && (0 <= key) && (key < (int) collection->size())) {
 		collection->insert(collection->begin() + key, pRef);
 	} else {
 		collection->push_back(pRef);
@@ -69,8 +71,8 @@ void DustProdLightRef::append(DustProdLightRef* pRef, int key) {
 DustProdLightRef* DustProdLightRef::getBy(DPLEntity ptarget, int key) {
 	if (collection) {
 		DustProdLightRef *pL;
-		switch (refType) {
-		case fmd_valtype_ref_set:
+		switch (tokenType) {
+		case dpl_token_ref_set:
 			for (RefVectorIterator it = collection->begin(); it != collection->end(); ++it) {
 				pL = *it;
 				if (pL->target == ptarget) {
@@ -78,7 +80,7 @@ DustProdLightRef* DustProdLightRef::getBy(DPLEntity ptarget, int key) {
 				}
 			}
 			break;
-		case fmd_valtype_ref_array:
+		case dpl_token_ref_array:
 			if ( REFKEY_ARR_APPEND != key) {
 				pL = collection->at(key);
 				if (pL->target == ptarget) {
@@ -86,7 +88,7 @@ DustProdLightRef* DustProdLightRef::getBy(DPLEntity ptarget, int key) {
 				}
 			}
 			break;
-		case fmd_valtype_ref_map:
+		case dpl_token_ref_map:
 			for (RefVectorIterator it = collection->begin(); it != collection->end(); ++it) {
 				pL = *it;
 				if ((pL->target == ptarget) && (pL->mapKey == key)) {
@@ -99,13 +101,13 @@ DustProdLightRef* DustProdLightRef::getBy(DPLEntity ptarget, int key) {
 		}
 	} else {
 		if (target == ptarget) {
-			switch (refType) {
-			case fmd_valtype_ref_map:
+			switch (tokenType) {
+			case dpl_token_ref_map:
 				if (mapKey != key) {
 					return NULL;
 				}
 				break;
-			case fmd_valtype_ref_array:
+			case dpl_token_ref_array:
 				if (0 != key) {
 					return NULL;
 				}
@@ -120,10 +122,6 @@ DustProdLightRef* DustProdLightRef::getBy(DPLEntity ptarget, int key) {
 	return NULL;
 }
 
-DPLValType DustProdLightRef::getType() {
-	return refType;
-}
-
 int DustProdLightRef::getCount() {
 	return collection ? collection->size() : 1;
 }
@@ -131,7 +129,7 @@ int DustProdLightRef::getCount() {
 DPLEntity DustProdLightRef::getRef(int key) {
 	DustProdLightRef *pL;
 
-	if (fmd_valtype_ref_map == refType) {
+	if (dpl_token_ref_map == tokenType) {
 		if (collection) {
 			for (RefVectorIterator it = collection->begin(); it != collection->end(); ++it) {
 				pL = *it;
@@ -160,7 +158,7 @@ DPLEntity DustProdLightRef::getRef(int key) {
 }
 
 DPLToken DustProdLightRef::getTokenByIndex(int idx) {
-	if (fmd_valtype_ref_map == refType) {
+	if (dpl_token_ref_map == tokenType) {
 		if (collection) {
 			if ((0 <= idx) && (idx < (int) collection->size())) {
 				DustProdLightRef* pL = *(collection->begin() + idx);

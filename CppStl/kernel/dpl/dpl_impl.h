@@ -1,8 +1,10 @@
 /*
- * fleetmandata.h
+ * dpl_impl.h
+ *
+ * DustProdLight STL version - all implementation class declaration
  *
  *  Created on: Feb 12, 2020
- *      Author: loran
+ *      Author: Lorand Kedves
  */
 
 #ifndef DPL_IMPL_H_
@@ -18,7 +20,6 @@
 using namespace std;
 
 class DustProdLightStore;
-class FleetManJSON;
 class DustProdLightRef;
 class DustProdLightEntity;
 class DustProdLightRef;
@@ -27,16 +28,16 @@ class DustProdLightToken {
 private:
 	int id = -1;
 	DPLType type;
-	DPLValType valType;
+	DPLTokenType tokenType;
 
 	friend DustProdLightStore;
-	friend FleetManJSON;
 	friend DustProdLightRef;
 	friend DustProdLightEntity;
+	friend DPL;
 };
 
 
-class DustProdLightValue: public DPLValue {
+class DustProdLightValue {
 private:
 	int int_value;
 	double double_value;
@@ -45,16 +46,13 @@ private:
 public:
 	virtual ~DustProdLightValue();
 
-	virtual int getInt();
-	virtual double getDouble();
-	virtual string getString();
-
-	void set(DPLValType valType, void* pVal);
+	void set(DPLTokenType tokenType, void* pVal);
 
 	friend DustProdLightStore;
+	friend DPL;
 };
 
-class DustProdLightEntity : public DPLEntityInt {
+class DustProdLightEntity {
 	int localId = -1;
 	DPLType primaryType;
 	set<DPLType> types;
@@ -68,21 +66,21 @@ class DustProdLightEntity : public DPLEntityInt {
 
 	friend DustProdLightStore;
 	friend DustProdLightRef;
+	friend DPL;
+
 
 public:
-	virtual ~DustProdLightEntity();
+	~DustProdLightEntity();
 
-	virtual DPLType getPrimaryType();
-
-	virtual bool isOfType(DPLType type);
-	virtual void getTypes(set<DPLType>& typeSet);
+	bool isOfType(DPLType type);
+	void getTypes(set<DPLType>& typeSet);
 };
 
 typedef vector<DustProdLightRef*>::iterator RefVectorIterator;
 
-class DustProdLightRef: public DPLRef {
+class DustProdLightRef {
 	DPLToken token;
-	DPLValType refType;
+	DPLTokenType tokenType;
 
 	DPLEntity source;
 	DPLEntity target;
@@ -91,27 +89,29 @@ class DustProdLightRef: public DPLRef {
 
 	vector<DustProdLightRef*>* collection = 0;
 
-	DustProdLightRef(DPLToken ptoken, DPLValType preftype, DPLEntity psource, DPLEntity ptarget, int pkey);
+	DustProdLightRef(DPLToken ptoken, DPLTokenType ptokentype, DPLEntity psource, DPLEntity ptarget, int pkey);
 	DustProdLightRef(DustProdLightToken* ptoken, DPLEntity psource, DPLEntity ptarget, int pkey);
 	DustProdLightRef(DustProdLightRef *porig, DPLEntity ptarget, int pkey);
 
 	DustProdLightRef* getBy(DPLEntity ptarget, int key);
 	void append(DustProdLightRef* pRef, int key);
 
+	int getCount();
+	DPLEntity getRef(int key);
+	DPLToken getTokenByIndex(int idx);
+
+
 public:
 	~DustProdLightRef();
 
-	virtual DPLValType getType();
-	virtual int getCount();
-	virtual DPLEntity getRef(int key);
-	virtual DPLToken getTokenByIndex(int idx);
-
 	friend DustProdLightStore;
+	friend DPL;
+
 };
 
-class DustProdLightStore: public DPLStore {
+class DustProdLightStore {
 private:
-	static DustProdLightStore store;
+	static DustProdLightStore* store;
 
 	vector<string> vecTypes;
 	map<string, int> mapTypes;
@@ -126,21 +126,19 @@ private:
 	int nextEntityId = 0;
 
 protected:
-	DustProdLightToken *validateGetToken(DPLToken token, DPLValType valType);
+	DPLType getType(string typeName);
+	DustProdLightToken *getToken(DPLType type, string tokenName, DPLTokenType tokenType);
 
-	DustProdLightToken *getTokenImpl(DPLType type, string tokenName, DPLValType valType);
+	DustProdLightToken *validateGetToken(DPLToken token, DPLTokenType tokenType);
 
-	virtual DPLType getTypeInt(string typeName);
-	virtual DPLToken getTokenInt(DPLType type, string tokenName, DPLValType valType);
+	DustProdLightValue *getValue(DPLEntity entity, DPLTokenType tokenType, DPLToken token);
+	void setValue(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void* pVal);
 
-	virtual DPLValue *getValue(DPLEntity entity, DPLValType valType, DPLToken token);
-	virtual void setValue(DPLEntity entity, DPLToken token, DPLValType valType, void* pVal);
+	bool chgRef(DPLChange chg, DPLEntity entity, DPLToken token, DPLEntity target, int key);
+	DustProdLightRef* getRef(DPLEntity, DPLToken);
 
-	virtual bool chgRef(DPLChange chg, DPLEntity entity, DPLToken token, DPLEntity target, int key);
-	virtual DPLRef* getRef(DPLEntity, DPLToken);
-
-	virtual DPLEntity createEntityInt(DPLType primaryType);
-	virtual DPLEntityInt* getEntityInt(DPLEntity entity);
+	DustProdLightEntity* createEntity(DPLType primaryType);
+	DustProdLightEntity* getEntity(DPLEntity entity);
 
 public:
 	DustProdLightStore();
@@ -149,6 +147,7 @@ public:
 
 	friend DustProdLightRef;
 	friend DustProdLightEntity;
+	friend DPL;
 };
 
 #endif /* DPL_IMPL_H_ */
