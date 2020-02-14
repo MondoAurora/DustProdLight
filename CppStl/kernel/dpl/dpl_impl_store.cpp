@@ -15,7 +15,7 @@ DustProdLightStore* DustProdLightStore::store = NULL;
 DustProdLightStore::DustProdLightStore() {
 // create zero index placeholders in all collectors; means invalid / nonexistent
 	DPLType notype = getType("");
-	getToken(notype, "", dpl_token_val_invalid);
+	getToken(notype, "", DPL_TOKEN_INVALID);
 	createEntity(notype);
 	cout << "DustProdLightStore - Initialized" << endl;
 }
@@ -56,6 +56,7 @@ DustProdLightToken *DustProdLightStore::getToken(DPLType type, string tokenName,
 	if (-1 == pToken->id) {
 		pToken->id = vecTokens.size();
 		pToken->tokenType = tokenType;
+		pToken->name = tokenName;
 
 		vecTokens.push_back(pToken);
 	} else {
@@ -134,65 +135,64 @@ void DPL::shutdown() {
 }
 
 
-DPLType DPL::get_type(string typeName) {
+DPLType DPL::getType(string typeName) {
 	init();
 
 	return DustProdLightStore::store->getType(typeName);
 }
 
-DPLToken DPL::get_token(DPLType type, string tokenName, DPLTokenType tokenType) {
+DPLToken DPL::getToken(DPLType type, string tokenName, DPLTokenType tokenType) {
 	DustProdLightToken* pToken = DustProdLightStore::store->getToken(type, tokenName, tokenType);
 	return pToken->id;
 }
 
-// int
-void DPL::set_int(DPLEntity entity, DPLToken token, int i) {
-	DustProdLightStore::store->setValue(entity, token, dpl_token_val_int, &i);
+void DPL::setInt(DPLEntity entity, DPLToken token, int i) {
+	DustProdLightStore::store->setValue(entity, token, DPL_TOKEN_VAL_INT, &i);
 }
 
-int DPL::get_int(DPLEntity entity, DPLToken token, int defValue) {
-	DustProdLightValue *pVal = DustProdLightStore::store->getValue(entity, dpl_token_val_int, token);
-	return (0 == pVal) ? defValue : pVal->int_value;
+int DPL::getInt(DPLEntity entity, DPLToken token, int defValue) {
+	DustProdLightValue *pVal = DustProdLightStore::store->getValue(entity, DPL_TOKEN_VAL_INT, token);
+	return (0 == pVal) ? defValue : pVal->valInt;
 }
-// double
-void DPL::set_double(DPLEntity entity, DPLToken token, double d) {
-	DustProdLightStore::store->setValue(entity, token, dpl_token_val_double, &d);
+
+void DPL::setDouble(DPLEntity entity, DPLToken token, double d) {
+	DustProdLightStore::store->setValue(entity, token, DPL_TOKEN_VAL_DOUBLE, &d);
 }
-double DPL::get_double(DPLEntity entity, DPLToken token, double defValue) {
-	DustProdLightValue *pVal = DustProdLightStore::store->getValue(entity, dpl_token_val_double, token);
-	return (0 == pVal) ? defValue : pVal->double_value;
+double DPL::getDouble(DPLEntity entity, DPLToken token, double defValue) {
+	DustProdLightValue *pVal = DustProdLightStore::store->getValue(entity, DPL_TOKEN_VAL_DOUBLE, token);
+	return (0 == pVal) ? defValue : pVal->valDbl;
 }
-// string
-void DPL::set_string(DPLEntity entity, DPLToken token, string s) {
-	DustProdLightStore::store->setValue(entity, token, dpl_token_val_string, &s);
+
+void DPL::setString(DPLEntity entity, DPLToken token, string s) {
+	DustProdLightStore::store->setValue(entity, token, DPL_TOKEN_VAL_STRING, &s);
 
 }
-string DPL::get_string(DPLEntity entity, DPLToken token, string defValue) {
-	DustProdLightValue *pVal = DustProdLightStore::store->getValue(entity, dpl_token_val_string, token);
-	return (0 == pVal) ? defValue : pVal->string_value;
+string DPL::getString(DPLEntity entity, DPLToken token, string defValue) {
+	DustProdLightValue *pVal = DustProdLightStore::store->getValue(entity, DPL_TOKEN_VAL_STRING, token);
+	return (0 == pVal) ? defValue : pVal->valStr;
 }
 
 // references
-bool DPL::set_ref(DPLEntity entity, DPLToken token, DPLEntity target, int key) {
-	return DustProdLightStore::store->chgRef(dpl_chg_ref_set, entity, token, target, key);
+bool DPL::setRef(DPLEntity entity, DPLToken token, DPLEntity target, int key) {
+	return DustProdLightStore::store->chgRef(DPL_CHG_REF_SET, entity, token, target, key);
 }
 
-int DPL::get_ref_count(DPLEntity entity, DPLToken token) {
+int DPL::getRefCount(DPLEntity entity, DPLToken token) {
 	DustProdLightRef *pR = DustProdLightStore::store->getRef(entity, token);
 	return pR ? pR->getCount() : 0;
 }
 
-DPLEntity DPL::get_ref(DPLEntity entity, DPLToken token, int key) {
+DPLEntity DPL::getRef(DPLEntity entity, DPLToken token, int key) {
 	DustProdLightRef *pR = DustProdLightStore::store->getRef(entity, token);
 	return pR ? pR->getRef(key) : 0;
 }
 
-DPLToken DPL::get_ref_key(DPLEntity entity, DPLToken token, int idx) {
+DPLToken DPL::getRefKey(DPLEntity entity, DPLToken token, int idx) {
 	DustProdLightRef *pR = DustProdLightStore::store->getRef(entity, token);
-	return (pR && (dpl_token_ref_map == pR->tokenType)) ? pR->getTokenByIndex(idx) : 0;
+	return (pR && (DPL_TOKEN_REF_MAP == pR->tokenType)) ? pR->getTokenByIndex(idx) : 0;
 }
 
-DPLEntity DPL::get_entity_by_path(DPLEntity root, int path... ) {
+DPLEntity DPL::getEntityByPath(DPLEntity root, int path... ) {
 	DPLEntity e = root;
 	DustProdLightRef *pR = NULL;
 
@@ -210,15 +210,15 @@ DPLEntity DPL::get_entity_by_path(DPLEntity root, int path... ) {
 
 		if ( pR && pR->getCount() ) {
 			switch ( pR->tokenType ) {
-				case dpl_token_ref_single:
+				case DPL_TOKEN_REF_SINGLE:
 				e = pR->getRef(0);
 				break;
-				case dpl_token_ref_set:
-				case dpl_token_ref_array:
+				case DPL_TOKEN_REF_SET:
+				case DPL_TOKEN_REF_ARR:
 				p = va_arg(args, int);
 				e = pR->getRef(p);
 				break;
-				case dpl_token_ref_map:
+				case DPL_TOKEN_REF_MAP:
 				p = va_arg(args, int);
 				p = pR->getTokenByIndex(p);
 				e = pR->getRef(p);
@@ -235,19 +235,37 @@ DPLEntity DPL::get_entity_by_path(DPLEntity root, int path... ) {
 	}
 
 	return e;
-
 }
 
-DPLEntity DPL::create_entity(DPLType primaryType) {
+void DPL::visit(DPLEntity root, DPLVisitor *pVisitor, void *pHint) {
+	DustProdLightEntity *pE = DustProdLightStore::store->getEntity(root);
+
+	pVisitor->visitStart(root, pHint);
+	pHint = pE->optVisit(pVisitor, 0, pHint);
+	pVisitor->visitEnd(root, pHint);
+}
+
+
+DPLEntity DPL::createEntity(DPLType primaryType) {
 	return DustProdLightStore::store->createEntity(primaryType)->localId;
 }
 
-DPLType DPL::get_primary_type(DPLEntity entity) {
+DPLType DPL::getPrimaryType(DPLEntity entity) {
 	return DustProdLightStore::store->getEntity(entity)->primaryType;
 }
-bool DPL::has_type(DPLEntity entity, DPLType type) {
+bool DPL::hasType(DPLEntity entity, DPLType type) {
 	return DustProdLightStore::store->getEntity(entity)->isOfType(type);
 }
-void DPL::get_all_types(DPLEntity entity, set<DPLType>& typeSet) {
-	DustProdLightStore::store->getEntity(entity)->getTypes(typeSet);
+void DPL::getAllTypes(DPLEntity entity, set<DPLType>& typeSet) {
+	DustProdLightStore::store->getEntity(entity)->getAllTypes(typeSet);
+}
+
+
+
+string DPLUtils::getTypeName(DPLType type) {
+	return DustProdLightStore::store->vecTypes[type];
+}
+string DPLUtils::getTokenName(DPLToken token) {
+	DustProdLightToken *pT = DustProdLightStore::store->vecTokens[token];
+	return pT->name;
 }

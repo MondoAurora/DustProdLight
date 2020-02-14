@@ -16,6 +16,7 @@
 #include <set>
 
 #include "dpl.h"
+#include "dplutils.h"
 
 using namespace std;
 
@@ -29,24 +30,29 @@ private:
 	int id = -1;
 	DPLType type;
 	DPLTokenType tokenType;
+	string name;
 
 	friend DustProdLightStore;
 	friend DustProdLightRef;
 	friend DustProdLightEntity;
 	friend DPL;
+	friend DPLUtils;
 };
 
 
 class DustProdLightValue {
 private:
-	int int_value;
-	double double_value;
-	string string_value;
+	DPLTokenType tokenType;
+
+	int valInt;
+	double valDbl;
+	string valStr;
 
 public:
 	virtual ~DustProdLightValue();
 
 	void set(DPLTokenType tokenType, void* pVal);
+	void optVisit(DPLVisitor *pVisitor, DPLEntity entity, DPLToken token, void *pHint);
 
 	friend DustProdLightStore;
 	friend DPL;
@@ -73,10 +79,16 @@ public:
 	~DustProdLightEntity();
 
 	bool isOfType(DPLType type);
-	void getTypes(set<DPLType>& typeSet);
+	void getAllTypes(set<DPLType>& typeSet);
+
+	void* optVisit(DPLVisitor *pVisitor, int key, void *pHint);
+
 };
 
 typedef vector<DustProdLightRef*>::iterator RefVectorIterator;
+
+typedef map<int, DustProdLightValue>::iterator EntityValIterator;
+typedef map<int, DustProdLightRef*>::iterator EntityRefIterator;
 
 class DustProdLightRef {
 	DPLToken token;
@@ -100,13 +112,15 @@ class DustProdLightRef {
 	DPLEntity getRef(int key);
 	DPLToken getTokenByIndex(int idx);
 
+	void optVisit(DPLVisitor *pVisitor, void *pHint);
+	void doVisit(DPLVisitor *pVisitor, int key, void *pHint, DPLFilterResponse fr);
 
 public:
 	~DustProdLightRef();
 
 	friend DustProdLightStore;
+	friend DustProdLightEntity;
 	friend DPL;
-
 };
 
 class DustProdLightStore {
@@ -148,6 +162,7 @@ public:
 	friend DustProdLightRef;
 	friend DustProdLightEntity;
 	friend DPL;
+	friend DPLUtils;
 };
 
 #endif /* DPL_IMPL_H_ */

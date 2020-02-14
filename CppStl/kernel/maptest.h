@@ -4,28 +4,28 @@
 #include "dpl/dpl_impl.h"
 
 namespace MapMeta {
-	DPLType Vector = DPL::get_type("Vector");
+	DPLType Vector = DPL::getType("Vector");
 
-	DPLToken Vector_X = DPL::get_token(Vector, "X", dpl_token_val_double);
-	DPLToken Vector_Y = DPL::get_token(Vector, "Y", dpl_token_val_double);
+	DPLToken VectorX = DPL::getToken(Vector, "X", DPL_TOKEN_VAL_DOUBLE);
+	DPLToken VectorY = DPL::getToken(Vector, "Y", DPL_TOKEN_VAL_DOUBLE);
 
-	DPLType ID = DPL::get_type("Identified");
+	DPLType Id = DPL::getType("Identified");
 
-	DPLToken ID_Name = DPL::get_token(ID, "Name", dpl_token_val_string);
-	DPLToken ID_id = DPL::get_token(ID, "id", dpl_token_val_int);
+	DPLToken IdName = DPL::getToken(Id, "Name", DPL_TOKEN_VAL_STRING);
+	DPLToken IdNum = DPL::getToken(Id, "Num", DPL_TOKEN_VAL_INT);
 
-	DPLType Position = DPL::get_type("Position");
+	DPLType Position = DPL::getType("Position");
 
-	DPLType Shape = DPL::get_type("Shape");
+	DPLType Shape = DPL::getType("Shape");
 
-	DPLToken Shape_Direction = DPL::get_token(Shape, "Direction", dpl_token_ref_single);
+	DPLToken ShapeDirection = DPL::getToken(Shape, "Direction", DPL_TOKEN_REF_SINGLE);
 
-	DPLToken Shape_Path = DPL::get_token(Shape, "Path", dpl_token_ref_array);
+	DPLToken ShapePath = DPL::getToken(Shape, "Path", DPL_TOKEN_REF_ARR);
 
-	DPLType Moving = DPL::get_type("Moving");
+	DPLType Moving = DPL::getType("Moving");
 
-	DPLToken Moving_Velocity = DPL::get_token(Shape, "Velocity", dpl_token_ref_single);
-	DPLToken Moving_Acceleration = DPL::get_token(Shape, "Acceleration", dpl_token_ref_single);
+	DPLToken MovingVelocity = DPL::getToken(Shape, "Velocity", DPL_TOKEN_REF_SINGLE);
+	DPLToken MovingAcceleration = DPL::getToken(Shape, "Acceleration", DPL_TOKEN_REF_SINGLE);
 };
 
 #endif /*MAPTEST_H_*/

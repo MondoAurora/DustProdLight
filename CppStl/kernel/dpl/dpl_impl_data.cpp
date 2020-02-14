@@ -9,56 +9,95 @@
 
 #include "dpl_impl.h"
 
+DustProdLightValue::~DustProdLightValue() {
+}
+;
 
-	DustProdLightValue::~DustProdLightValue() {
+void DustProdLightValue::set(DPLTokenType tokenType, void* pVal) {
+	this->tokenType = tokenType;
+
+	switch (tokenType) {
+	case DPL_TOKEN_VAL_INT:
+		valInt = *((int*) pVal);
+		break;
+	case DPL_TOKEN_VAL_DOUBLE:
+		valDbl = *((double*) pVal);
+		break;
+	case DPL_TOKEN_VAL_STRING:
+		valStr = *((string*) pVal);
+		break;
+	default:
+		throw DPLErrInvalidValueType();
 	}
-	;
+}
 
-	void DustProdLightValue::set(DPLTokenType tokenType, void* pVal) {
+void DustProdLightValue::optVisit(DPLVisitor *pVisitor, DPLEntity entity, DPLToken token, void *pHint) {
+	if (DPL_FILTER_SKIP != pVisitor->shouldProcess(entity, token)) {
 		switch (tokenType) {
-		case dpl_token_val_int:
-			int_value = *((int*) pVal);
+		case DPL_TOKEN_VAL_INT:
+			pVisitor->processValInt(entity, token, valInt, pHint);
 			break;
-		case dpl_token_val_double:
-			double_value = *((double*) pVal);
+		case DPL_TOKEN_VAL_DOUBLE:
+			pVisitor->processValDouble(entity, token, valDbl, pHint);
 			break;
-		case dpl_token_val_string:
-			string_value = *((string*) pVal);
+		case DPL_TOKEN_VAL_STRING:
+			pVisitor->processValString(entity, token, valStr, pHint);
 			break;
 		default:
 			throw DPLErrInvalidValueType();
 		}
 	}
+}
 
-	void DustProdLightEntity::updated() {
-		changed = true;
-	}
+void DustProdLightEntity::updated() {
+	changed = true;
+}
 
-	void DustProdLightEntity::optReloadMeta() {
-		if ( changed ) {
-			types.clear();
+void DustProdLightEntity::optReloadMeta() {
+	if (changed) {
+		types.clear();
 
-			for(std::map<int, DustProdLightValue>::iterator iter = values.begin(); iter != values.end(); ++iter) {
-				int k =  iter->first;
-				types.insert(DustProdLightStore::store->vecTokens[k]->type);
-			}
-			for(std::map<int, DustProdLightRef*>::iterator iter = refs.begin(); iter != refs.end(); ++iter) {
-				int k =  iter->first;
-				types.insert(DustProdLightStore::store->vecTokens[k]->type);
-			}
-			changed = false;
+		for (EntityValIterator iter = values.begin(); iter != values.end(); ++iter) {
+			int k = iter->first;
+			types.insert(DustProdLightStore::store->vecTokens[k]->type);
 		}
+		for (EntityRefIterator iter = refs.begin(); iter != refs.end(); ++iter) {
+			int k = iter->first;
+			types.insert(DustProdLightStore::store->vecTokens[k]->type);
+		}
+		changed = false;
+	}
+}
+
+DustProdLightEntity::~DustProdLightEntity() {
+}
+
+bool DustProdLightEntity::isOfType(DPLType type) {
+	return types.end() != types.find(type);
+}
+
+void DustProdLightEntity::getAllTypes(set<DPLType>& typeSet) {
+	typeSet.clear();
+	typeSet.insert(types.begin(), types.end());
+}
+
+void* DustProdLightEntity::optVisit(DPLVisitor *pVisitor, int key, void *pHint) {
+	void *pRet = pHint;
+	DPLFilterResponse fr = pVisitor->shouldProcess(localId, key);
+
+	if (DPL_FILTER_SKIP != fr) {
+		pRet = pVisitor->processBeginEntity(localId, 0, pHint);
+
+		for (EntityValIterator iter = values.begin(); iter != values.end(); ++iter) {
+			int token = iter->first;
+			iter->second.optVisit(pVisitor, localId, token, pRet);
+		}
+
+		for (EntityRefIterator iter = refs.begin(); iter != refs.end(); ++iter) {
+			iter->second->optVisit(pVisitor, pRet);
+		}
+		pRet = pVisitor->processEndEntity(localId, 0, pHint);
 	}
 
-	DustProdLightEntity::~DustProdLightEntity() {
-	}
-
-	bool DustProdLightEntity::isOfType(DPLType type) {
-		return types.end() != types.find(type);
-	}
-
-	void DustProdLightEntity::getTypes(set<DPLType>& typeSet) {
-		typeSet.clear();
-		typeSet.insert(types.begin(), types.end());
-	}
-
+	return pRet;
+}

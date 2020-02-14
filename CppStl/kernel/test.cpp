@@ -14,36 +14,40 @@ using namespace std;
 void addPoint(DPLEntity shape, double x, double y) {
 	DPLEntity p;
 
-	p = DPL::create_entity(MapMeta::Position);
+	p = DPL::createEntity(MapMeta::Position);
 
-	DPL::set_double(p, MapMeta::Vector_X, x);
-	DPL::set_double(p, MapMeta::Vector_Y, y);
+	DPL::setDouble(p, MapMeta::VectorX, x);
+	DPL::setDouble(p, MapMeta::VectorY, y);
 
-	DPL::set_ref(shape, MapMeta::Shape_Path, p, REFKEY_ARR_APPEND);
+	DPL::setRef(shape, MapMeta::ShapePath, p, REFKEY_ARR_APPEND);
 }
 
 int test() {
-	DPLEntity e = DPL::create_entity(MapMeta::Shape_Path);
+	DPLEntity e = DPL::createEntity(MapMeta::ShapePath);
 
-	DPL::set_string(e, MapMeta::ID_Name, "Room 01");
-	DPL::set_int(e, MapMeta::ID_id, e);
-	DPL::set_double(e, MapMeta::Vector_X, 3.14);
-	DPL::set_double(e, MapMeta::Vector_Y, 9.81);
+	DPL::setString(e, MapMeta::IdName, "Room 01");
+	DPL::setInt(e, MapMeta::IdNum, e);
+	DPL::setDouble(e, MapMeta::VectorX, 3.14);
+	DPL::setDouble(e, MapMeta::VectorY, 9.81);
 
 	addPoint(e, 88, 33);
 	addPoint(e, 188, 33);
 	addPoint(e, 188, 133);
 	addPoint(e, 88, 133);
 
-	cout << DPL::get_string(e, MapMeta::ID_Name, "??") << ": " << DPL::get_int(e, MapMeta::ID_id, -100) << " ("
-			<< DPL::get_double(e, MapMeta::Vector_X, -1) << ", " << DPL::get_double(e, MapMeta::Vector_Y, -1) << ")" << endl;
+	cout << DPL::getString(e, MapMeta::IdName, "??") << ": " << DPL::getInt(e, MapMeta::IdNum, -100) << " ("
+			<< DPL::getDouble(e, MapMeta::VectorX, -1) << ", " << DPL::getDouble(e, MapMeta::VectorY, -1) << ")" << endl;
 
-	int pc = DPL::get_ref_count(e, MapMeta::Shape_Path);
+	int pc = DPL::getRefCount(e, MapMeta::ShapePath);
 	for (int i = 0; i < pc; ++i) {
-		DPLEntity pt = DPL::get_ref(e, MapMeta::Shape_Path, i);
-		cout << "   (" << DPL::get_double(pt, MapMeta::Vector_X, -1) << ", " << DPL::get_double(pt, MapMeta::Vector_Y, -1)
+		DPLEntity pt = DPL::getRef(e, MapMeta::ShapePath, i);
+		cout << "   (" << DPL::getDouble(pt, MapMeta::VectorX, -1) << ", " << DPL::getDouble(pt, MapMeta::VectorY, -1)
 				<< ")" << endl;
 	}
+
+	DPLEntityDumper dumper;
+
+	DPL::visit(e, &dumper, NULL);
 
 	return 0;
 }
