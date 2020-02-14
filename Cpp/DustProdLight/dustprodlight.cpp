@@ -130,7 +130,7 @@ DPLChange* DustProdLight::getCurrentTransaction() {
     DPLChange* ret = self.currTransaction;
 
     if ( !ret ) {
-        ret = new DPLChange();
+        ret = self.currTransaction = new DPLChange();
         self.transactions.append(ret);
     }
 

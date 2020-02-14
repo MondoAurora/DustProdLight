@@ -4,8 +4,13 @@
 #include <dplentity.h>
 
 
+class DPLChangeTransmitter;
+class DPLChangeReceiver;
+
 class DPLChangeValue
 {
+    friend class DPLChange;
+
 private:
     DustVariant varOrig;
     DustVariant varCurrent;
@@ -19,6 +24,8 @@ public:
 
 class DPLChangeRef
 {
+    friend class DPLChange;
+
 private:
     DustKey key;
     DustRefCommand refCommand;
@@ -31,6 +38,8 @@ public:
 
 class DPLChangeEntity
 {
+    friend class DPLChange;
+
 private:
     DustEntityCommand chgEntity;
     DPLEntity *pEntity;
@@ -44,7 +53,6 @@ public:
 
     void chgValue(DustKey keyRef, const DustVariant &varOld, const DustVariant &varNew);
     void chgRef(DustKey keyRef, DustRefCommand cmd, DPLRef *pRef);
-
 };
 
 class DPLChange
@@ -58,6 +66,8 @@ public:
 
     void chgValue(DPLEntity *pTarget, DustKey keyRef, const DustVariant &varOld, const DustVariant &varNew);
     void chgRef(DPLEntity *pTarget, DustKey keyRef, DustRefCommand cmd, DPLRef *pRef);
+
+    void toReceiver(DPLChangeReceiver *pReceiver);
 };
 
 class DPLChangeHint{

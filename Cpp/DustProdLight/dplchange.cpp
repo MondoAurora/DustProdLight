@@ -1,5 +1,6 @@
 #include "dplchange.h"
 
+#include <QMapIterator>
 
 
 DPLChangeValue::DPLChangeValue(const DustVariant &varOld, const DustVariant &varNew)
@@ -38,7 +39,6 @@ void DPLChangeEntity::chgRef(DustKey keyRef, DustRefCommand cmd, DPLRef *pRef) {
 
 }
 
-
 DPLChange::DPLChange() { }
 
 DPLChange::~DPLChange()
@@ -60,6 +60,35 @@ void DPLChange::chgValue(DPLEntity *pTarget, DustKey keyRef, const DustVariant &
 
 void DPLChange::chgRef(DPLEntity *pTarget, DustKey keyRef, DustRefCommand cmd, DPLRef *pRef) {
 
+}
+
+void DPLChange::toReceiver(DPLChangeReceiver *pReceiver) {
+    pReceiver->begin();
+
+    QMapIterator<DPLEntity*, DPLChangeEntity*> it(entityChanges);
+    while ( it.hasNext() ) {
+        it.next();
+        DPLEntity *pE = it.key();
+        pReceiver->beginEntity(pE);
+
+        DPLChangeEntity *pCe = it.value();
+
+        QMapIterator<DustKey, DPLChangeValue*> itVc(pCe->valChanges);
+        while ( itVc.hasNext() ) {
+            itVc.next();
+            pReceiver->chgValue(itVc.key(), itVc.value()->varCurrent);
+        }
+
+        QVectorIterator<DPLChangeRef*> itRc(pCe->refChanges);
+        while ( itRc.hasNext() ) {
+            DPLChangeRef *pcr = itRc.next();
+            pReceiver->chgRef(pcr->key, pcr->refCommand, pcr->pRef);
+        }
+
+        pReceiver->endEntity(pE);
+    }
+
+    pReceiver->end();
 }
 
 
