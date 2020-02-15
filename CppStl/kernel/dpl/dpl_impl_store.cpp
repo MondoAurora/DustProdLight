@@ -57,6 +57,7 @@ DustProdLightToken *DustProdLightStore::getToken(DPLType type, string tokenName,
 		pToken->id = vecTokens.size();
 		pToken->tokenType = tokenType;
 		pToken->name = tokenName;
+		pToken->idStr = id;
 
 		vecTokens.push_back(pToken);
 	} else {
@@ -146,8 +147,17 @@ DPLToken DPL::getToken(DPLType type, string tokenName, DPLTokenType tokenType) {
 	return pToken->id;
 }
 
+void DPL::setBool(DPLEntity entity, DPLToken token, bool b) {
+	DustProdLightStore::store->setValue(entity, token, DPL_TOKEN_VAL_BOOL, &b);
+}
+
 void DPL::setInt(DPLEntity entity, DPLToken token, int i) {
 	DustProdLightStore::store->setValue(entity, token, DPL_TOKEN_VAL_INT, &i);
+}
+
+bool DPL::getBool(DPLEntity entity, DPLToken token, bool defValue) {
+	DustProdLightValue *pVal = DustProdLightStore::store->getValue(entity, DPL_TOKEN_VAL_BOOL, token);
+	return (0 == pVal) ? defValue : pVal->valInt;
 }
 
 int DPL::getInt(DPLEntity entity, DPLToken token, int defValue) {
@@ -267,5 +277,5 @@ string DPLUtils::getTypeName(DPLType type) {
 }
 string DPLUtils::getTokenName(DPLToken token) {
 	DustProdLightToken *pT = DustProdLightStore::store->vecTokens[token];
-	return pT->name;
+	return pT->idStr;
 }

@@ -56,6 +56,10 @@ DPLFilterResponse DPLEntityDumper::shouldProcess(DPLEntity entity, DPLToken toke
 	return DPL_FILTER_VISIT;
 }
 
+void DPLEntityDumper::processValBool(DPLEntity entity, DPLToken token, bool val, void *pHint) {
+	leadToken(token) << (val ? "true" : "false");
+}
+
 void DPLEntityDumper::processValInt(DPLEntity entity, DPLToken token, int val, void *pHint) {
 	leadToken(token) << val;
 }

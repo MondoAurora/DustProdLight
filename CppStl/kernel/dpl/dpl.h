@@ -18,6 +18,7 @@ using namespace std;
 enum DPLTokenType {
 	DPL_TOKEN_INVALID,
 
+	DPL_TOKEN_VAL_BOOL,
 	DPL_TOKEN_VAL_INT,
 	DPL_TOKEN_VAL_DOUBLE,
 	DPL_TOKEN_VAL_STRING,
@@ -60,6 +61,7 @@ public:
 
 	virtual DPLFilterResponse shouldProcess(DPLEntity entity, DPLToken token) { return DPL_FILTER_PROCESS; }
 
+	virtual void processValBool(DPLEntity entity, DPLToken token, bool val, void *pHint) {};
 	virtual void processValInt(DPLEntity entity, DPLToken token, int val, void *pHint) {};
 	virtual void processValDouble(DPLEntity entity, DPLToken token, double val, void *pHint) {};
 	virtual void processValString(DPLEntity entity, DPLToken token, string val, void *pHint) {};
@@ -92,10 +94,12 @@ public:
 	static void visit(DPLEntity root, DPLVisitor *pVisitor, void *pHint);
 
 // Entity value access
+	static bool getBool(DPLEntity entity, DPLToken token, bool defValue);
 	static int getInt(DPLEntity entity, DPLToken token, int defValue);
 	static double getDouble(DPLEntity entity, DPLToken token, double defValue);
 	static string getString(DPLEntity entity, DPLToken token, string defValue);
 
+	static void setBool(DPLEntity entity, DPLToken token, bool val);
 	static void setInt(DPLEntity entity, DPLToken token, int val);
 	static void setDouble(DPLEntity entity, DPLToken token, double val);
 	static void setString(DPLEntity entity, DPLToken token, string val);

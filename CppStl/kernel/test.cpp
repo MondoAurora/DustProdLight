@@ -20,6 +20,10 @@ void addPoint(DPLEntity shape, double x, double y) {
 	DPL::setDouble(p, MapMeta::VectorY, y);
 
 	DPL::setRef(shape, MapMeta::ShapePath, p, REFKEY_ARR_APPEND);
+
+	bool odd = DPL::getRefCount(shape, MapMeta::ShapePath) % 2;
+	DPL::setBool(p, MapMeta::TestOdd, odd);
+
 }
 
 int test() {

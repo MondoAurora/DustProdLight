@@ -44,6 +44,7 @@ public:
 
 	virtual void visitEnd(DPLEntity entity, void *pHint);
 
+	virtual void processValBool(DPLEntity entity, DPLToken token, bool val, void *pHint);
 	virtual void processValInt(DPLEntity entity, DPLToken token, int val, void *pHint);
 	virtual void processValDouble(DPLEntity entity, DPLToken token, double val, void *pHint);
 	virtual void processValString(DPLEntity entity, DPLToken token, string val, void *pHint);

@@ -30,6 +30,7 @@ private:
 	int id = -1;
 	DPLType type;
 	DPLTokenType tokenType;
+	string idStr;
 	string name;
 
 	friend DustProdLightStore;
