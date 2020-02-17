@@ -58,7 +58,6 @@ int main() {
 	DPLUEntityToJSON dumper(cout, true);
 	DPL::visit(e, &dumper, NULL);
 
-
 	DPL::shutdown();
 
 	return 0;

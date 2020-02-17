@@ -89,12 +89,6 @@ ostream& DPLUEntityToJSON::writeStr(string str) {
 		} else {
 			char encoded[] = "\\u0000";
 			DPLUCppUtils::toStringBase(encoded, 16, ch);
-//			int idx = strlen(encoded);
-//
-//			for (unsigned int rem = ch; rem; rem = rem / 16) {
-//				encoded[--idx] = HEX[rem % 16];
-//			}
-
 			out << encoded;
 		}
 	}
