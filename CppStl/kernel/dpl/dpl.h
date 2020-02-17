@@ -52,6 +52,11 @@ enum DPLFilterResponse {
 	DPL_FILTER_SKIP, DPL_FILTER_PROCESS, DPL_FILTER_VISIT
 };
 
+enum DPLProcessResponse {
+	DPL_PROCESS_REJECT, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT,
+	DPL_PROCESS_RELAY, DPL_PROCESS_RELAY_RECALL, DPL_PROCESS_SUCCESS_RECALL, 
+};
+
 class DPLVisitor {
 public:
 	virtual ~DPLVisitor() {};
@@ -82,6 +87,7 @@ public:
 // meta initialization
 	static DPLType getType(string typeName);
 	static DPLToken getToken(DPLType type, string tokenName, DPLTokenType tokenType);
+	static DPLToken getToken(string tokenId);
 
 // meta detection on Entity
 	static DPLType getPrimaryType(DPLEntity entity);

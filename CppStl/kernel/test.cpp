@@ -58,6 +58,10 @@ int main() {
 	DPLUEntityToJSON dumper(cout, true);
 	DPL::visit(e, &dumper, NULL);
 
+	DPLUDump dd;
+
+	DPLUStream::process("test1.json", &dd);
+
 	DPL::shutdown();
 
 	return 0;

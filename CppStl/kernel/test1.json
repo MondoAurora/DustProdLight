@@ -1,0 +1,28 @@
+{
+  "Vector.X" : 3.14,
+  "Vector.Y" : 9.81,
+  "Identified.Name" : "Room 01 t\u00f6\u0171k OOO",
+  "Identified.Num" : 1,
+  "Shape.Path" : [
+    {
+      "Test.Odd" : true,
+      "Vector.X" : 88,
+      "Vector.Y" : 33
+    },
+    {
+      "Test.Odd" : false,
+      "Vector.X" : 188,
+      "Vector.Y" : 33
+    },
+    {
+      "Test.Odd" : true,
+      "Vector.X" : 188,
+      "Vector.Y" : 133
+    },
+    {
+      "Test.Odd" : false,
+      "Vector.X" : 88,
+      "Vector.Y" : 133
+    }
+  ]
+}

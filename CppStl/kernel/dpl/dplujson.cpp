@@ -9,6 +9,7 @@
 
 #include <string.h>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <cctype>
 #include <algorithm>
@@ -17,15 +18,46 @@
 #include "dplujson.h"
 
 using namespace std;
-char ESC_JSON_FLAG = '\\';
-char ESC_JSON_UNICODE = 'u';
-char ESC_STR[] = "\"\\/\b\f\r\n\t";
-int ESC_COUNT = strlen(ESC_STR);
-char ESC_JSON[] = "\"\\/bfrnt";
+
+enum JsonChar {
+	JSON_CHR_BACKSLASH,
+
+	JSON_CHR_SLASH,
+	JSON_CHR_QUOTE,
+	JSON_CHR_TAB,
+	JSON_CHR_LINEFEED,
+	JSON_CHR_CARRIAGE_RETURN,
+	JSON_CHR_FORMFEED,
+	JSON_CHR_BACKSPACE,
+
+	JSON_CTRL_UNICODE_LEAD,
+	JSON_CTRL_KEY_SEP,
+	JSON_CTRL_ARRAY_SEP,
+	JSON_CTRL_OBJECT_BEGIN,
+	JSON_CTRL_OBJECT_END,
+	JSON_CTRL_ARRAY_BEGIN,
+	JSON_CTRL_ARRAY_END,
+};
+
+const char JSON_CHAR_VALUE[] = "\\/\"tnrfbu:,{}[]";
+const int JSON_CHAR_COUNT = strlen(JSON_CHAR_VALUE);
+
+const char ESC_STR[] = "\\/\"\t\n\r\f\b";
+const int ESC_COUNT = strlen(ESC_STR);
+
+const char* ESC_END = ESC_STR + ESC_COUNT;
+const char* JSON_ESC_END = JSON_CHAR_VALUE + ESC_COUNT;
+
+enum JsonReadStates {
+	JSON_READ_VALUE, JSON_READ_STRING, JSON_READ_ESC, JSON_READ_UCHAR,
+//	JSON_READ_TOKEN,
+	JSON_READ_OBJECT,
+	JSON_READ_ARRAY,
+};
 
 DPLUEntityToJSON::DPLUEntityToJSON(ostream& os_, bool escJson_) :
 		escJson(escJson_), os(&os_) {
-	writeStr("öű\n\"");
+//	writeStr("öű\n\"");
 }
 
 DPLUEntityToJSON::~DPLUEntityToJSON() {
@@ -78,11 +110,10 @@ ostream& DPLUEntityToJSON::writeStr(string str) {
 	for (char32_t ch = us.getNextCodePoint(); ch; ch = us.getNextCodePoint()) {
 		if (ch < 127) {
 			// ASCII
-			char * end = ESC_STR + ESC_COUNT;
-			char * p = find(ESC_STR, end, ch);
-			if (p < end) {
-				char r = ESC_JSON[p - ESC_STR];
-				out << ESC_JSON_FLAG << r;
+			const char * p = find(ESC_STR, ESC_END, ch);
+			if (p < ESC_END) {
+				char r = JSON_CHAR_VALUE[p - ESC_STR];
+				out << JSON_CHAR_VALUE[JSON_CHR_BACKSLASH] << r;
 			} else {
 				out << (char) ch;
 			}
@@ -141,4 +172,91 @@ void* DPLUEntityToJSON::processEndEntity(DPLEntity entity, int key, void* pHint)
 
 void DPLUEntityToJSON::visitEnd(DPLEntity entity, void *pHint) {
 	target() << endl << endl;
+}
+
+DPLUJSONToEntity::DPLUJSONToEntity() {
+	pos = -1;
+	readState = JSON_READ_VALUE;
+	uCharPos = uCharVal = 0;
+	eTarget = 0;
+}
+
+DPLProcessResponse DPLUJSONToEntity::addCodePoint(char32_t cp) {
+	++pos;
+
+	if ( isascii(cp)) {
+		throw new DPLErrJson(JSON_ERR_NON_ASCII_CHAR, pos);
+	}
+
+	const unsigned char chr = (unsigned char) cp;
+	const char * p;
+
+	if (isspace(chr)) {
+		switch ((JsonReadStates) readState) {
+		case JSON_READ_STRING:
+			if (' ' == chr) {
+				str += (char) chr;
+			}
+			break;
+		case JSON_READ_VALUE:
+			if (0 == token) {
+				token = DPL::getToken(str);
+				str = "";
+			}
+			break;
+		default:
+			// eat whitespace
+			break;
+		}
+	} else {
+		switch ((JsonReadStates) readState) {
+		case JSON_READ_ESC:
+			if (chr == JSON_CHAR_VALUE[JSON_CTRL_UNICODE_LEAD]) {
+				readState = JSON_READ_UCHAR;
+			} else {
+				p = find(JSON_CHAR_VALUE, JSON_ESC_END, chr);
+				if (p < JSON_ESC_END) {
+					char r = ESC_STR[p - JSON_CHAR_VALUE];
+					str += r;
+					readState = JSON_READ_STRING;
+				} else {
+					throw new DPLErrJson(JSON_ERR_INVALID_ESCAPE_CHAR, pos);
+				}
+			}
+			break;
+		case JSON_READ_UCHAR:
+			DPLUCppUtils::addByBase(uCharVal, 16, chr);
+			if (++uCharPos > 3) {
+				str += uCharVal;
+				uCharPos = uCharVal = 0;
+				readState = JSON_READ_STRING;
+			}
+			break;
+		case JSON_READ_STRING:
+			if (chr == JSON_CHAR_VALUE[JSON_CHR_BACKSLASH]) {
+				readState = JSON_READ_ESC;
+			} else if (chr == JSON_CHAR_VALUE[JSON_CHR_QUOTE]) {
+				readState = JSON_READ_VALUE;
+			} else {
+				str += chr;
+			}
+			break;
+		case JSON_READ_VALUE:
+			if (chr == JSON_CHAR_VALUE[JSON_CHR_BACKSLASH]) {
+				readState = JSON_READ_ESC;
+			} else if (chr == JSON_CHAR_VALUE[JSON_CHR_QUOTE]) {
+				readState = JSON_READ_VALUE;
+			} else {
+				str += chr;
+			}
+			break;
+		case JSON_READ_OBJECT:
+			break;
+		case JSON_READ_ARRAY:
+			break;
+
+		}
+	}
+
+	return DPL_PROCESS_ACCEPT;
 }

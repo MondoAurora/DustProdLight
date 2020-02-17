@@ -147,6 +147,11 @@ DPLToken DPL::getToken(DPLType type, string tokenName, DPLTokenType tokenType) {
 	return pToken->id;
 }
 
+DPLToken DPL::getToken(string tokenId) {
+	map<string, DustProdLightToken>::iterator i = DustProdLightStore::store->mapTokens.find(tokenId);
+	return (DustProdLightStore::store->mapTokens.end() == i) ? 0 : i->second.id;
+}
+
 void DPL::setBool(DPLEntity entity, DPLToken token, bool b) {
 	DustProdLightStore::store->setValue(entity, token, DPL_TOKEN_VAL_BOOL, &b);
 }
