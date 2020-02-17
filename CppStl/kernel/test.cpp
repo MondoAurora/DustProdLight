@@ -29,7 +29,7 @@ void addPoint(DPLEntity shape, double x, double y) {
 int test() {
 	DPLEntity e = DPL::createEntity(MapMeta::ShapePath);
 
-	DPL::setString(e, MapMeta::IdName, "Room 01");
+	DPL::setString(e, MapMeta::IdName, "Room 01 töűk");
 	DPL::setInt(e, MapMeta::IdNum, e);
 	DPL::setDouble(e, MapMeta::VectorX, 3.14);
 	DPL::setDouble(e, MapMeta::VectorY, 9.81);
@@ -49,15 +49,15 @@ int test() {
 				<< ")" << endl;
 	}
 
-	DPLEntityDumper dumper;
-
-	DPL::visit(e, &dumper, NULL);
-
-	return 0;
+	return e;
 }
 
 int main() {
-	test();
+	DPLEntity e = test();
+
+	DPLUEntityToJSON dumper(cout, true);
+	DPL::visit(e, &dumper, NULL);
+
 
 	DPL::shutdown();
 

@@ -3,97 +3,133 @@
  *
  * Utilities based on DustProdLight API
  *
+ * DPLUStringUtils::getCodePoint() based on http://www.nubaria.com/en/blog/?p=371
+ *
  *  Created on: Feb 12, 2020
  *      Author: Lorand Kedves
  */
 
+#include <string.h>
 #include <iostream>
+#include <iomanip>
+#include <cctype>
+#include <algorithm>
 
 #include "dplutils.h"
-#include "../base/strconv.h"
 
-using namespace std;
+char CODE[] = "0123456789abcdef";
 
-DPLEntityDumper::~DPLEntityDumper() {
+bool DPLUCppUtils::toStringBase(char* target, unsigned char base, unsigned int value) {
+	if ( strlen(CODE) < base ) {
+		return false;
+	}
+
+	int idx = strlen(target);
+
+	for (unsigned int rem = value; idx && rem; rem = rem / base) {
+		target[--idx] = CODE[rem % base];
+	}
+
+	return idx;
 }
 
-ostream& DPLEntityDumper::closeLine(DPLUtilsIndent chgIndent) {
-	if ( comma ) {
-		cout << ",";
+bool DPLUCppUtils::testBit(unsigned int value, unsigned int bit) {
+	unsigned int chk = 1 << bit;
+	return value & chk;
+}
+
+unsigned int DPLUCppUtils::collectValue(unsigned int target, unsigned int shift, unsigned int mask, unsigned int val) {
+	return (target << shift) + (val & mask);
+}
+
+//
+//unsigned char CPCHK_BIT[] = { 7, 5, 4 };
+//unsigned char CPCHK_MASK[] = { 0x1f, 0x0f, 0x07 };
+//
+//bool DPLUCodepointReader::optAppend() {
+//	if (0 == step) {
+//		head = chrSrc->getNext();
+//		codePoint = head;
+//	}
+//
+//	bool ret = (step < 4) && DPLUCppUtils::testBit(head, CPCHK_BIT[step]);
+//
+//	if (ret) {
+//		codePoint = (codePoint << 6) + (chrSrc->getNext() & 0x3f);
+//		char32_t headMask = CPCHK_MASK[step] << (6 * (++step));
+//		codePoint = codePoint && headMask;
+//	} else {
+//		step = 0;
+//	}
+//
+//	return ret;
+//}
+//
+//char32_t DPLUCodepointReader::getNextCodePoint() {
+//	while (optAppend())
+//		;
+//
+//	return codePoint;
+//}
+
+char32_t DPLUCppUtils::getCodePoint(DPLUCharSource *chrSrc) {
+	char32_t codePoint = 0;
+	unsigned char chr = chrSrc->getNext();
+
+	char32_t ret = chr;
+
+	if (testBit(chr, 7)) // First byte>127, beyond the ASCII range.
+			{
+		if (testBit(chr, 5)) // First byte > 191, and so it must be at least a three-octet code point.
+				{
+			if (testBit(chr, 4)) // First byte > 224, and so it must be a four-octet code point.
+					{
+				codePoint = (chr & 0x07) << 18;
+				chr = chrSrc->getNext();
+				codePoint += (chr & 0x3f) << 12;
+				chr = chrSrc->getNext();
+				codePoint += (chr & 0x3f) << 6;
+				chr = chrSrc->getNext();
+				codePoint += (chr & 0x3f);
+			} else {
+				codePoint = (chr & 0x0f) << 12;
+				chr = chrSrc->getNext();
+				codePoint += (chr & 0x3f) << 6;
+				chr = chrSrc->getNext();
+				codePoint += (chr & 0x3f);
+			}
+		} else {
+			ret = collectValue(0, 0, 0x1f, chr);
+			ret = collectValue(ret, 6, 0x3f, chr);
+
+			codePoint = (chr & 0x1f) << 6;
+			chr = chrSrc->getNext();
+			codePoint += (chr & 0x3f);
+		}
 	} else {
-		comma = true;
+		codePoint = chr;
+		ret = chr;
 	}
 
-	cout << endl;
-
-	switch (chgIndent) {
-	case DPL_INDENT_KEEP:
-		cout << prefix;
-		break;
-	case DPL_INDENT_INC:
-		cout << prefix;
-		prefix = prefix + indent;
-		break;
-	case DPL_INDENT_DEC:
-		prefix = prefix.substr(0, prefix.length() - indent.length());
-		cout << prefix;
-		break;
-	}
-
-	return cout;
+	return codePoint;
 }
 
-ostream& DPLEntityDumper::leadToken(DPLToken token) {
-	return leadToken(token, DPL_INDENT_KEEP);
+unsigned char DPLUString::getNext() {
+	return ptr < str.length() ? str[ptr++] : 0;
 }
 
-ostream& DPLEntityDumper::leadToken(DPLToken token, DPLUtilsIndent chgIndent) {
-	closeLine(chgIndent) << "\"" << DPLUtils::getTokenName(token) << "\" : ";
-	return cout;
+char32_t DPLUString::getNextCodePoint() {
+//	return cpReader.getNextCodePoint();
+	return DPLUCppUtils::getCodePoint(this);
 }
 
-DPLFilterResponse DPLEntityDumper::shouldProcess(DPLEntity entity, DPLToken token) {
-	return DPL_FILTER_VISIT;
+void DPLUString::addCodePoint(char32_t cp) {
 }
 
-void DPLEntityDumper::processValBool(DPLEntity entity, DPLToken token, bool val, void *pHint) {
-	leadToken(token) << (val ? "true" : "false");
+void DPLUString::process(string source, DPLUCodepointTarget *pTarget) {
+	this->str = source;
 }
 
-void DPLEntityDumper::processValInt(DPLEntity entity, DPLToken token, int val, void *pHint) {
-	leadToken(token) << val;
-}
-
-void DPLEntityDumper::processValDouble(DPLEntity entity, DPLToken token, double val, void *pHint) {
-	leadToken(token) << val;
-}
-
-void DPLEntityDumper::processValString(DPLEntity entity, DPLToken token, string val, void *pHint) {
-	leadToken(token) << "\"" << val << "\"";
-}
-
-void DPLEntityDumper::processRefBegin(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void *pHint) {
-	leadToken(token, DPL_INDENT_INC) << "[";
-	comma = false;
-}
-
-void DPLEntityDumper::processRefEnd(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void *pHint) {
-	comma = false;
-	closeLine(DPL_INDENT_DEC) << "]";
-}
-
-void* DPLEntityDumper::processBeginEntity(DPLEntity entity, int key, void* pHint) {
-	closeLine(DPL_INDENT_INC) << "{";
-	comma = false;
-	return pHint;
-}
-
-void* DPLEntityDumper::processEndEntity(DPLEntity entity, int key, void* pHint) {
-	comma = false;
-	closeLine(DPL_INDENT_DEC) << "}";
-	return pHint;
-}
-
-void DPLEntityDumper::visitEnd(DPLEntity entity, void *pHint) {
-	cout << endl << endl;
+string DPLUString::getString() {
+	return str;
 }

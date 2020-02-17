@@ -16,7 +16,7 @@
 #include <set>
 
 #include "dpl.h"
-#include "dplutils.h"
+#include "dplujson.h"
 
 using namespace std;
 
