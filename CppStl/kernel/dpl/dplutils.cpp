@@ -67,12 +67,12 @@ char32_t DPLUCppUtils::getNextCodePoint(DPLUCharSource *chrSrc) {
 	int headLead = 0;
 	char32_t codePoint = 0;
 
-	while ((step < 4) && DPLUCppUtils::testBit(head, CPCHK_BIT[step++]) ) {
+	while ((step < 4) && DPLUCppUtils::testBit(head, CPCHK_BIT[step++])) {
 		codePoint = (codePoint << 6) + (chrSrc->getNext() & 0x3f);
 		headLead += 6;
 	}
 
-	if ( 0 == headLead ) {
+	if (0 == headLead) {
 		codePoint = head;
 	} else {
 		codePoint += (head & CPCHK_MASK[step]) << headLead;
@@ -81,8 +81,32 @@ char32_t DPLUCppUtils::getNextCodePoint(DPLUCharSource *chrSrc) {
 	return codePoint;
 }
 
-DPLProcessResponse DPLUDump::addCodePoint(char32_t cp) {
-	if ( encodeUtf8 ) {
+DPLProcessResult DPLUStringTester::addChar(const unsigned char chr) {
+	if (ignoreCase ? (tolower(chr) == (char) tolower(str[pos])) : str[pos] == chr) {
+		return (++pos < len) ? DPL_PROCESS_ACCEPT : DPL_PROCESS_SUCCESS;
+	} else {
+		pos = 0;
+		return DPL_PROCESS_REJECT;
+	}
+}
+
+unsigned char DPLUCodeTable::resolve(const char chr, bool reverse, const char notFound) {
+	const char * s = reverse ? target : source;
+	const char * t = reverse ? source : target;
+	const char * e = s + len;
+
+	const char * p = find(s, e, chr);
+
+	return (p < e) ? t[p - s] : notFound;
+}
+
+DPLProcessResult DPLUCharMatcher::addChar(const unsigned char chr) {
+	value = table->resolve(chr, reverse);
+	return value ? DPL_PROCESS_SUCCESS : DPL_PROCESS_REJECT;
+}
+
+DPLProcessResult DPLUDump::addCodePoint(char32_t cp) {
+	if (encodeUtf8) {
 		char encoded[] = "\\u0000";
 		DPLUCppUtils::toStringBase(encoded, 16, cp);
 		cout << encoded;
@@ -97,7 +121,6 @@ bool DPLUString::isAvail() {
 	return ptr < str.length();
 }
 
-
 unsigned char DPLUString::getNext() {
 	return isAvail() ? str[ptr++] : 0;
 }
@@ -106,7 +129,7 @@ char32_t DPLUString::getNextCodePoint() {
 	return DPLUCppUtils::getNextCodePoint(this);
 }
 
-DPLProcessResponse DPLUString::addCodePoint(char32_t cp) {
+DPLProcessResult DPLUString::addCodePoint(char32_t cp) {
 	return DPL_PROCESS_ACCEPT;
 }
 
@@ -118,12 +141,13 @@ string DPLUString::getString() {
 	return str;
 }
 
-DPLUStream::DPLUStream(const char *fName) : inStream(fName) {
+DPLUStream::DPLUStream(const char *fName) :
+		inStream(fName) {
 
 }
 
 DPLUStream::~DPLUStream() {
-	if (inStream.is_open() ) {
+	if (inStream.is_open()) {
 		inStream.close();
 	}
 }
@@ -133,19 +157,30 @@ bool DPLUStream::isAvail() {
 }
 
 unsigned char DPLUStream::getNext() {
-  char c;
-  return inStream.get(c) ? c : 0;
+	char c;
+	return inStream.get(c) ? c : 0;
 }
 
 char32_t DPLUStream::getNextCodePoint() {
 	return DPLUCppUtils::getNextCodePoint(this);
 }
 
+void DPLUStream::process(const char* fName, DPLUCharTarget *target) {
+	fstream inStream(fName);
+
+	char c;
+	while (inStream.get(c))
+	{
+		target->addChar(c);
+	}
+
+	inStream.close();
+}
 
 void DPLUStream::process(const char* fName, DPLUCodepointTarget *target) {
 	DPLUStream ds(fName);
 
-	while ( !ds.inStream.eof() ) {
+	while (!ds.inStream.eof()) {
 		target->addCodePoint(ds.getNextCodePoint());
 	}
 }

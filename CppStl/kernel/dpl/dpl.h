@@ -52,11 +52,6 @@ enum DPLFilterResponse {
 	DPL_FILTER_SKIP, DPL_FILTER_PROCESS, DPL_FILTER_VISIT
 };
 
-enum DPLProcessResponse {
-	DPL_PROCESS_REJECT, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT,
-	DPL_PROCESS_RELAY, DPL_PROCESS_RELAY_RECALL, DPL_PROCESS_SUCCESS_RECALL, 
-};
-
 class DPLVisitor {
 public:
 	virtual ~DPLVisitor() {};
@@ -76,6 +71,17 @@ public:
 
 	virtual void* processBeginEntity(DPLEntity entity, int key, void* pHint) { return pHint; };
 	virtual void* processEndEntity(DPLEntity entity, int key, void* pHint) { return pHint; };
+};
+
+enum DPLProcessResult {
+	DPL_PROCESS_REJECT, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT,
+	DPL_PROCESS_RELAY, DPL_PROCESS_RELAY_RECALL, DPL_PROCESS_SUCCESS_RECALL,
+};
+
+class DPLProcessor {
+public:
+	virtual ~DPLProcessor(){}
+	virtual DPLProcessResult getProcessResult() = 0;
 };
 
 class DPL {

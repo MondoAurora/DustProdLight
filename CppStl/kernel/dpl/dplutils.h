@@ -29,6 +29,13 @@ public:
 	static string getTokenName(DPLToken token);
 };
 
+class DPLUStringContainer {
+public:
+	virtual ~DPLUStringContainer() {}
+	virtual string getString() = 0;
+};
+
+
 class DPLUCharSource {
 public:
 	virtual ~DPLUCharSource() {
@@ -39,10 +46,17 @@ public:
 	virtual unsigned char getNext() = 0;
 };
 
+class DPLUCharTarget {
+public:
+	virtual ~DPLUCharTarget() {} ;
+
+	virtual DPLProcessResult addChar(const unsigned char chr) = 0;
+};
+
 class DPLUCodepointTarget {
 public:
 	virtual ~DPLUCodepointTarget(){};
-	virtual DPLProcessResponse addCodePoint(char32_t cp) = 0;
+	virtual DPLProcessResult addCodePoint(char32_t cp) = 0;
 };
 
 class DPLUCppUtils {
@@ -61,10 +75,24 @@ public:
 	DPLUDump(bool encodeUtf8_) : encodeUtf8(encodeUtf8_) {};
 	DPLUDump() : DPLUDump(false) {};
 
-	virtual DPLProcessResponse addCodePoint(char32_t cp);
+	virtual DPLProcessResult addCodePoint(char32_t cp);
 };
 
-class DPLUStringTester: public DPLUCodepointTarget {
+class DPLUStringCollector: public DPLUCharTarget, DPLUStringContainer {
+	string str;
+
+public:
+	virtual DPLProcessResult addChar(const unsigned char chr) {
+		str += chr;
+		return DPL_PROCESS_ACCEPT;
+	}
+
+	virtual string getString() {
+		return str;
+	}
+};
+
+class DPLUStringTester: public DPLUCharTarget {
 	bool ignoreCase;
 	string str;
 	unsigned int pos;
@@ -77,39 +105,30 @@ public:
 
 	DPLUStringTester(string toTest) : DPLUStringTester(toTest, false) {};
 
-	virtual DPLProcessResponse addCodePoint(char32_t cp) {
-		if ( ignoreCase ? (tolower((char) cp) == (char)tolower(str[pos])) : str[pos] == (char) cp ) {
-			return (++pos < len) ? DPL_PROCESS_ACCEPT : DPL_PROCESS_SUCCESS;
-		} else {
-			pos = 0;
-			return DPL_PROCESS_REJECT;
-		}
-	}
+	virtual DPLProcessResult addChar(const unsigned char chr);
 };
 
 class DPLUCodeTable {
-	const char* src;
+	const char* source;
 	const char* target;
 	const unsigned int len;
 
 public:
-	DPLUCodeTable(char* src_, const char* target_, unsigned int len_) : src(src_), target(target_), len(len_) {
+	DPLUCodeTable(const char* source_, const char* target_, unsigned int len_) : source(source_), target(target_), len(len_) {
 	}
+	unsigned char resolve(const char chr, bool reverse, const char notFound = '\0');
 };
 
 
-
 class DPLUCharMatcher: public DPLUCodepointTarget {
-	const DPLUCodeTable *table;
+	DPLUCodeTable *table;
 	bool reverse;
-	char value;
+	char value = 0;
 
 public:
 	DPLUCharMatcher(DPLUCodeTable *table_, bool reverse_) : table(table_), reverse(reverse_) {};
 
-	virtual DPLProcessResponse addCodePoint(char32_t cp) {
-		return DPL_PROCESS_REJECT;
-	}
+	virtual DPLProcessResult addChar(const unsigned char chr);
 
 	char getValue() {
 		return value;
@@ -129,6 +148,7 @@ public:
 
 	char32_t getNextCodePoint();
 	static void process(const char* fName, DPLUCodepointTarget *target);
+	static void process(const char* fName, DPLUCharTarget *target);
 };
 
 class DPLUString: public DPLUCharSource, DPLUCodepointTarget {
@@ -156,7 +176,7 @@ public:
 
 	virtual bool isAvail();
 	virtual unsigned char getNext();
-	virtual DPLProcessResponse addCodePoint(char32_t cp);
+	virtual DPLProcessResult addCodePoint(char32_t cp);
 
 	char32_t getNextCodePoint();
 

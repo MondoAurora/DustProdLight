@@ -85,7 +85,7 @@ private:
 
 public:
 	DPLUJSONToEntity();
-	virtual DPLProcessResponse addCodePoint(char32_t cp);
+	virtual DPLProcessResult addCodePoint(char32_t cp);
 };
 
 #endif /* DPLUJSON_H_ */

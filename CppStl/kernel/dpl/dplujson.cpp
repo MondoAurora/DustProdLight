@@ -40,13 +40,9 @@ enum JsonChar {
 };
 
 const char JSON_CHAR_VALUE[] = "\\/\"tnrfbu:,{}[]";
-const int JSON_CHAR_COUNT = strlen(JSON_CHAR_VALUE);
-
 const char ESC_STR[] = "\\/\"\t\n\r\f\b";
-const int ESC_COUNT = strlen(ESC_STR);
 
-const char* ESC_END = ESC_STR + ESC_COUNT;
-const char* JSON_ESC_END = JSON_CHAR_VALUE + ESC_COUNT;
+DPLUCodeTable CT_JSON(JSON_CHAR_VALUE, ESC_STR, strlen(ESC_STR));
 
 enum JsonReadStates {
 	JSON_READ_VALUE, JSON_READ_STRING, JSON_READ_ESC, JSON_READ_UCHAR,
@@ -57,7 +53,7 @@ enum JsonReadStates {
 
 DPLUEntityToJSON::DPLUEntityToJSON(ostream& os_, bool escJson_) :
 		escJson(escJson_), os(&os_) {
-//	writeStr("öű\n\"");
+	writeStr("öű\n\"");
 }
 
 DPLUEntityToJSON::~DPLUEntityToJSON() {
@@ -109,11 +105,9 @@ ostream& DPLUEntityToJSON::writeStr(string str) {
 
 	for (char32_t ch = us.getNextCodePoint(); ch; ch = us.getNextCodePoint()) {
 		if (ch < 127) {
-			// ASCII
-			const char * p = find(ESC_STR, ESC_END, ch);
-			if (p < ESC_END) {
-				char r = JSON_CHAR_VALUE[p - ESC_STR];
-				out << JSON_CHAR_VALUE[JSON_CHR_BACKSLASH] << r;
+			const char escRes = CT_JSON.resolve(ch, true);
+			if ( escRes ) {
+				out << JSON_CHAR_VALUE[JSON_CHR_BACKSLASH] << escRes;
 			} else {
 				out << (char) ch;
 			}
@@ -176,12 +170,12 @@ void DPLUEntityToJSON::visitEnd(DPLEntity entity, void *pHint) {
 
 DPLUJSONToEntity::DPLUJSONToEntity() {
 	pos = -1;
-	readState = JSON_READ_VALUE;
+	readState = readContext = JSON_READ_VALUE;
 	uCharPos = uCharVal = 0;
-	eTarget = 0;
+	eTarget = token = 0;
 }
 
-DPLProcessResponse DPLUJSONToEntity::addCodePoint(char32_t cp) {
+DPLProcessResult DPLUJSONToEntity::addCodePoint(char32_t cp) {
 	++pos;
 
 	if ( isascii(cp)) {
@@ -189,7 +183,7 @@ DPLProcessResponse DPLUJSONToEntity::addCodePoint(char32_t cp) {
 	}
 
 	const unsigned char chr = (unsigned char) cp;
-	const char * p;
+//	const char * p;
 
 	if (isspace(chr)) {
 		switch ((JsonReadStates) readState) {
@@ -214,14 +208,14 @@ DPLProcessResponse DPLUJSONToEntity::addCodePoint(char32_t cp) {
 			if (chr == JSON_CHAR_VALUE[JSON_CTRL_UNICODE_LEAD]) {
 				readState = JSON_READ_UCHAR;
 			} else {
-				p = find(JSON_CHAR_VALUE, JSON_ESC_END, chr);
-				if (p < JSON_ESC_END) {
-					char r = ESC_STR[p - JSON_CHAR_VALUE];
-					str += r;
-					readState = JSON_READ_STRING;
-				} else {
-					throw new DPLErrJson(JSON_ERR_INVALID_ESCAPE_CHAR, pos);
-				}
+//				p = find(JSON_CHAR_VALUE, JSON_ESC_END, chr);
+//				if (p < JSON_ESC_END) {
+//					char r = ESC_STR[p - JSON_CHAR_VALUE];
+//					str += r;
+//					readState = JSON_READ_STRING;
+//				} else {
+//					throw new DPLErrJson(JSON_ERR_INVALID_ESCAPE_CHAR, pos);
+//				}
 			}
 			break;
 		case JSON_READ_UCHAR:
