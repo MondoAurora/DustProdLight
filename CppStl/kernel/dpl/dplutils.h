@@ -43,14 +43,14 @@ public:
 	;
 
 	virtual bool isAvail() = 0;
-	virtual unsigned char getNext() = 0;
+	virtual char getNext() = 0;
 };
 
 class DPLUCharTarget {
 public:
 	virtual ~DPLUCharTarget() {} ;
 
-	virtual DPLProcessResult addChar(const unsigned char chr) = 0;
+	virtual DPLProcessResult addChar(const char chr) = 0;
 };
 
 class DPLUCodepointTarget {
@@ -62,10 +62,16 @@ public:
 class DPLUCppUtils {
 public:
 	static bool testBit(unsigned int value, unsigned int bit);
+	static void setBit(unsigned int &value, unsigned int bit);
+
 //	static unsigned int collectValue(unsigned int target, unsigned int shift, unsigned int mask, unsigned int val);
-	static bool toStringBase(char* target, unsigned char base, unsigned int value);
-	static unsigned int addByBase(unsigned int &target, unsigned char base, unsigned char value);
+	static bool optOffset(unsigned int &target, const char val, const char start, const char end);
+	static bool toStringBase(char* target, unsigned char base, unsigned int value, bool fill = false);
+	static bool fromStringBase(unsigned int &target, const char* source, unsigned char base, unsigned int length = 0);
+//	static unsigned int addByBase(unsigned int &target, unsigned char base, unsigned char value);
+
 	static char32_t getNextCodePoint(DPLUCharSource *chrSrc);
+	static char32_t toUtf8Char(unsigned int val);
 };
 
 class DPLUDump: public DPLUCodepointTarget {
@@ -79,10 +85,11 @@ public:
 };
 
 class DPLUStringCollector: public DPLUCharTarget, DPLUStringContainer {
+protected:
 	string str;
 
 public:
-	virtual DPLProcessResult addChar(const unsigned char chr) {
+	virtual DPLProcessResult addChar(const char chr) {
 		str += chr;
 		return DPL_PROCESS_ACCEPT;
 	}
@@ -105,7 +112,7 @@ public:
 
 	DPLUStringTester(string toTest) : DPLUStringTester(toTest, false) {};
 
-	virtual DPLProcessResult addChar(const unsigned char chr);
+	virtual DPLProcessResult addChar(const char chr);
 };
 
 class DPLUCodeTable {
@@ -128,7 +135,7 @@ class DPLUCharMatcher: public DPLUCodepointTarget {
 public:
 	DPLUCharMatcher(DPLUCodeTable *table_, bool reverse_) : table(table_), reverse(reverse_) {};
 
-	virtual DPLProcessResult addChar(const unsigned char chr);
+	virtual DPLProcessResult addChar(const char chr);
 
 	char getValue() {
 		return value;
@@ -144,7 +151,7 @@ public:
 	virtual ~DPLUStream();
 
 	virtual bool isAvail();
-	virtual unsigned char getNext();
+	virtual char getNext();
 
 	char32_t getNextCodePoint();
 	static void process(const char* fName, DPLUCodepointTarget *target);
@@ -175,7 +182,7 @@ public:
 	;
 
 	virtual bool isAvail();
-	virtual unsigned char getNext();
+	virtual char getNext();
 	virtual DPLProcessResult addCodePoint(char32_t cp);
 
 	char32_t getNextCodePoint();

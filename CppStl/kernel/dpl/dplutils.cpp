@@ -17,46 +17,80 @@
 
 #include "dplutils.h"
 
-const char* BASE_CODE = "0123456789abcdef";
-const int BASE_COUNT = strlen(BASE_CODE);
+const char BASE_CHAR_LOW_START = 'a';
+const char BASE_CHAR_LOW_END = 'z';
+const char BASE_CHAR_UP_START = 'A';
+const char BASE_CHAR_UP_END = 'Z';
 
-bool DPLUCppUtils::toStringBase(char* target, unsigned char base, unsigned int value) {
-	if (BASE_COUNT < base) {
+const int BASE_CHAR = BASE_CHAR_LOW_START - 10;
+const int BASE_MAX = BASE_CHAR_LOW_END - BASE_CHAR;
+
+bool DPLUCppUtils::toStringBase(char* target, unsigned char base, unsigned int value, bool fill) {
+	if (BASE_MAX < base) {
 		return false;
 	}
 
 	int idx = strlen(target);
+	unsigned int rem = value;
 
-	for (unsigned int rem = value; idx && rem; rem = rem / base) {
-		target[--idx] = BASE_CODE[rem % base];
+	if (value || fill) {
+		for (; idx && (fill || rem); rem = rem / base) {
+			int m = rem % base;
+			target[--idx] = m + ((m < 10) ? '0' : BASE_CHAR);
+		}
+	} else {
+		target[idx - 1] = '0';
 	}
 
-	return idx;
+	return (0 == rem);
 }
 
-unsigned int DPLUCppUtils::addByBase(unsigned int &target, unsigned char base, unsigned char value) {
-	if (BASE_COUNT < base) {
-		return target;
+bool DPLUCppUtils::optOffset(unsigned int &target, const char val, const char start, const char end) {
+	if ((start <= val) && (val <= end)) {
+		target = val - start;
+		return true;
+	} else {
+		return false;
 	}
-
-	const char * end = BASE_CODE + BASE_COUNT;
-	const char * p = find(BASE_CODE, end, value);
-	if (p < end) {
-		target = target * base + (p - BASE_CODE);
-	}
-
-	return target;
-
 }
+
+bool DPLUCppUtils::fromStringBase(unsigned int &target, const char* source, unsigned char base,
+		unsigned int length) {
+	if (BASE_MAX < base) {
+		return false;
+	}
+
+	target = 0;
+
+	int l = (0 == length) ? strlen(source) : length;
+
+	for (int idx = 0; idx < l; ++idx) {
+		char c = source[idx];
+
+		target *= base;
+		unsigned int diff;
+
+		if (optOffset(diff, c, '0', '9') || optOffset(diff, c, BASE_CHAR_LOW_START, BASE_CHAR_LOW_END)
+				|| optOffset(diff, c, BASE_CHAR_UP_START, BASE_CHAR_UP_END)) {
+			target = target + c - diff;
+		} else {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 
 bool DPLUCppUtils::testBit(unsigned int value, unsigned int bit) {
 	unsigned int chk = 1 << bit;
 	return value & chk;
 }
 
-//unsigned int DPLUCppUtils::collectValue(unsigned int target, unsigned int shift, unsigned int mask, unsigned int val) {
-//	return (target << shift) + (val & mask);
-//}
+void DPLUCppUtils::setBit(unsigned int &value, unsigned int bit) {
+	unsigned int chk = 1 << bit;
+	value &= chk;
+}
 
 unsigned char CPCHK_BIT[] = { 7, 5, 4 };
 unsigned char CPCHK_MASK[] = { 0x1f, 0x0f, 0x07 };
@@ -81,7 +115,30 @@ char32_t DPLUCppUtils::getNextCodePoint(DPLUCharSource *chrSrc) {
 	return codePoint;
 }
 
-DPLProcessResult DPLUStringTester::addChar(const unsigned char chr) {
+char32_t DPLUCppUtils::toUtf8Char(unsigned int val) {
+	char32_t codePoint;
+
+	if (val > 0x7f) {
+		unsigned int headFlag = 0;
+		int shiftIdx = 0;
+
+		for (unsigned char chVal ; val; ) {
+			chVal = val & 0x3f;
+			codePoint = (codePoint << 8) + chVal;
+			val >>= 6;
+			setBit(headFlag, CPCHK_BIT[shiftIdx++]);
+		}
+
+		codePoint += headFlag << (8*shiftIdx);
+
+	} else {
+		codePoint = val;
+	}
+
+	return codePoint;
+}
+
+DPLProcessResult DPLUStringTester::addChar(const char chr) {
 	if (ignoreCase ? (tolower(chr) == (char) tolower(str[pos])) : str[pos] == chr) {
 		return (++pos < len) ? DPL_PROCESS_ACCEPT : DPL_PROCESS_SUCCESS;
 	} else {
@@ -100,7 +157,7 @@ unsigned char DPLUCodeTable::resolve(const char chr, bool reverse, const char no
 	return (p < e) ? t[p - s] : notFound;
 }
 
-DPLProcessResult DPLUCharMatcher::addChar(const unsigned char chr) {
+DPLProcessResult DPLUCharMatcher::addChar(const char chr) {
 	value = table->resolve(chr, reverse);
 	return value ? DPL_PROCESS_SUCCESS : DPL_PROCESS_REJECT;
 }
@@ -121,7 +178,7 @@ bool DPLUString::isAvail() {
 	return ptr < str.length();
 }
 
-unsigned char DPLUString::getNext() {
+char DPLUString::getNext() {
 	return isAvail() ? str[ptr++] : 0;
 }
 
@@ -156,7 +213,7 @@ bool DPLUStream::isAvail() {
 	return inStream.is_open() && !inStream.eof();
 }
 
-unsigned char DPLUStream::getNext() {
+char DPLUStream::getNext() {
 	char c;
 	return inStream.get(c) ? c : 0;
 }
@@ -169,8 +226,7 @@ void DPLUStream::process(const char* fName, DPLUCharTarget *target) {
 	fstream inStream(fName);
 
 	char c;
-	while (inStream.get(c))
-	{
+	while (inStream.get(c)) {
 		target->addChar(c);
 	}
 

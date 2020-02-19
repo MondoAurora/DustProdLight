@@ -60,7 +60,7 @@ int main() {
 
 	DPLUStringCollector sc;
 
-	DPLUStream::process("test1.json", &sc);
+	DPLUStream::process("test2.json", &sc);
 
 	cout << sc.getString() << endl;
 
