@@ -36,7 +36,8 @@ private:
 	friend DustProdLightStore;
 	friend DustProdLightRef;
 	friend DustProdLightEntity;
-	friend DPL;
+	friend DPLMeta;
+	friend DPLData;
 	friend DPLUtils;
 };
 
@@ -56,7 +57,8 @@ public:
 	void optVisit(DPLVisitor *pVisitor, DPLEntity entity, DPLToken token, void *pHint);
 
 	friend DustProdLightStore;
-	friend DPL;
+	friend DPLMeta;
+	friend DPLData;
 };
 
 class DustProdLightEntity {
@@ -73,7 +75,8 @@ class DustProdLightEntity {
 
 	friend DustProdLightStore;
 	friend DustProdLightRef;
-	friend DPL;
+	friend DPLMeta;
+	friend DPLData;
 
 
 public:
@@ -121,7 +124,8 @@ public:
 
 	friend DustProdLightStore;
 	friend DustProdLightEntity;
-	friend DPL;
+	friend DPLMeta;
+	friend DPLData;
 };
 
 class DustProdLightStore {
@@ -162,7 +166,8 @@ public:
 
 	friend DustProdLightRef;
 	friend DustProdLightEntity;
-	friend DPL;
+	friend DPLMeta;
+	friend DPLData;
 	friend DPLUtils;
 };
 

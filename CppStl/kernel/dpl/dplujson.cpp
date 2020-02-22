@@ -17,7 +17,7 @@
 
 #include "../base/strconv.h"
 #include "dplujson.h"
-#include "dpluproc.h"
+#include "dpl_impl_proc.h"
 
 using namespace std;
 
@@ -217,7 +217,7 @@ public:
 		str += chr;
 	}
 };
-
+/*
 class JSONNodeProcBase: public DPLUCharTarget, public DPLUProcessorRelayNode {
 protected:
 	JSONNodeProcContext *pCtx;
@@ -393,6 +393,8 @@ public:
 		return result;
 	}
 };
+
+*/
 
 //DPLUJSONToEntity::DPLUJSONToEntity() {
 //	pos = -1;

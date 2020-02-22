@@ -15,18 +15,15 @@
 
 using namespace std;
 
+typedef int DPLType;
+typedef int DPLToken;
+typedef int DPLEntity;
+typedef int DPLProcess;
+
 enum DPLTokenType {
 	DPL_TOKEN_INVALID,
-
-	DPL_TOKEN_VAL_BOOL,
-	DPL_TOKEN_VAL_INT,
-	DPL_TOKEN_VAL_DOUBLE,
-	DPL_TOKEN_VAL_STRING,
-
-	DPL_TOKEN_REF_SINGLE,
-	DPL_TOKEN_REF_SET,
-	DPL_TOKEN_REF_ARR,
-	DPL_TOKEN_REF_MAP
+	DPL_TOKEN_VAL_BOOL, DPL_TOKEN_VAL_INT, DPL_TOKEN_VAL_DOUBLE, DPL_TOKEN_VAL_STRING,
+	DPL_TOKEN_REF_SINGLE, DPL_TOKEN_REF_SET, DPL_TOKEN_REF_ARR, DPL_TOKEN_REF_MAP
 };
 
 enum DPLChange {
@@ -44,9 +41,53 @@ class DPLErrOutOfRange {
 class DPLErrIdOutOfRange {
 };
 
-typedef int DPLType;
-typedef int DPLToken;
-typedef int DPLEntity;
+class DPLProcessImplementation {
+};
+
+enum DPLProcessResult {
+	DPL_PROCESS_REJECT, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT, DPL_PROCESS_RELAY,
+};
+
+#define DPL_PROCESS_NO_RELAY 0
+
+class DPLProcessState {
+public:
+	virtual ~DPLProcessState() {
+	}
+	virtual void setProcessed(bool p) = 0;
+	virtual DPLProcessResult requestRelay(int relayId_, bool processed_) = 0;
+};
+
+//template<class ProcessContext>
+class DPLProcessor {
+public:
+	virtual ~DPLProcessor() {
+	}
+//	virtual DPLProcessResult dplProcess(ProcessContext *pCtx, DPLProcessState &state) = 0;
+	virtual DPLProcessResult dplProcess(void *pCtx, DPLProcessState *pState) = 0;
+//	virtual DPLProcessResult dplProcessChildReturn(void *pCtx, DPLProcessResult childResult, DPLProcessState *pState) {
+//		return DPL_PROCESS_REJECT;
+//	}
+};
+
+//template<class ProcessContext>
+class DPLProcessDef {
+public:
+	virtual ~DPLProcessDef() {
+	}
+
+	virtual int getStartNode() = 0;
+
+	virtual DPLProcessor* createProcessor(int procId) = 0;
+
+	virtual void* createProcessContext() = 0;
+	virtual void openProcessContext(void* pCtx, void *pData) = 0;
+	virtual void closeProcessContext(void* pCtx) {
+	}
+//	virtual DPLProcessor<ProcessContext>* createProcessor(int procId) = 0;
+//	virtual ProcessContext* createProcessContext() = 0;
+
+};
 
 enum DPLFilterResponse {
 	DPL_FILTER_SKIP, DPL_FILTER_PROCESS, DPL_FILTER_VISIT
@@ -54,37 +95,41 @@ enum DPLFilterResponse {
 
 class DPLVisitor {
 public:
-	virtual ~DPLVisitor() {};
+	virtual ~DPLVisitor() {
+	}
 
-	virtual void visitStart(DPLEntity entity, void *pHint) {};
-	virtual void visitEnd(DPLEntity entity, void *pHint) {};
+	virtual void visitStart(DPLEntity entity, void *pHint) {
+	}
+	virtual void visitEnd(DPLEntity entity, void *pHint) {
+	}
 
-	virtual DPLFilterResponse shouldProcess(DPLEntity entity, DPLToken token) { return DPL_FILTER_PROCESS; }
+	virtual DPLFilterResponse shouldProcess(DPLEntity entity, DPLToken token) {
+		return DPL_FILTER_PROCESS;
+	}
 
-	virtual void processValBool(DPLEntity entity, DPLToken token, bool val, void *pHint) {};
-	virtual void processValInt(DPLEntity entity, DPLToken token, int val, void *pHint) {};
-	virtual void processValDouble(DPLEntity entity, DPLToken token, double val, void *pHint) {};
-	virtual void processValString(DPLEntity entity, DPLToken token, string val, void *pHint) {};
+	virtual void processValBool(DPLEntity entity, DPLToken token, bool val, void *pHint) {
+	}
+	virtual void processValInt(DPLEntity entity, DPLToken token, int val, void *pHint) {
+	}
+	virtual void processValDouble(DPLEntity entity, DPLToken token, double val, void *pHint) {
+	}
+	virtual void processValString(DPLEntity entity, DPLToken token, string val, void *pHint) {
+	}
 
-	virtual void processRefBegin(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void *pHint) {};
-	virtual void processRefEnd(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void *pHint) {};
+	virtual void processRefBegin(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void *pHint) {
+	}
+	virtual void processRefEnd(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void *pHint) {
+	}
 
-	virtual void* processBeginEntity(DPLEntity entity, int key, void* pHint) { return pHint; };
-	virtual void* processEndEntity(DPLEntity entity, int key, void* pHint) { return pHint; };
+	virtual void* processBeginEntity(DPLEntity entity, int key, void* pHint) {
+		return pHint;
+	}
+	virtual void* processEndEntity(DPLEntity entity, int key, void* pHint) {
+		return pHint;
+	}
 };
 
-enum DPLProcessResult {
-	DPL_PROCESS_REJECT, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT,
-	DPL_PROCESS_RELAY, DPL_PROCESS_RELAY_RECALL, DPL_PROCESS_SUCCESS_RECALL,
-};
-
-class DPLProcessor {
-public:
-	virtual ~DPLProcessor(){}
-	virtual DPLProcessResult getProcessResult() = 0;
-};
-
-class DPL {
+class DPLMeta {
 public:
 // state management
 	static void init();
@@ -94,6 +139,11 @@ public:
 	static DPLType getType(string typeName);
 	static DPLToken getToken(DPLType type, string tokenName, DPLTokenType tokenType);
 	static DPLToken getToken(string tokenId);
+
+};
+
+class DPLData {
+public:
 
 // meta detection on Entity
 	static DPLType getPrimaryType(DPLEntity entity);
@@ -123,5 +173,19 @@ public:
 
 	static bool setRef(DPLEntity entity, DPLToken token, DPLEntity target, int key);
 };
+
+class DPLProc {
+public:
+	static void registerCtrlRepeat(DPLProcessDef &procDef, int nodeId, int what, int minCount, int maxCount, int optSep);
+	static void registerCtrlSequence(DPLProcessDef &procDef, int nodeId, int optSep, int members_...);
+	static void registerCtrlSelection(DPLProcessDef &procDef, int nodeId, int members_...);
+
+	static DPLProcessResult executeProcess(DPLProcessDef &procDef, void *initData);
+
+//	static DPLProcess createProcess(DPLProcessDef &procDef, void *initData);
+//	static void executeProcessStep(DPLProcess proc);
+//	static bool isProcessActive(DPLProcess proc, DPLProcessResult& currentState);
+//	static DPLProcessResult getProcessState(DPLProcess proc);
+		};
 
 #endif /* DPL_H_ */
