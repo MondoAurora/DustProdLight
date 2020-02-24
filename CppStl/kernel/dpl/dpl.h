@@ -18,7 +18,9 @@ using namespace std;
 typedef int DPLType;
 typedef int DPLToken;
 typedef int DPLEntity;
-typedef int DPLProcess;
+
+typedef int DPLNarrative;
+typedef int DPLAction;
 
 enum DPLTokenType {
 	DPL_TOKEN_INVALID,
@@ -48,45 +50,39 @@ enum DPLProcessResult {
 	DPL_PROCESS_REJECT, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT, DPL_PROCESS_RELAY,
 };
 
-#define DPL_PROCESS_NO_RELAY 0
+#define DPL_PROCESS_NO_ACTION 0
+#define DPL_PROCESS_DEFAULT_CONTEXT 0
 
 class DPLProcessState {
 public:
 	virtual ~DPLProcessState() {
 	}
+	virtual void* getContext(int ctxId) = 0;
 	virtual void setProcessed(bool p) = 0;
 	virtual DPLProcessResult requestRelay(int relayId_, bool processed_) = 0;
 };
 
-//template<class ProcessContext>
-class DPLProcessor {
+class DPLProcessAction {
 public:
-	virtual ~DPLProcessor() {
+	virtual ~DPLProcessAction() {
 	}
-//	virtual DPLProcessResult dplProcess(ProcessContext *pCtx, DPLProcessState &state) = 0;
-	virtual DPLProcessResult dplProcess(void *pCtx, DPLProcessState *pState) = 0;
-//	virtual DPLProcessResult dplProcessChildReturn(void *pCtx, DPLProcessResult childResult, DPLProcessState *pState) {
-//		return DPL_PROCESS_REJECT;
-//	}
+	virtual DPLProcessResult dplProcess(DPLProcessState *pState) = 0;
 };
 
-//template<class ProcessContext>
-class DPLProcessDef {
+class DPLProcessDefinition {
 public:
-	virtual ~DPLProcessDef() {
+	virtual ~DPLProcessDefinition() {
 	}
 
 	virtual int getStartNode() = 0;
 
-	virtual DPLProcessor* createProcessor(int procId) = 0;
+	virtual DPLProcessAction* createProcessor(int procId) = 0;
 
-	virtual void* createProcessContext() = 0;
-	virtual void openProcessContext(void* pCtx, void *pData) = 0;
-	virtual void closeProcessContext(void* pCtx) {
+	virtual void* createProcessContext(int ctxId) = 0;
+
+	virtual void openProcessContext(int ctxId, void* pCtx, void *pData) = 0;
+	virtual void closeProcessContext(int ctxId, void* pCtx) {
 	}
-//	virtual DPLProcessor<ProcessContext>* createProcessor(int procId) = 0;
-//	virtual ProcessContext* createProcessContext() = 0;
-
 };
 
 enum DPLFilterResponse {
@@ -176,11 +172,13 @@ public:
 
 class DPLProc {
 public:
-	static void registerCtrlRepeat(DPLProcessDef &procDef, int nodeId, int what, int minCount, int maxCount, int optSep);
-	static void registerCtrlSequence(DPLProcessDef &procDef, int nodeId, int optSep, int members_...);
-	static void registerCtrlSelection(DPLProcessDef &procDef, int nodeId, int members_...);
+//	static DPLNarrative registerNarrative(DPLProcessDefinition &procDef);
 
-	static DPLProcessResult executeProcess(DPLProcessDef &procDef, void *initData);
+	static void registerCtrlRepeat(DPLProcessDefinition &procDef, int nodeId, int what, int minCount, int maxCount, int optSep);
+	static void registerCtrlSequence(DPLProcessDefinition &procDef, int nodeId, int optSep, int members_...);
+	static void registerCtrlSelection(DPLProcessDefinition &procDef, int nodeId, int members_...);
+
+	static DPLProcessResult executeProcess(DPLProcessDefinition &procDef, void *initData);
 
 //	static DPLProcess createProcess(DPLProcessDef &procDef, void *initData);
 //	static void executeProcessStep(DPLProcess proc);

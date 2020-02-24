@@ -32,25 +32,22 @@ enum DPLProcessNodeTypes {
 
 class DustProdLightProcState : public DPLProcessState {
 private:
-	int relayId = DPL_PROCESS_NO_RELAY;
+	DustProdLightProcSession* pSession;
+
+	int relayId = DPL_PROCESS_NO_ACTION;
 	bool processed = true;
 
-	int getRelay() {
-		int ret = relayId;
-		relayId = DPL_PROCESS_NO_RELAY;
-		return ret;
-	}
+	int getRelay();
 
 public:
-	virtual void setProcessed(bool p) {
-		processed = p;
-	}
+	DustProdLightProcState(DustProdLightProcSession* pSession_) : pSession(pSession_) {};
+	~DustProdLightProcState();
 
-	virtual DPLProcessResult requestRelay(int relayId_, bool processed_) {
-		relayId = relayId_;
-		processed = processed_;
-		return DPL_PROCESS_RELAY;
-	}
+	virtual void setProcessed(bool p);
+
+	virtual void* getContext(int ctxId);
+
+	virtual DPLProcessResult requestRelay(int relayId_, bool processed_);
 
 	friend class DustProdLightProcSession;
 	friend class DustProdLightProcNode;
@@ -81,23 +78,23 @@ public:
 
 
 class DustProdLightProcNode : public DPLProcessImplementation {
-	DPLProcessor *pProc;
+	DPLProcessAction *pProc;
 	DustProdLightProcNodeDef *pNodeDef;
 	DustProdLightProcSession *pSession = NULL;
 
-	int nodeId = DPL_PROCESS_NO_RELAY;
+	int nodeId = DPL_PROCESS_NO_ACTION;
 	unsigned int pos = 0;
 	unsigned int count = 0;
 	bool inSep = false;
 
 public:
-	DustProdLightProcNode(DPLProcessor *pProc);
+	DustProdLightProcNode(DPLProcessAction *pProc);
 	DustProdLightProcNode(DustProdLightProcNodeDef *pNodeDef_);
 	~DustProdLightProcNode();
 
 	void init(int nodeId_, DustProdLightProcSession *pSession_);
-	DPLProcessResult process(void *pCtx, DPLProcessState *pState);
-	DPLProcessResult childReturned(void *pCtx, DPLProcessResult childResult, DPLProcessState *pState);
+	DPLProcessResult process(DPLProcessState *pState);
+	DPLProcessResult childReturned(DPLProcessResult childResult, DPLProcessState *pState);
 
 	friend class DustProdLightProcEnv;
 	friend class DustProdLightProcSession;
@@ -109,7 +106,8 @@ class DustProdLightProcSession : public DPLProcessImplementation {
 
 	stack<DustProdLightProcNode*> stack;
 
-	void* procCtx;
+//	void* procCtx;
+	map<int, void*> mapCtx;
 	DustProdLightProcState state;
 	DPLProcessResult result;
 
@@ -124,6 +122,7 @@ public:
 	virtual ~DustProdLightProcSession();
 
 	void open(void* pInitData);
+	void* getContext(int ctxId);
 	void finish(bool error);
 
 	friend class DustProdLightProcEnv;
@@ -132,9 +131,9 @@ public:
 
 
 class DustProdLightProcEnv : public DPLProcessImplementation {
-	static map<DPLProcessDef*, DustProdLightProcEnv*> environments;
+	static map<DPLProcessDefinition*, DustProdLightProcEnv*> environments;
 
-	DPLProcessDef* pDef;
+	DPLProcessDefinition* pDef;
 	map<int, DustProdLightProcNodeDef*> ctrlNodeDefs;
 
 	map<int, set<DustProdLightProcNode*>> processorPool;
@@ -151,7 +150,7 @@ protected:
 	void releaseProcessor(DustProdLightProcNode* proc);
 
 public:
-	static DustProdLightProcEnv* getEnv(DPLProcessDef *pProcDef);
+	static DustProdLightProcEnv* getEnv(DPLProcessDefinition *pProcDef);
 	static void shutdown();
 
 	DPLProcessResult executeProcess(void *pInitData);

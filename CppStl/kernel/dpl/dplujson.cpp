@@ -21,30 +21,11 @@
 
 using namespace std;
 
-enum JsonChar {
-	JSON_CHR_BACKSLASH,
 
-	JSON_CHR_SLASH,
-	JSON_CHR_QUOTE,
-	JSON_CHR_TAB,
-	JSON_CHR_LINEFEED,
-	JSON_CHR_CARRIAGE_RETURN,
-	JSON_CHR_FORMFEED,
-	JSON_CHR_BACKSPACE,
+const char DPLUJsonLangConsts::JSON_CHAR_VALUE[] = "\\/\"tnrfbu:,{}[]";
+const char DPLUJsonLangConsts::ESC_STR[] = "\\/\"\t\n\r\f\b";
 
-	JSON_CTRL_UNICODE_LEAD,
-	JSON_CTRL_KEY_SEP,
-	JSON_CTRL_ARRAY_SEP,
-	JSON_CTRL_OBJECT_BEGIN,
-	JSON_CTRL_OBJECT_END,
-	JSON_CTRL_ARRAY_BEGIN,
-	JSON_CTRL_ARRAY_END,
-};
-
-const char JSON_CHAR_VALUE[] = "\\/\"tnrfbu:,{}[]";
-const char ESC_STR[] = "\\/\"\t\n\r\f\b";
-
-DPLUCodeTable CT_JSON(JSON_CHAR_VALUE, ESC_STR, strlen(ESC_STR));
+const DPLUCodeTable DPLUJsonLangConsts::CT_JSON(JSON_CHAR_VALUE, ESC_STR, strlen(ESC_STR));
 
 //enum JsonReadStates {
 //	JSON_READ_VALUE, JSON_READ_STRING, JSON_READ_ESC, JSON_READ_UCHAR,
@@ -107,9 +88,9 @@ ostream& DPLUEntityToJSON::writeStr(string str) {
 
 	for (char32_t ch = us.getNextCodePoint(); ch; ch = us.getNextCodePoint()) {
 		if (ch < 127) {
-			const char escRes = CT_JSON.resolve(ch, true);
+			const char escRes = DPLUJsonLangConsts::CT_JSON.resolve(ch, true);
 			if (escRes) {
-				out << JSON_CHAR_VALUE[JSON_CHR_BACKSLASH] << escRes;
+				out << DPLUJsonLangConsts::JSON_CHAR_VALUE[JSON_CHR_BACKSLASH] << escRes;
 			} else {
 				out << (char) ch;
 			}

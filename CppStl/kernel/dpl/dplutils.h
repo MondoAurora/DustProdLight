@@ -123,7 +123,7 @@ class DPLUCodeTable {
 public:
 	DPLUCodeTable(const char* source_, const char* target_, unsigned int len_) : source(source_), target(target_), len(len_) {
 	}
-	unsigned char resolve(const char chr, bool reverse, const char notFound = '\0');
+	unsigned char resolve(const char chr, bool reverse, const char notFound = '\0') const;
 };
 
 

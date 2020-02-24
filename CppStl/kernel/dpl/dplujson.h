@@ -30,6 +30,35 @@ public:
 	DPLErrJson(JsonErr e, int p) : err(e), pos(p) {}
 };
 
+
+enum JsonChar {
+	JSON_CHR_BACKSLASH,
+
+	JSON_CHR_SLASH,
+	JSON_CHR_QUOTE,
+	JSON_CHR_TAB,
+	JSON_CHR_LINEFEED,
+	JSON_CHR_CARRIAGE_RETURN,
+	JSON_CHR_FORMFEED,
+	JSON_CHR_BACKSPACE,
+
+	JSON_CTRL_UNICODE_LEAD,
+	JSON_CTRL_KEY_SEP,
+	JSON_CTRL_ARRAY_SEP,
+	JSON_CTRL_OBJECT_BEGIN,
+	JSON_CTRL_OBJECT_END,
+	JSON_CTRL_ARRAY_BEGIN,
+	JSON_CTRL_ARRAY_END,
+};
+
+class DPLUJsonLangConsts {
+public:
+	static const char JSON_CHAR_VALUE[];
+	static const char ESC_STR[];
+
+	static const DPLUCodeTable CT_JSON;
+};
+
 class DPLUEntityToJSON: public DPLVisitor {
 	bool escJson;
 	ostream* os;
@@ -69,23 +98,23 @@ public:
 	virtual void* processEndEntity(DPLEntity entity, int key, void* pHint);
 };
 
-class DPLUJSONToEntity : public DPLUCodepointTarget {
-private:
-	int pos = 0;
-
-	DPLEntity eTarget;
-	DPLToken token;
-	string str;
-
-	unsigned int uCharVal;
-	char uCharPos;
-
-	int readContext;
-	int readState;
-
-public:
-	DPLUJSONToEntity();
-	virtual DPLProcessResult addCodePoint(char32_t cp);
-};
+//class DPLUJSONToEntity : public DPLUCodepointTarget {
+//private:
+//	int pos = 0;
+//
+//	DPLEntity eTarget;
+//	DPLToken token;
+//	string str;
+//
+//	unsigned int uCharVal;
+//	char uCharPos;
+//
+//	int readContext;
+//	int readState;
+//
+//public:
+//	DPLUJSONToEntity();
+//	virtual DPLProcessResult addCodePoint(char32_t cp);
+//};
 
 #endif /* DPLUJSON_H_ */

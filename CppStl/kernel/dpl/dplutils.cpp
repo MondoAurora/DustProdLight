@@ -147,7 +147,7 @@ DPLProcessResult DPLUStringTester::addChar(const char chr) {
 	}
 }
 
-unsigned char DPLUCodeTable::resolve(const char chr, bool reverse, const char notFound) {
+unsigned char DPLUCodeTable::resolve(const char chr, bool reverse, const char notFound) const {
 	const char * s = reverse ? target : source;
 	const char * t = reverse ? source : target;
 	const char * e = s + len;
