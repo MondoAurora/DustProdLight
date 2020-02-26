@@ -9,6 +9,8 @@
 
 #include "maptest.h"
 
+#include "dpl/dplujson.h"
+
 using namespace std;
 
 void addPoint(DPLEntity shape, double x, double y) {
@@ -58,11 +60,17 @@ int main() {
 	DPLUEntityToJSON dumper(cout, true);
 	DPLData::visit(e, &dumper, NULL);
 
-	DPLUStringCollector sc;
+	cout << endl << "----" << endl;
 
-	DPLUStream::process("test2.json", &sc);
+//	DPLUStringCollector sc;
+//
+//	DPLUStream::process("test2.json", &sc);
+//
+//	cout << sc.getString() << endl;
 
-	cout << sc.getString() << endl;
+	DPLJson::read("test1.json");
+
+	cout << endl << "----" << endl;
 
 	DPLMeta::shutdown();
 

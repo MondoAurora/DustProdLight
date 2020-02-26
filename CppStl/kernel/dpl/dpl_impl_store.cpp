@@ -123,19 +123,6 @@ DustProdLightEntity* DustProdLightStore::getEntity(DPLEntity entity) {
  *
  ******************************************************/
 
-void DPLMeta::init() {
-	if ( !DustProdLightStore::store) {
-		DustProdLightStore::store = new DustProdLightStore();
-	}
-}
-void DPLMeta::shutdown() {
-	if ( DustProdLightStore::store) {
-		delete DustProdLightStore::store;
-		DustProdLightStore::store = NULL;
-	}
-}
-
-
 DPLType DPLMeta::getType(string typeName) {
 	init();
 

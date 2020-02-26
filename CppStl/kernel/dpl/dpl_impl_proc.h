@@ -17,7 +17,6 @@
 #include <array>
 
 #include "dplutils.h"
-#include "dpl_impl_proc.h"
 
 using namespace std;
 
@@ -35,7 +34,7 @@ private:
 	DustProdLightProcSession* pSession;
 
 	int relayId = DPL_PROCESS_NO_ACTION;
-	bool processed = true;
+//	bool processed = true;
 
 	int getRelay();
 
@@ -43,11 +42,12 @@ public:
 	DustProdLightProcState(DustProdLightProcSession* pSession_) : pSession(pSession_) {};
 	~DustProdLightProcState();
 
-	virtual void setProcessed(bool p);
+//	virtual void setProcessed(bool p);
 
 	virtual void* getContext(int ctxId);
 
-	virtual DPLProcessResult requestRelay(int relayId_, bool processed_);
+	virtual DPLProcessResult requestRelay(int relayId_);
+//	virtual DPLProcessResult requestRelay(int relayId_, bool processed_);
 
 	friend class DustProdLightProcSession;
 	friend class DustProdLightProcNode;
@@ -106,32 +106,38 @@ class DustProdLightProcSession : public DPLProcessImplementation {
 
 	stack<DustProdLightProcNode*> stack;
 
-//	void* procCtx;
+	const void* initData = NULL;
 	map<int, void*> mapCtx;
 	DustProdLightProcState state;
 	DPLProcessResult result;
 
-	DustProdLightProcNode* selectNode(int nodeId) ;
+//	void walkUp();
+//	void walkDown();
 
-	DPLProcessResult step();
-	void walkUp();
-	void walkDown();
+	void* getContext(int ctxId);
+
+	DustProdLightProcNode* selectNode(int nodeId);
+
+	void open(const void* pInitData);
+	void step();
+	void stepUp();
+	void finish(bool error);
 
 public:
 	DustProdLightProcSession(DustProdLightProcEnv *pEnv_);
 	virtual ~DustProdLightProcSession();
 
-	void open(void* pInitData);
-	void* getContext(int ctxId);
-	void finish(bool error);
+	DPLProcessResult execute(const void* pInitData);
 
-	friend class DustProdLightProcEnv;
-	friend class DustProc;
+	friend class DustProdLightProcState;
+//	friend class DustProdLightProcEnv;
+//	friend class DustProc;
 };
 
 
 class DustProdLightProcEnv : public DPLProcessImplementation {
-	static map<DPLProcessDefinition*, DustProdLightProcEnv*> environments;
+	static map<DPLNarrative, DPLLogicProvider*> logicFactory;
+	static map<DPLNarrative, DustProdLightProcEnv*> environments;
 
 	DPLProcessDefinition* pDef;
 	map<int, DustProdLightProcNodeDef*> ctrlNodeDefs;
@@ -141,19 +147,17 @@ class DustProdLightProcEnv : public DPLProcessImplementation {
 	set<DustProdLightProcSession*> sessionPool;
 
 protected:
+	DustProdLightProcEnv(DPLProcessDefinition* pDef_) : pDef(pDef_) {}
 	virtual ~DustProdLightProcEnv();
-
-	DustProdLightProcSession* getSession(void *pInitData);
-	void releaseSession(DustProdLightProcSession *pSession);
 
 	DustProdLightProcNode* getProcessor(int procId);
 	void releaseProcessor(DustProdLightProcNode* proc);
 
 public:
-	static DustProdLightProcEnv* getEnv(DPLProcessDefinition *pProcDef);
+	static DustProdLightProcEnv* getEnv(DPLNarrative narrative);
 	static void shutdown();
 
-	DPLProcessResult executeProcess(void *pInitData);
+	DPLProcessResult executeProcess(const void *pInitData);
 
 	friend class DustProdLightProcSession;
 	friend class DPLProc;

@@ -12,6 +12,8 @@
 
 #include <string>
 #include <set>
+#include <vector>
+#include <map>
 
 using namespace std;
 
@@ -24,8 +26,16 @@ typedef int DPLAction;
 
 enum DPLTokenType {
 	DPL_TOKEN_INVALID,
-	DPL_TOKEN_VAL_BOOL, DPL_TOKEN_VAL_INT, DPL_TOKEN_VAL_DOUBLE, DPL_TOKEN_VAL_STRING,
-	DPL_TOKEN_REF_SINGLE, DPL_TOKEN_REF_SET, DPL_TOKEN_REF_ARR, DPL_TOKEN_REF_MAP
+	DPL_TOKEN_VAL_BOOL,
+	DPL_TOKEN_VAL_INT,
+	DPL_TOKEN_VAL_DOUBLE,
+	DPL_TOKEN_VAL_STRING,
+	DPL_TOKEN_REF_SINGLE,
+	DPL_TOKEN_REF_SET,
+	DPL_TOKEN_REF_ARR,
+	DPL_TOKEN_REF_MAP,
+
+	DPL_TOKEN_ACTION,
 };
 
 enum DPLChange {
@@ -58,8 +68,7 @@ public:
 	virtual ~DPLProcessState() {
 	}
 	virtual void* getContext(int ctxId) = 0;
-	virtual void setProcessed(bool p) = 0;
-	virtual DPLProcessResult requestRelay(int relayId_, bool processed_) = 0;
+	virtual DPLProcessResult requestRelay(int relayId_) = 0;
 };
 
 class DPLProcessAction {
@@ -67,6 +76,9 @@ public:
 	virtual ~DPLProcessAction() {
 	}
 	virtual DPLProcessResult dplProcess(DPLProcessState *pState) = 0;
+	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse, DPLProcessState *pState) {
+		return DPL_PROCESS_REJECT;
+	}
 };
 
 class DPLProcessDefinition {
@@ -76,13 +88,44 @@ public:
 
 	virtual int getStartNode() = 0;
 
-	virtual DPLProcessAction* createProcessor(int procId) = 0;
-
-	virtual void* createProcessContext(int ctxId) = 0;
-
-	virtual void openProcessContext(int ctxId, void* pCtx, void *pData) = 0;
+	virtual void openProcessContext(int ctxId, void* pCtx, const void *pData) = 0;
 	virtual void closeProcessContext(int ctxId, void* pCtx) {
 	}
+};
+
+class DPLLogicProvider {
+	vector<int> providedIDs;
+	map<int, int> idMap;
+
+public:
+	DPLLogicProvider(int *ids_) {
+		int mId;
+
+		for (int idx = 0; DPL_PROCESS_NO_ACTION != (mId = ids_[idx]); ++idx) {
+			idMap[mId] = idx;
+			providedIDs.push_back(mId);
+		}
+	}
+	;
+
+	virtual ~DPLLogicProvider() {
+	}
+	;
+
+	int getCount() {
+		return providedIDs.size();
+	}
+
+	int getId(int idx) {
+		return providedIDs[idx];
+	}
+
+	int indexOf(int logicId) {
+		return idMap[logicId];
+	}
+
+	virtual void* createLogic(int logicId) = 0;
+	virtual void releaseLogic(int logicId, void* pLogic) = 0;
 };
 
 enum DPLFilterResponse {
@@ -172,18 +215,19 @@ public:
 
 class DPLProc {
 public:
-//	static DPLNarrative registerNarrative(DPLProcessDefinition &procDef);
+	static bool isRunning(DPLProcessResult result) {
+		return (DPL_PROCESS_ACCEPT == result) || (DPL_PROCESS_RELAY == result);
+	}
+	static void registerLogicProvider(DPLLogicProvider *pLogicFactory);
 
-	static void registerCtrlRepeat(DPLProcessDefinition &procDef, int nodeId, int what, int minCount, int maxCount, int optSep);
-	static void registerCtrlSequence(DPLProcessDefinition &procDef, int nodeId, int optSep, int members_...);
-	static void registerCtrlSelection(DPLProcessDefinition &procDef, int nodeId, int members_...);
+	static void registerNarrative(DPLNarrative narrative, DPLProcessDefinition &procDef);
 
-	static DPLProcessResult executeProcess(DPLProcessDefinition &procDef, void *initData);
+	static void registerCtrlRepeat(DPLNarrative narrative, int nodeId, int what, int minCount, int maxCount, int optSep);
+	static void registerCtrlSequence(DPLNarrative narrative, int nodeId, int optSep, ...);
+	static void registerCtrlSelection(DPLNarrative narrative, int nodeId, int members_...);
 
-//	static DPLProcess createProcess(DPLProcessDef &procDef, void *initData);
-//	static void executeProcessStep(DPLProcess proc);
-//	static bool isProcessActive(DPLProcess proc, DPLProcessResult& currentState);
-//	static DPLProcessResult getProcessState(DPLProcess proc);
-		};
+	static DPLProcessResult executeProcess(DPLNarrative narrative, const void *initData);
+
+};
 
 #endif /* DPL_H_ */

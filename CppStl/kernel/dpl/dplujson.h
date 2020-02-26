@@ -98,23 +98,11 @@ public:
 	virtual void* processEndEntity(DPLEntity entity, int key, void* pHint);
 };
 
-//class DPLUJSONToEntity : public DPLUCodepointTarget {
-//private:
-//	int pos = 0;
-//
-//	DPLEntity eTarget;
-//	DPLToken token;
-//	string str;
-//
-//	unsigned int uCharVal;
-//	char uCharPos;
-//
-//	int readContext;
-//	int readState;
-//
-//public:
-//	DPLUJSONToEntity();
-//	virtual DPLProcessResult addCodePoint(char32_t cp);
-//};
+namespace DPLJson {
+	void init();
+	void shutdown();
+
+	void read(const char* fileName);
+}
 
 #endif /* DPLUJSON_H_ */
