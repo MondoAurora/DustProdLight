@@ -34,7 +34,6 @@ private:
 	DustProdLightProcSession* pSession;
 
 	int relayId = DPL_PROCESS_NO_ACTION;
-//	bool processed = true;
 
 	int getRelay();
 
@@ -42,12 +41,9 @@ public:
 	DustProdLightProcState(DustProdLightProcSession* pSession_) : pSession(pSession_) {};
 	~DustProdLightProcState();
 
-//	virtual void setProcessed(bool p);
-
 	virtual void* getContext(int ctxId);
 
 	virtual DPLProcessResult requestRelay(int relayId_);
-//	virtual DPLProcessResult requestRelay(int relayId_, bool processed_);
 
 	friend class DustProdLightProcSession;
 	friend class DustProdLightProcNode;
@@ -111,9 +107,6 @@ class DustProdLightProcSession : public DPLProcessImplementation {
 	DustProdLightProcState state;
 	DPLProcessResult result;
 
-//	void walkUp();
-//	void walkDown();
-
 	void* getContext(int ctxId);
 
 	DustProdLightProcNode* selectNode(int nodeId);
@@ -130,8 +123,6 @@ public:
 	DPLProcessResult execute(const void* pInitData);
 
 	friend class DustProdLightProcState;
-//	friend class DustProdLightProcEnv;
-//	friend class DustProc;
 };
 
 

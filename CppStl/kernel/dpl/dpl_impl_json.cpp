@@ -24,14 +24,40 @@ const DPLToken JsonMeta::DPLJsonValue = DPLMeta::getToken(JsonMeta::DPLJsonTemp,
 using namespace JsonMeta;
 
 
+//void DPLUActionStreamReader::dplInit(DPLProcessState *pState) {
+//	DPLUProcCtxJson* pCtx = (DPLUProcCtxJson*) pState->getContext(DPLJsonCtxJson);
+//
+//	if ( !inStream.is_open() ) {
+//		inStream.open(pCtx->fName);
+//	}
+//}
+
 DPLProcessResult DPLUActionStreamReader::dplProcess(DPLProcessState *pState) {
 	DPLUProcCtxJson* pCtx = (DPLUProcCtxJson*) pState->getContext(DPLJsonCtxJson);
 
-	pCtx->inStream.get(pCtx->c);
-	pCtx->charRead = pCtx->inStream.good();
+	if ( !inStream.is_open() ) {
+		inStream.open(pCtx->fName);
+		pCtx->pos = 0;
+	}
+
+	inStream.get(pCtx->c);
+	pCtx->charRead = inStream.good();
+
+	if ( pCtx->charRead ) {
+		++pCtx->pos;
+	} else {
+		inStream.close();
+	}
+
 
 	return DPL_PROCESS_SUCCESS;
 }
+
+//void DPLUActionStreamReader::dplRelease(DPLProcessState *pState) {
+//	if ( inStream.is_open() ) {
+//		inStream.close();
+//	}
+//}
 
 DPLProcessResult DPLUActionDump::dplProcess(DPLProcessState *pState) {
 	DPLUProcCtxJson* pCtx = (DPLUProcCtxJson*) pState->getContext(DPLJsonCtxJson);
@@ -91,21 +117,7 @@ void DPLJsonLogicProvider::releaseLogic(int logicId, void* pLogic) {
 void DPLJsonReader::openProcessContext(int ctxId, void* pCtx, const void *pData) {
 	switch (logicProvider->indexOf(ctxId)) {
 	case 0: {
-		DPLUProcCtxJson* pc = (DPLUProcCtxJson*) pCtx;
-		pc->fName = (const char*) pData;
-		pc->inStream.open(pc->fName);
-	}
-		break;
-	default:
-		break;
-	}
-}
-
-void DPLJsonReader::closeProcessContext(int ctxId, void* pCtx) {
-	switch (logicProvider->indexOf(ctxId)) {
-	case 0: {
-		DPLUProcCtxJson* pc = (DPLUProcCtxJson*) pCtx;
-		pc->inStream.close();
+		((DPLUProcCtxJson*)pCtx)->fName = (const char*) pData;
 	}
 		break;
 	default:

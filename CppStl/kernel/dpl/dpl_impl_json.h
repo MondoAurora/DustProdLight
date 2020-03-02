@@ -32,27 +32,28 @@ extern const DPLToken DPLJsonValue;
 class DPLUProcCtxJson {
 public:
 	const char* fName;
-	ifstream inStream;
 
+	char c;
 	bool charRead;
 	int pos;
-	char c;
 };
 
 class DPLUActionDump: public DPLProcessAction {
 public:
 	virtual ~DPLUActionDump() {
 	}
-	;
 	virtual DPLProcessResult dplProcess(DPLProcessState *pState);
 };
 
 class DPLUActionStreamReader: public DPLProcessAction {
+	ifstream inStream;
+
 public:
 	virtual ~DPLUActionStreamReader() {
 	}
-	;
+//	virtual void dplInit(DPLProcessState *pState);
 	virtual DPLProcessResult dplProcess(DPLProcessState *pState);
+//	virtual void dplRelease(DPLProcessState *pState);
 };
 
 class DPLJsonReader: public DPLProcessDefinition {
@@ -62,7 +63,6 @@ public:
 	virtual int getStartNode();
 
 	virtual void openProcessContext(int ctxId, void* pCtx, const void *pData);
-	virtual void closeProcessContext(int ctxId, void* pCtx);
 };
 
 class DPLJsonLogicProvider: public DPLLogicProvider {

@@ -41,13 +41,16 @@ int test() {
 	addPoint(e, 188, 133);
 	addPoint(e, 88, 133);
 
-	cout << DPLData::getString(e, MapMeta::IdName, "??") << ": " << DPLData::getInt(e, MapMeta::IdNum, -100) << " ("
-			<< DPLData::getDouble(e, MapMeta::VectorX, -1) << ", " << DPLData::getDouble(e, MapMeta::VectorY, -1) << ")" << endl;
+	cout << DPLData::getString(e, MapMeta::IdName, "??") << ": "
+			<< DPLData::getInt(e, MapMeta::IdNum, -100) << " ("
+			<< DPLData::getDouble(e, MapMeta::VectorX, -1) << ", "
+			<< DPLData::getDouble(e, MapMeta::VectorY, -1) << ")" << endl;
 
 	int pc = DPLData::getRefCount(e, MapMeta::ShapePath);
 	for (int i = 0; i < pc; ++i) {
 		DPLEntity pt = DPLData::getRef(e, MapMeta::ShapePath, i);
-		cout << "   (" << DPLData::getDouble(pt, MapMeta::VectorX, -1) << ", " << DPLData::getDouble(pt, MapMeta::VectorY, -1)
+		cout << "   (" << DPLData::getDouble(pt, MapMeta::VectorX, -1) << ", "
+				<< DPLData::getDouble(pt, MapMeta::VectorY, -1)
 				<< ")" << endl;
 	}
 
@@ -61,12 +64,6 @@ int main() {
 	DPLData::visit(e, &dumper, NULL);
 
 	cout << endl << "----" << endl;
-
-//	DPLUStringCollector sc;
-//
-//	DPLUStream::process("test2.json", &sc);
-//
-//	cout << sc.getString() << endl;
 
 	DPLJson::read("test1.json");
 

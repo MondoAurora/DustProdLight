@@ -31,10 +31,6 @@ DustProdLightProcState::~DustProdLightProcState() {
 
 }
 
-//void DustProdLightProcState::setProcessed(bool p) {
-//	processed = p;
-//}
-
 void* DustProdLightProcState::getContext(int ctxId) {
 	return pSession->getContext(ctxId);
 }
@@ -44,11 +40,6 @@ DPLProcessResult DustProdLightProcState::requestRelay(int relayId_) {
 	return DPL_PROCESS_RELAY;
 }
 
-//DPLProcessResult DustProdLightProcState::requestRelay(int relayId_, bool processed_) {
-//	relayId = relayId_;
-//	processed = processed_;
-//	return DPL_PROCESS_RELAY;
-//}
 
 /****************************
  *
@@ -92,6 +83,10 @@ void DustProdLightProcNode::init(int nodeId_, DustProdLightProcSession *pSession
 	inSep = false;
 	pos = 0;
 	count = 0;
+
+//	if ( pProc ) {
+//		pProc->dplInit(&pSession->state);
+//	}
 }
 
 DPLProcessResult DustProdLightProcNode::process(DPLProcessState *pState) {
@@ -197,11 +192,6 @@ void* DustProdLightProcSession::getContext(int ctxId) {
 void DustProdLightProcSession::finish(bool error) {
 	while (!stack.empty()) {
 		stepUp();
-//		DustProdLightProcNode* pn = stack.top();
-//		stack.pop();
-//		pEnv->releaseProcessor(pn);
-//
-//		result = pn->childReturned(result, &state);
 	}
 
 	cout << endl << "stack released";
@@ -230,31 +220,14 @@ void DustProdLightProcSession::stepUp() {
 	if (!stack.empty()) {
 		result = stack.top()->childReturned(result, &state);
 	}
+
+//	if ( pn->pProc ) {
+//		pn->pProc->dplRelease(&state);
+//	}
+
 	pEnv->releaseProcessor(pn);
 
 }
-
-//void DustProdLightProcSession::walkUp() {
-//	while (DPL_PROCESS_SUCCESS == result) {
-//	}
-//
-//	if (!state.processed && (DPL_PROCESS_ACCEPT == result)) {
-//		step();
-//	}
-//}
-
-//void DustProdLightProcSession::walkDown() {
-//	while (DPL_PROCESS_RELAY == result) {
-//		DustProdLightProcNode* pn = selectNode(state.getRelay());
-//		if (!state.processed) {
-//			state.processed = true;
-////			step();
-//			result = pn->process(&state);
-//		} else {
-//			result = DPL_PROCESS_ACCEPT;
-//		}
-//	}
-//}
 
 void DustProdLightProcSession::step() {
 	DustProdLightProcNode* proc;

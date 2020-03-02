@@ -3,6 +3,20 @@
  *
  * DustProdLight API (STL version)
  *
+ * LOG
+ *
+ * 20200302
+ *   Moved the stream into processor, to make context free of implementation-level pointers (ctx to move into entity) - GOOD.
+ *   Created init and release in processor, call it when moving it onto stack - FAIL:
+ *     readers generally appear inside repeat, init/release called all time.
+ *     Actually, the stream state works OUTSIDE the processor, in the Session context.
+ *     QUESTION if this mixed approach is better
+ *     NEEDED a safe release on quick exit,
+ *       but it would also need managing all connected processors in Session regardless off stck state. ugly.
+ *       however, Processors MAY have local state anywway, this is necessary
+ *       LogicProvider level management would not be modular.
+ *     CLOSED: this is TBD.
+ *
  *  Created on: Feb 12, 2020
  *      Author: Lorand Kedves
  */
@@ -75,10 +89,14 @@ class DPLProcessAction {
 public:
 	virtual ~DPLProcessAction() {
 	}
+//	virtual void dplInit(DPLProcessState *pState) {
+//	}
 	virtual DPLProcessResult dplProcess(DPLProcessState *pState) = 0;
 	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse, DPLProcessState *pState) {
 		return DPL_PROCESS_REJECT;
 	}
+//	virtual void dplRelease(DPLProcessState *pState) {
+//	}
 };
 
 class DPLProcessDefinition {
@@ -88,7 +106,8 @@ public:
 
 	virtual int getStartNode() = 0;
 
-	virtual void openProcessContext(int ctxId, void* pCtx, const void *pData) = 0;
+	virtual void openProcessContext(int ctxId, void* pCtx, const void *pData) {
+	}
 	virtual void closeProcessContext(int ctxId, void* pCtx) {
 	}
 };
