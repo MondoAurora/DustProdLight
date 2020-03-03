@@ -31,26 +31,35 @@
 
 using namespace std;
 
-typedef int DPLType;
-typedef int DPLToken;
 typedef int DPLEntity;
-
-typedef int DPLNarrative;
-typedef int DPLAction;
 
 enum DPLTokenType {
 	DPL_TOKEN_INVALID,
+
+	DPL_TOKEN_ENTITY,
+
+	DPL_TOKEN_STORE,
+	DPL_TOKEN_UNIT,
+
+	DPL_TOKEN_NARRATIVE,
+	DPL_TOKEN_ACTION,
+
+	DPL_TOKEN_TYPE,
+
 	DPL_TOKEN_VAL_BOOL,
 	DPL_TOKEN_VAL_INT,
 	DPL_TOKEN_VAL_DOUBLE,
 	DPL_TOKEN_VAL_STRING,
+
 	DPL_TOKEN_REF_SINGLE,
 	DPL_TOKEN_REF_SET,
 	DPL_TOKEN_REF_ARR,
 	DPL_TOKEN_REF_MAP,
-
-	DPL_TOKEN_ACTION,
 };
+
+#define DPL_SEP_ID "."
+#define DPL_SEP_STORE ":"
+
 
 enum DPLChange {
 	DPL_CHG_REF_SET, DPL_CHG_REF_REMOVE, DPL_CHG_REF_CLEAR,
@@ -161,22 +170,22 @@ public:
 	virtual void visitEnd(DPLEntity entity, void *pHint) {
 	}
 
-	virtual DPLFilterResponse shouldProcess(DPLEntity entity, DPLToken token) {
+	virtual DPLFilterResponse shouldProcess(DPLEntity entity, DPLEntity token) {
 		return DPL_FILTER_PROCESS;
 	}
 
-	virtual void processValBool(DPLEntity entity, DPLToken token, bool val, void *pHint) {
+	virtual void processValBool(DPLEntity entity, DPLEntity token, bool val, void *pHint) {
 	}
-	virtual void processValInt(DPLEntity entity, DPLToken token, int val, void *pHint) {
+	virtual void processValInt(DPLEntity entity, DPLEntity token, int val, void *pHint) {
 	}
-	virtual void processValDouble(DPLEntity entity, DPLToken token, double val, void *pHint) {
+	virtual void processValDouble(DPLEntity entity, DPLEntity token, double val, void *pHint) {
 	}
-	virtual void processValString(DPLEntity entity, DPLToken token, string val, void *pHint) {
+	virtual void processValString(DPLEntity entity, DPLEntity token, string val, void *pHint) {
 	}
 
-	virtual void processRefBegin(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void *pHint) {
+	virtual void processRefBegin(DPLEntity entity, DPLEntity token, DPLTokenType tokenType, void *pHint) {
 	}
-	virtual void processRefEnd(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void *pHint) {
+	virtual void processRefEnd(DPLEntity entity, DPLEntity token, DPLTokenType tokenType, void *pHint) {
 	}
 
 	virtual void* processBeginEntity(DPLEntity entity, int key, void* pHint) {
@@ -194,42 +203,43 @@ public:
 	static void shutdown();
 
 // meta initialization
-	static DPLType getType(string typeName);
-	static DPLToken getToken(DPLType type, string tokenName, DPLTokenType tokenType);
-	static DPLToken getToken(string tokenId);
+	static DPLEntity getUnit(string unitName);
+	static DPLEntity getType(DPLEntity unit, string typeName);
+	static DPLEntity getToken(DPLEntity type, string tokenName, DPLTokenType tokenType);
 
+	static DPLEntity getToken(string tokenId);
 };
 
 class DPLData {
 public:
 
 // meta detection on Entity
-	static DPLType getPrimaryType(DPLEntity entity);
-	static bool hasType(DPLEntity entity, DPLType type);
-	static void getAllTypes(DPLEntity entity, set<DPLType>& typeSet);
+	static DPLEntity getPrimaryType(DPLEntity entity);
+	static bool hasType(DPLEntity entity, DPLEntity type);
+	static void getAllTypes(DPLEntity entity, set<DPLEntity>& typeSet);
 
 // Entity creation and access
 	static DPLEntity getEntityByPath(DPLEntity root, int path... );
-	static DPLEntity createEntity(DPLType primaryType);
+	static DPLEntity createEntity(DPLEntity primaryType);
 	static void visit(DPLEntity root, DPLVisitor *pVisitor, void *pHint);
 
 // Entity value access
-	static bool getBool(DPLEntity entity, DPLToken token, bool defValue);
-	static int getInt(DPLEntity entity, DPLToken token, int defValue);
-	static double getDouble(DPLEntity entity, DPLToken token, double defValue);
-	static string getString(DPLEntity entity, DPLToken token, string defValue);
+	static bool getBool(DPLEntity entity, DPLEntity token, bool defValue);
+	static int getInt(DPLEntity entity, DPLEntity token, int defValue);
+	static double getDouble(DPLEntity entity, DPLEntity token, double defValue);
+	static string getString(DPLEntity entity, DPLEntity token, string defValue);
 
-	static void setBool(DPLEntity entity, DPLToken token, bool val);
-	static void setInt(DPLEntity entity, DPLToken token, int val);
-	static void setDouble(DPLEntity entity, DPLToken token, double val);
-	static void setString(DPLEntity entity, DPLToken token, string val);
+	static void setBool(DPLEntity entity, DPLEntity token, bool val);
+	static void setInt(DPLEntity entity, DPLEntity token, int val);
+	static void setDouble(DPLEntity entity, DPLEntity token, double val);
+	static void setString(DPLEntity entity, DPLEntity token, string val);
 
 // Entity reference access
-	static int getRefCount(DPLEntity entity, DPLToken token);
-	static DPLToken getRefKey(DPLEntity entity, DPLToken token, int idx);
-	static DPLEntity getRef(DPLEntity entity, DPLToken token, int key);
+	static int getRefCount(DPLEntity entity, DPLEntity token);
+	static DPLEntity getRefKey(DPLEntity entity, DPLEntity token, int idx);
+	static DPLEntity getRef(DPLEntity entity, DPLEntity token, int key);
 
-	static bool setRef(DPLEntity entity, DPLToken token, DPLEntity target, int key);
+	static bool setRef(DPLEntity entity, DPLEntity token, DPLEntity target, int key);
 };
 
 class DPLProc {
@@ -239,13 +249,13 @@ public:
 	}
 	static void registerLogicProvider(DPLLogicProvider *pLogicFactory);
 
-	static void registerNarrative(DPLNarrative narrative, DPLProcessDefinition &procDef);
+	static void registerNarrative(DPLEntity narrative, DPLProcessDefinition &procDef);
 
-	static void registerCtrlRepeat(DPLNarrative narrative, int nodeId, int what, int minCount, int maxCount, int optSep);
-	static void registerCtrlSequence(DPLNarrative narrative, int nodeId, int optSep, ...);
-	static void registerCtrlSelection(DPLNarrative narrative, int nodeId, int members_...);
+	static void registerCtrlRepeat(DPLEntity narrative, int nodeId, int what, int minCount, int maxCount, int optSep);
+	static void registerCtrlSequence(DPLEntity narrative, int nodeId, int optSep, ...);
+	static void registerCtrlSelection(DPLEntity narrative, int nodeId, int members_...);
 
-	static DPLProcessResult executeProcess(DPLNarrative narrative, const void *initData);
+	static DPLProcessResult executeProcess(DPLEntity narrative, const void *initData);
 
 };
 

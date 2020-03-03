@@ -11,15 +11,16 @@
 #include "dpl_impl_json.h"
 
 
-const DPLType JsonMeta::DPLJsonTemp = DPLMeta::getType("TempJson");
+const DPLEntity JsonMeta::DPLJsonUnit = DPLMeta::getUnit("TempJson");
+const DPLEntity JsonMeta::DPLJsonTemp = DPLMeta::getType(JsonMeta::DPLJsonUnit, "TempJson");
 
-const DPLToken JsonMeta::DPLJsonCtxJson = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "CtxJson", DPL_TOKEN_ACTION);
+const DPLEntity JsonMeta::DPLJsonCtxJson = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "CtxJson", DPL_TOKEN_ACTION);
 
-const DPLToken JsonMeta::DPLJsonMainRep = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "MainRep", DPL_TOKEN_ACTION);
-const DPLToken JsonMeta::DPLJsonMainSeq = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "MainSeq", DPL_TOKEN_ACTION);
-const DPLToken JsonMeta::DPLJsonCharSrc = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "CharSrc", DPL_TOKEN_ACTION);
+const DPLEntity JsonMeta::DPLJsonMainRep = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "MainRep", DPL_TOKEN_ACTION);
+const DPLEntity JsonMeta::DPLJsonMainSeq = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "MainSeq", DPL_TOKEN_ACTION);
+const DPLEntity JsonMeta::DPLJsonCharSrc = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "CharSrc", DPL_TOKEN_ACTION);
 
-const DPLToken JsonMeta::DPLJsonValue = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "JsonValue", DPL_TOKEN_ACTION);
+const DPLEntity JsonMeta::DPLJsonValue = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "JsonValue", DPL_TOKEN_ACTION);
 
 using namespace JsonMeta;
 

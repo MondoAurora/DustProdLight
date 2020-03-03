@@ -11,14 +11,16 @@
 #include "dplujson.h"
 
 namespace JsonMeta {
-extern const DPLType DPLJsonTemp;
-extern const DPLToken DPLJsonCtxJson;
+extern const DPLEntity DPLJsonUnit;
 
-extern const DPLToken DPLJsonMainRep;
-extern const DPLToken DPLJsonMainSeq;
-extern const DPLToken DPLJsonCharSrc;
+extern const DPLEntity DPLJsonTemp;
+extern const DPLEntity DPLJsonCtxJson;
 
-extern const DPLToken DPLJsonValue;
+extern const DPLEntity DPLJsonMainRep;
+extern const DPLEntity DPLJsonMainSeq;
+extern const DPLEntity DPLJsonCharSrc;
+
+extern const DPLEntity DPLJsonValue;
 }
 
 //class DPLUProcCtxFile {

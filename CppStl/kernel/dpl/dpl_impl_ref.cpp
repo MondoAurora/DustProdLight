@@ -9,7 +9,7 @@
 
 #include "dpl_impl.h"
 
-DustProdLightRef::DustProdLightRef(DPLToken ptoken, DPLTokenType ptokentype, DPLEntity psource, DPLEntity ptarget,
+DustProdLightRef::DustProdLightRef(DPLEntity ptoken, DPLTokenType ptokentype, DPLEntity psource, DPLEntity ptarget,
 		int pkey) :
 		token(ptoken), tokenType(ptokentype), source(psource), target(ptarget) {
 	if (DPL_TOKEN_REF_MAP == tokenType) {
@@ -19,8 +19,8 @@ DustProdLightRef::DustProdLightRef(DPLToken ptoken, DPLTokenType ptokentype, DPL
 	DustProdLightStore::store->refs.insert(this);
 }
 
-DustProdLightRef::DustProdLightRef(DustProdLightToken* ptoken, DPLEntity psource, DPLEntity ptarget, int pkey) :
-		DustProdLightRef(ptoken->id, ptoken->tokenType, psource, ptarget, pkey) {
+DustProdLightRef::DustProdLightRef(DustProdLightEntity* ptoken, DPLEntity psource, DPLEntity ptarget, int pkey) :
+		DustProdLightRef(ptoken->localId, ptoken->tokenType, psource, ptarget, pkey) {
 }
 
 DustProdLightRef::DustProdLightRef(DustProdLightRef *porig, DPLEntity ptarget, int pkey) :
@@ -157,7 +157,7 @@ DPLEntity DustProdLightRef::getRef(int key) {
 	return 0;
 }
 
-DPLToken DustProdLightRef::getTokenByIndex(int idx) {
+DPLEntity DustProdLightRef::getTokenByIndex(int idx) {
 	if (DPL_TOKEN_REF_MAP == tokenType) {
 		if (collection) {
 			if ((0 <= idx) && (idx < (int) collection->size())) {

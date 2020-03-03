@@ -70,13 +70,13 @@ ostream& DPLUEntityToJSON::closeLine(DPLUtilsIndent chgIndent) {
 	return out;
 }
 
-ostream& DPLUEntityToJSON::leadToken(DPLToken token) {
+ostream& DPLUEntityToJSON::leadToken(DPLEntity token) {
 	return leadToken(token, DPL_INDENT_KEEP);
 }
 
-ostream& DPLUEntityToJSON::leadToken(DPLToken token, DPLUtilsIndent chgIndent) {
+ostream& DPLUEntityToJSON::leadToken(DPLEntity token, DPLUtilsIndent chgIndent) {
 	closeLine(chgIndent);
-	return writeStr(DPLUtils::getTokenName(token)) << " : ";
+	return writeStr(DPLUtils::getGlobalId(token)) << " : ";
 }
 
 ostream& DPLUEntityToJSON::writeStr(string str) {
@@ -104,33 +104,33 @@ ostream& DPLUEntityToJSON::writeStr(string str) {
 	return out << "\"";
 }
 
-DPLFilterResponse DPLUEntityToJSON::shouldProcess(DPLEntity entity, DPLToken token) {
+DPLFilterResponse DPLUEntityToJSON::shouldProcess(DPLEntity entity, DPLEntity token) {
 	return DPL_FILTER_VISIT;
 }
 
-void DPLUEntityToJSON::processValBool(DPLEntity entity, DPLToken token, bool val, void *pHint) {
+void DPLUEntityToJSON::processValBool(DPLEntity entity, DPLEntity token, bool val, void *pHint) {
 	leadToken(token) << (val ? "true" : "false");
 }
 
-void DPLUEntityToJSON::processValInt(DPLEntity entity, DPLToken token, int val, void *pHint) {
+void DPLUEntityToJSON::processValInt(DPLEntity entity, DPLEntity token, int val, void *pHint) {
 	leadToken(token) << val;
 }
 
-void DPLUEntityToJSON::processValDouble(DPLEntity entity, DPLToken token, double val, void *pHint) {
+void DPLUEntityToJSON::processValDouble(DPLEntity entity, DPLEntity token, double val, void *pHint) {
 	leadToken(token) << val;
 }
 
-void DPLUEntityToJSON::processValString(DPLEntity entity, DPLToken token, string val, void *pHint) {
+void DPLUEntityToJSON::processValString(DPLEntity entity, DPLEntity token, string val, void *pHint) {
 	leadToken(token);
 	writeStr(val);
 }
 
-void DPLUEntityToJSON::processRefBegin(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void *pHint) {
+void DPLUEntityToJSON::processRefBegin(DPLEntity entity, DPLEntity token, DPLTokenType tokenType, void *pHint) {
 	leadToken(token, DPL_INDENT_INC) << "[";
 	comma = false;
 }
 
-void DPLUEntityToJSON::processRefEnd(DPLEntity entity, DPLToken token, DPLTokenType tokenType, void *pHint) {
+void DPLUEntityToJSON::processRefEnd(DPLEntity entity, DPLEntity token, DPLTokenType tokenType, void *pHint) {
 	comma = false;
 	closeLine(DPL_INDENT_DEC) << "]";
 }

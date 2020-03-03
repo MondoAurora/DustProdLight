@@ -25,8 +25,7 @@ enum DPLUtilsIndent {
 
 class DPLUtils {
 public:
-	static string getTypeName(DPLType type);
-	static string getTokenName(DPLToken token);
+	static string getGlobalId(DPLEntity entity);
 };
 
 class DPLUStringContainer {

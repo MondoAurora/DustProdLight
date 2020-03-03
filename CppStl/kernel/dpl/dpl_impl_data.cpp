@@ -13,7 +13,7 @@ DustProdLightValue::~DustProdLightValue() {
 }
 ;
 
-void DustProdLightValue::set(DPLTokenType tokenType, void* pVal) {
+void DustProdLightValue::set(DPLTokenType tokenType, const void* pVal) {
 	this->tokenType = tokenType;
 
 	switch (tokenType) {
@@ -34,7 +34,7 @@ void DustProdLightValue::set(DPLTokenType tokenType, void* pVal) {
 	}
 }
 
-void DustProdLightValue::optVisit(DPLVisitor *pVisitor, DPLEntity entity, DPLToken token, void *pHint) {
+void DustProdLightValue::optVisit(DPLVisitor *pVisitor, DPLEntity entity, DPLEntity token, void *pHint) {
 	if (DPL_FILTER_SKIP != pVisitor->shouldProcess(entity, token)) {
 		switch (tokenType) {
 		case DPL_TOKEN_VAL_BOOL:
@@ -65,11 +65,11 @@ void DustProdLightEntity::optReloadMeta() {
 
 		for (EntityValIterator iter = values.begin(); iter != values.end(); ++iter) {
 			int k = iter->first;
-			types.insert(DustProdLightStore::store->vecTokens[k]->type);
+//			types.insert(DustProdLightStore::store->vecTokens[k]->type);
 		}
 		for (EntityRefIterator iter = refs.begin(); iter != refs.end(); ++iter) {
 			int k = iter->first;
-			types.insert(DustProdLightStore::store->vecTokens[k]->type);
+//			types.insert(DustProdLightStore::store->vecTokens[k]->type);
 		}
 		changed = false;
 	}
@@ -78,11 +78,11 @@ void DustProdLightEntity::optReloadMeta() {
 DustProdLightEntity::~DustProdLightEntity() {
 }
 
-bool DustProdLightEntity::isOfType(DPLType type) {
+bool DustProdLightEntity::isOfType(DPLEntity type) {
 	return types.end() != types.find(type);
 }
 
-void DustProdLightEntity::getAllTypes(set<DPLType>& typeSet) {
+void DustProdLightEntity::getAllTypes(set<DPLEntity>& typeSet) {
 	typeSet.clear();
 	typeSet.insert(types.begin(), types.end());
 }

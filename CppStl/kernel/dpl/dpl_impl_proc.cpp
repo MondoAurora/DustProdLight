@@ -263,15 +263,15 @@ DPLProcessResult DustProdLightProcSession::execute(const void *pInitData) {
  *
  ****************************/
 
-map<DPLNarrative, DPLLogicProvider*> DustProdLightProcEnv::logicFactory;
+map<DPLEntity, DPLLogicProvider*> DustProdLightProcEnv::logicFactory;
 
-map<DPLNarrative, DustProdLightProcEnv*> DustProdLightProcEnv::environments;
+map<DPLEntity, DustProdLightProcEnv*> DustProdLightProcEnv::environments;
 
 DustProdLightProcEnv::~DustProdLightProcEnv() {
 
 }
 
-DustProdLightProcEnv* DustProdLightProcEnv::getEnv(DPLNarrative narrative) {
+DustProdLightProcEnv* DustProdLightProcEnv::getEnv(DPLEntity narrative) {
 	DustProdLightProcEnv *pEnv = environments[narrative];
 
 	return pEnv;
@@ -332,17 +332,17 @@ void DPLProc::registerLogicProvider(DPLLogicProvider *pLogicFactory) {
 	}
 }
 
-void DPLProc::registerNarrative(DPLNarrative narrative, DPLProcessDefinition &procDef) {
+void DPLProc::registerNarrative(DPLEntity narrative, DPLProcessDefinition &procDef) {
 	DustProdLightProcEnv::environments[narrative] = new DustProdLightProcEnv(&procDef);
 
 }
 
-void DPLProc::registerCtrlRepeat(DPLNarrative narrative, int nodeId, int what, int minCount, int maxCount, int optSep) {
+void DPLProc::registerCtrlRepeat(DPLEntity narrative, int nodeId, int what, int minCount, int maxCount, int optSep) {
 	DustProdLightProcEnv *pEnv = DustProdLightProcEnv::getEnv(narrative);
 	pEnv->ctrlNodeDefs[nodeId] = new DustProdLightProcNodeDef(nodeId, what, minCount, maxCount, optSep);
 }
 
-void DPLProc::registerCtrlSequence(DPLNarrative narrative, int nodeId, int optSep, ...) {
+void DPLProc::registerCtrlSequence(DPLEntity narrative, int nodeId, int optSep, ...) {
 	DustProdLightProcEnv *pEnv = DustProdLightProcEnv::getEnv(narrative);
 
 	vector<int> mm;
@@ -358,7 +358,7 @@ void DPLProc::registerCtrlSequence(DPLNarrative narrative, int nodeId, int optSe
 	pEnv->ctrlNodeDefs[nodeId] = new DustProdLightProcNodeDef(nodeId, DPLU_PROC_NODE_SEQUENCE, optSep, mm);
 }
 
-void DPLProc::registerCtrlSelection(DPLNarrative narrative, int nodeId, int members_...) {
+void DPLProc::registerCtrlSelection(DPLEntity narrative, int nodeId, int members_...) {
 	DustProdLightProcEnv *pEnv = DustProdLightProcEnv::getEnv(narrative);
 
 	vector<int> mm;
@@ -374,6 +374,6 @@ void DPLProc::registerCtrlSelection(DPLNarrative narrative, int nodeId, int memb
 	pEnv->ctrlNodeDefs[nodeId] = new DustProdLightProcNodeDef(nodeId, DPLU_PROC_NODE_SELECT, DPL_PROCESS_NO_ACTION, mm);
 }
 
-DPLProcessResult DPLProc::executeProcess(DPLNarrative narrative, const void *pInitData) {
+DPLProcessResult DPLProc::executeProcess(DPLEntity narrative, const void *pInitData) {
 	return DustProdLightProcEnv::getEnv(narrative)->executeProcess(pInitData);
 }

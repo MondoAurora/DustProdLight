@@ -127,8 +127,8 @@ public:
 
 
 class DustProdLightProcEnv : public DPLProcessImplementation {
-	static map<DPLNarrative, DPLLogicProvider*> logicFactory;
-	static map<DPLNarrative, DustProdLightProcEnv*> environments;
+	static map<DPLEntity, DPLLogicProvider*> logicFactory;
+	static map<DPLEntity, DustProdLightProcEnv*> environments;
 
 	DPLProcessDefinition* pDef;
 	map<int, DustProdLightProcNodeDef*> ctrlNodeDefs;
@@ -145,7 +145,7 @@ protected:
 	void releaseProcessor(DustProdLightProcNode* proc);
 
 public:
-	static DustProdLightProcEnv* getEnv(DPLNarrative narrative);
+	static DustProdLightProcEnv* getEnv(DPLEntity narrative);
 	static void shutdown();
 
 	DPLProcessResult executeProcess(const void *pInitData);

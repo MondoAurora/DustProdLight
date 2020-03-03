@@ -4,32 +4,33 @@
 #include "dpl/dpl_impl.h"
 
 namespace MapMeta {
-DPLType Test = DPLMeta::getType("Test");
+DPLEntity TestUnit = DPLMeta::getUnit("Test");
+DPLEntity Test = DPLMeta::getType(TestUnit, "Test");
 
-DPLToken TestOdd = DPLMeta::getToken(Test, "Odd", DPL_TOKEN_VAL_BOOL);
+DPLEntity TestOdd = DPLMeta::getToken(Test, "Odd", DPL_TOKEN_VAL_BOOL);
 
-DPLType Vector = DPLMeta::getType("Vector");
+DPLEntity Vector = DPLMeta::getType(TestUnit, "Vector");
 
-DPLToken VectorX = DPLMeta::getToken(Vector, "X", DPL_TOKEN_VAL_DOUBLE);
-DPLToken VectorY = DPLMeta::getToken(Vector, "Y", DPL_TOKEN_VAL_DOUBLE);
+DPLEntity VectorX = DPLMeta::getToken(Vector, "X", DPL_TOKEN_VAL_DOUBLE);
+DPLEntity VectorY = DPLMeta::getToken(Vector, "Y", DPL_TOKEN_VAL_DOUBLE);
 
-DPLType Id = DPLMeta::getType("Identified");
+DPLEntity Id = DPLMeta::getType(TestUnit, "Identified");
 
-DPLToken IdName = DPLMeta::getToken(Id, "Name", DPL_TOKEN_VAL_STRING);
-DPLToken IdNum = DPLMeta::getToken(Id, "Num", DPL_TOKEN_VAL_INT);
+DPLEntity IdName = DPLMeta::getToken(Id, "Name", DPL_TOKEN_VAL_STRING);
+DPLEntity IdNum = DPLMeta::getToken(Id, "Num", DPL_TOKEN_VAL_INT);
 
-DPLType Position = DPLMeta::getType("Position");
+DPLEntity Position = DPLMeta::getType(TestUnit, "Position");
 
-DPLType Shape = DPLMeta::getType("Shape");
+DPLEntity Shape = DPLMeta::getType(TestUnit, "Shape");
 
-DPLToken ShapeDirection = DPLMeta::getToken(Shape, "Direction", DPL_TOKEN_REF_SINGLE);
+DPLEntity ShapeDirection = DPLMeta::getToken(Shape, "Direction", DPL_TOKEN_REF_SINGLE);
 
-DPLToken ShapePath = DPLMeta::getToken(Shape, "Path", DPL_TOKEN_REF_ARR);
+DPLEntity ShapePath = DPLMeta::getToken(Shape, "Path", DPL_TOKEN_REF_ARR);
 
-DPLType Moving = DPLMeta::getType("Moving");
+DPLEntity Moving = DPLMeta::getType(TestUnit, "Moving");
 
-DPLToken MovingVelocity = DPLMeta::getToken(Shape, "Velocity", DPL_TOKEN_REF_SINGLE);
-DPLToken MovingAcceleration = DPLMeta::getToken(Shape, "Acceleration", DPL_TOKEN_REF_SINGLE);
+DPLEntity MovingVelocity = DPLMeta::getToken(Shape, "Velocity", DPL_TOKEN_REF_SINGLE);
+DPLEntity MovingAcceleration = DPLMeta::getToken(Shape, "Acceleration", DPL_TOKEN_REF_SINGLE);
 }
 
 #endif /*MAPTEST_H_*/
