@@ -34,7 +34,7 @@ using namespace std;
 typedef int DPLEntity;
 
 enum DPLTokenType {
-	DPL_TOKEN_INVALID,
+	DPL_ENTITY_INVALID,
 
 	DPL_TOKEN_ENTITY,
 
@@ -55,17 +55,33 @@ enum DPLTokenType {
 	DPL_TOKEN_REF_SET,
 	DPL_TOKEN_REF_ARR,
 	DPL_TOKEN_REF_MAP,
+
+	DPL_TOKEN_
 };
+
+enum DPLContext {
+	DPL_CTX_SELF = DPL_TOKEN_, DPL_CTX_CMD, DPL_CTX_MSG, DPL_CTX_APP, DPL_CTX_SYS, DPL_CTX_
+};
+
+enum DPLChange {
+	DPL_CHG_REF_SET = DPL_CTX_, DPL_CHG_REF_REMOVE, DPL_CHG_REF_CLEAR, DPL_CHG_REF_
+};
+
+enum DPLProcessResult {
+	DPL_PROCESS_REJECT = DPL_CHG_REF_, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT, DPL_PROCESS_RELAY, DPL_PROCESS_
+};
+
+enum DPLFilterResponse {
+	DPL_FILTER_SKIP = DPL_PROCESS_, DPL_FILTER_PROCESS, DPL_FILTER_VISIT, DPL_FILTER_
+};
+
+#define DPL_LAST_CONST DPL_FILTER_
+
+#define REFKEY_ARR_APPEND -1
 
 #define DPL_SEP_ID "."
 #define DPL_SEP_STORE ":"
 
-
-enum DPLChange {
-	DPL_CHG_REF_SET, DPL_CHG_REF_REMOVE, DPL_CHG_REF_CLEAR,
-};
-
-#define REFKEY_ARR_APPEND -1
 
 class DPLErrInvalidValueType {
 };
@@ -76,36 +92,32 @@ class DPLErrOutOfRange {
 class DPLErrIdOutOfRange {
 };
 
-class DPLProcessImplementation {
-};
-
-enum DPLProcessResult {
-	DPL_PROCESS_REJECT, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT, DPL_PROCESS_RELAY,
-};
-
-#define DPL_PROCESS_NO_ACTION 0
-#define DPL_PROCESS_DEFAULT_CONTEXT 0
-
 class DPLProcessState {
 public:
 	virtual ~DPLProcessState() {
 	}
-	virtual void* getContext(int ctxId) = 0;
-	virtual DPLProcessResult requestRelay(int relayId_) = 0;
+	virtual void* getContext(DPLEntity ctxId) = 0;
+	virtual DPLProcessResult requestRelay(DPLEntity relayId_) = 0;
 };
 
 class DPLProcessAction {
 public:
 	virtual ~DPLProcessAction() {
 	}
-//	virtual void dplInit(DPLProcessState *pState) {
-//	}
+
+	virtual bool dplIsReusable() {
+		return true;
+	}
+	virtual void dplInit(DPLProcessState *pState) {
+	}
+	virtual void dplRelease(DPLProcessState *pState) {
+	}
+
 	virtual DPLProcessResult dplProcess(DPLProcessState *pState) = 0;
+
 	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse, DPLProcessState *pState) {
 		return DPL_PROCESS_REJECT;
 	}
-//	virtual void dplRelease(DPLProcessState *pState) {
-//	}
 };
 
 class DPLProcessDefinition {
@@ -129,16 +141,14 @@ public:
 	DPLLogicProvider(int *ids_) {
 		int mId;
 
-		for (int idx = 0; DPL_PROCESS_NO_ACTION != (mId = ids_[idx]); ++idx) {
+		for (int idx = 0; DPL_ENTITY_INVALID != (mId = ids_[idx]); ++idx) {
 			idMap[mId] = idx;
 			providedIDs.push_back(mId);
 		}
 	}
-	;
 
 	virtual ~DPLLogicProvider() {
 	}
-	;
 
 	int getCount() {
 		return providedIDs.size();
@@ -154,10 +164,6 @@ public:
 
 	virtual void* createLogic(int logicId) = 0;
 	virtual void releaseLogic(int logicId, void* pLogic) = 0;
-};
-
-enum DPLFilterResponse {
-	DPL_FILTER_SKIP, DPL_FILTER_PROCESS, DPL_FILTER_VISIT
 };
 
 class DPLVisitor {
@@ -196,22 +202,29 @@ public:
 	}
 };
 
-class DPLMeta {
+class DPLMain {
 public:
-// state management
 	static void init();
+	static void registerLogicProvider(DPLLogicProvider *pLogicFactory);
+	static DPLProcessResult send(DPLEntity target, DPLEntity command, DPLEntity param);
 	static void shutdown();
-
-// meta initialization
-	static DPLEntity getUnit(string unitName);
-	static DPLEntity getType(DPLEntity unit, string typeName);
-	static DPLEntity getToken(DPLEntity type, string tokenName, DPLTokenType tokenType);
-
-	static DPLEntity getToken(string tokenId);
 };
+
+//class DPLMeta {
+//public:
+//// meta initialization
+//	static DPLEntity getUnit(string unitName);
+//	static DPLEntity getType(DPLEntity unit, string typeName);
+//	static DPLEntity getToken(DPLEntity type, string tokenName, DPLTokenType tokenType);
+//
+//	static DPLEntity getToken(string tokenId);
+//};
 
 class DPLData {
 public:
+// meta access
+	static DPLEntity getMetaEntity(DPLTokenType tokenType, string name, DPLEntity parent = DPL_ENTITY_INVALID);
+	static DPLEntity getEntityById(string globalId);
 
 // meta detection on Entity
 	static DPLEntity getPrimaryType(DPLEntity entity);
@@ -219,7 +232,7 @@ public:
 	static void getAllTypes(DPLEntity entity, set<DPLEntity>& typeSet);
 
 // Entity creation and access
-	static DPLEntity getEntityByPath(DPLEntity root, int path... );
+	static DPLEntity getEntityByPath(DPLContext ctx, ... );
 	static DPLEntity createEntity(DPLEntity primaryType);
 	static void visit(DPLEntity root, DPLVisitor *pVisitor, void *pHint);
 
@@ -242,21 +255,19 @@ public:
 	static bool setRef(DPLEntity entity, DPLEntity token, DPLEntity target, int key);
 };
 
-class DPLProc {
-public:
-	static bool isRunning(DPLProcessResult result) {
-		return (DPL_PROCESS_ACCEPT == result) || (DPL_PROCESS_RELAY == result);
-	}
-	static void registerLogicProvider(DPLLogicProvider *pLogicFactory);
-
-	static void registerNarrative(DPLEntity narrative, DPLProcessDefinition &procDef);
-
-	static void registerCtrlRepeat(DPLEntity narrative, int nodeId, int what, int minCount, int maxCount, int optSep);
-	static void registerCtrlSequence(DPLEntity narrative, int nodeId, int optSep, ...);
-	static void registerCtrlSelection(DPLEntity narrative, int nodeId, int members_...);
-
-	static DPLProcessResult executeProcess(DPLEntity narrative, const void *initData);
-
-};
+//class DPLProc {
+//public:
+//	static bool isRunning(DPLProcessResult result) {
+//		return (DPL_PROCESS_ACCEPT == result) || (DPL_PROCESS_RELAY == result);
+//	}
+//	static void registerNarrative(DPLEntity narrative, DPLProcessDefinition &procDef);
+//
+//	static void registerCtrlRepeat(DPLEntity narrative, int nodeId, int what, int minCount, int maxCount, int optSep);
+//	static void registerCtrlSequence(DPLEntity narrative, int nodeId, int optSep, ...);
+//	static void registerCtrlSelection(DPLEntity narrative, int nodeId, int members_...);
+//
+//	static DPLProcessResult executeProcess(DPLEntity narrative, const void *initData);
+//
+//};
 
 #endif /* DPL_H_ */

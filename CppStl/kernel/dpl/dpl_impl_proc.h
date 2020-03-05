@@ -17,6 +17,7 @@
 #include <array>
 
 #include "dplutils.h"
+#include "dpl_impl.h"
 
 using namespace std;
 
@@ -28,12 +29,11 @@ enum DPLProcessNodeTypes {
 	DPLU_PROC_NODE_NULL, DPLU_PROC_NODE_SEQUENCE, DPLU_PROC_NODE_REPEAT, DPLU_PROC_NODE_SELECT,
 };
 
-
 class DustProdLightProcState : public DPLProcessState {
 private:
 	DustProdLightProcSession* pSession;
 
-	int relayId = DPL_PROCESS_NO_ACTION;
+	int relayId = DPL_ENTITY_INVALID;
 
 	int getRelay();
 
@@ -73,12 +73,12 @@ public:
 };
 
 
-class DustProdLightProcNode : public DPLProcessImplementation {
+class DustProdLightProcNode {
 	DPLProcessAction *pProc;
 	DustProdLightProcNodeDef *pNodeDef;
 	DustProdLightProcSession *pSession = NULL;
 
-	int nodeId = DPL_PROCESS_NO_ACTION;
+	int nodeId = DPL_ENTITY_INVALID;
 	unsigned int pos = 0;
 	unsigned int count = 0;
 	bool inSep = false;
@@ -97,7 +97,7 @@ public:
 };
 
 
-class DustProdLightProcSession : public DPLProcessImplementation {
+class DustProdLightProcSession {
 	DustProdLightProcEnv *pEnv;
 
 	stack<DustProdLightProcNode*> stack;
@@ -126,9 +126,11 @@ public:
 };
 
 
-class DustProdLightProcEnv : public DPLProcessImplementation {
+class DustProdLightProcEnv {
 	static map<DPLEntity, DPLLogicProvider*> logicFactory;
 	static map<DPLEntity, DustProdLightProcEnv*> environments;
+
+	static stack<map<DPLContext, DPLEntity>*> singleThreadedStack;
 
 	DPLProcessDefinition* pDef;
 	map<int, DustProdLightProcNodeDef*> ctrlNodeDefs;
@@ -151,6 +153,7 @@ public:
 	DPLProcessResult executeProcess(const void *pInitData);
 
 	friend class DustProdLightProcSession;
+	friend class DPLMain;
 	friend class DPLProc;
 };
 

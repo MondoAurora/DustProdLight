@@ -23,7 +23,7 @@ using namespace std;
 
 int DustProdLightProcState::getRelay() {
 	int ret = relayId;
-	relayId = DPL_PROCESS_NO_ACTION;
+	relayId = DPL_ENTITY_INVALID;
 	return ret;
 }
 
@@ -49,7 +49,7 @@ DPLProcessResult DustProdLightProcState::requestRelay(int relayId_) {
 
 DustProdLightProcNodeDef::DustProdLightProcNodeDef(int nodeId, DPLProcessNodeTypes nodeType_, int separator_,
 		vector<int> members_) :
-		id(nodeId), nodeType(nodeType_), separator(separator_), rep(DPL_PROCESS_NO_ACTION), min(0), max(
+		id(nodeId), nodeType(nodeType_), separator(separator_), rep(DPL_ENTITY_INVALID), min(0), max(
 		INT_MAX) {
 	members = members_;
 }
@@ -113,7 +113,7 @@ DPLProcessResult DustProdLightProcNode::childReturned(DPLProcessResult childResu
 		return pProc->dplChildReturned(childResult, pState);
 	} else {
 
-		bool hasSep = DPL_PROCESS_NO_ACTION != pNodeDef->separator;
+		bool hasSep = DPL_ENTITY_INVALID != pNodeDef->separator;
 
 		switch (pNodeDef->nodeType) {
 		case DPLU_PROC_NODE_REPEAT:
@@ -244,6 +244,8 @@ void DustProdLightProcSession::step() {
 	case DPL_PROCESS_SUCCESS:
 		stepUp();
 		break;
+	case DPL_PROCESS_:
+		break;
 	}
 }
 
@@ -266,6 +268,8 @@ DPLProcessResult DustProdLightProcSession::execute(const void *pInitData) {
 map<DPLEntity, DPLLogicProvider*> DustProdLightProcEnv::logicFactory;
 
 map<DPLEntity, DustProdLightProcEnv*> DustProdLightProcEnv::environments;
+
+stack<map<DPLContext, DPLEntity>*> singleThreadedStack;
 
 DustProdLightProcEnv::~DustProdLightProcEnv() {
 
@@ -322,16 +326,31 @@ DPLProcessResult DustProdLightProcEnv::executeProcess(const void *pInitData) {
 
 /****************************
  *
+ * Call context management
+ *
+ ****************************/
+
+DPLEntity DustProdLightContext::optResolveContext(DPLEntity entity) {
+	return entity;
+}
+
+/****************************
+ *
  * DPL API
  *
  ****************************/
 
-void DPLProc::registerLogicProvider(DPLLogicProvider *pLogicFactory) {
+DPLProcessResult DPLMain::send(DPLEntity target, DPLEntity command, DPLEntity param) {
+	return DPL_PROCESS_REJECT;
+}
+
+
+void DPLMain::registerLogicProvider(DPLLogicProvider *pLogicFactory) {
 	for (int i = pLogicFactory->getCount(); i-- > 0;) {
 		DustProdLightProcEnv::logicFactory[pLogicFactory->getId(i)] = pLogicFactory;
 	}
 }
-
+/*
 void DPLProc::registerNarrative(DPLEntity narrative, DPLProcessDefinition &procDef) {
 	DustProdLightProcEnv::environments[narrative] = new DustProdLightProcEnv(&procDef);
 
@@ -350,7 +369,7 @@ void DPLProc::registerCtrlSequence(DPLEntity narrative, int nodeId, int optSep, 
 	va_list args;
 	va_start(args, optSep);
 	int mId;
-	while (DPL_PROCESS_NO_ACTION != (mId = va_arg(args, int))) {
+	while (DPL_ENTITY_INVALID != (mId = va_arg(args, int))) {
 		mm.push_back(mId);
 	}
 	va_end(args);
@@ -366,14 +385,15 @@ void DPLProc::registerCtrlSelection(DPLEntity narrative, int nodeId, int members
 	va_list args;
 	va_start(args, members_);
 	int mId;
-	while (DPL_PROCESS_NO_ACTION != (mId = va_arg(args, int))) {
+	while (DPL_ENTITY_INVALID != (mId = va_arg(args, int))) {
 		mm.push_back(mId);
 	}
 	va_end(args);
 
-	pEnv->ctrlNodeDefs[nodeId] = new DustProdLightProcNodeDef(nodeId, DPLU_PROC_NODE_SELECT, DPL_PROCESS_NO_ACTION, mm);
+	pEnv->ctrlNodeDefs[nodeId] = new DustProdLightProcNodeDef(nodeId, DPLU_PROC_NODE_SELECT, DPL_ENTITY_INVALID, mm);
 }
 
 DPLProcessResult DPLProc::executeProcess(DPLEntity narrative, const void *pInitData) {
 	return DustProdLightProcEnv::getEnv(narrative)->executeProcess(pInitData);
 }
+*/

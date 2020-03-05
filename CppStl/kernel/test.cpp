@@ -69,7 +69,7 @@ int main() {
 
 	cout << endl << "----" << endl;
 
-	DPLMeta::shutdown();
+	DPLMain::shutdown();
 
 	return 0;
 }

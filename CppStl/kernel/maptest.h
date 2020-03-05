@@ -4,33 +4,33 @@
 #include "dpl/dpl_impl.h"
 
 namespace MapMeta {
-DPLEntity TestUnit = DPLMeta::getUnit("Test");
-DPLEntity Test = DPLMeta::getType(TestUnit, "Test");
+DPLEntity TestUnit = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "Test");
+DPLEntity Test = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Test", TestUnit);
 
-DPLEntity TestOdd = DPLMeta::getToken(Test, "Odd", DPL_TOKEN_VAL_BOOL);
+DPLEntity TestOdd = DPLData::getMetaEntity(DPL_TOKEN_VAL_BOOL, "Odd", Test);
 
-DPLEntity Vector = DPLMeta::getType(TestUnit, "Vector");
+DPLEntity Vector = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Vector", TestUnit);
 
-DPLEntity VectorX = DPLMeta::getToken(Vector, "X", DPL_TOKEN_VAL_DOUBLE);
-DPLEntity VectorY = DPLMeta::getToken(Vector, "Y", DPL_TOKEN_VAL_DOUBLE);
+DPLEntity VectorX = DPLData::getMetaEntity(DPL_TOKEN_VAL_DOUBLE, "X", Vector);
+DPLEntity VectorY = DPLData::getMetaEntity(DPL_TOKEN_VAL_DOUBLE, "Y", Vector);
 
-DPLEntity Id = DPLMeta::getType(TestUnit, "Identified");
+DPLEntity Id = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Identified", TestUnit);
 
-DPLEntity IdName = DPLMeta::getToken(Id, "Name", DPL_TOKEN_VAL_STRING);
-DPLEntity IdNum = DPLMeta::getToken(Id, "Num", DPL_TOKEN_VAL_INT);
+DPLEntity IdName = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "Name", Id);
+DPLEntity IdNum = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "Num", Id);
 
-DPLEntity Position = DPLMeta::getType(TestUnit, "Position");
+DPLEntity Position = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Position", TestUnit);
 
-DPLEntity Shape = DPLMeta::getType(TestUnit, "Shape");
+DPLEntity Shape = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Shape", TestUnit);
 
-DPLEntity ShapeDirection = DPLMeta::getToken(Shape, "Direction", DPL_TOKEN_REF_SINGLE);
+DPLEntity ShapeDirection = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Direction", Shape);
 
-DPLEntity ShapePath = DPLMeta::getToken(Shape, "Path", DPL_TOKEN_REF_ARR);
+DPLEntity ShapePath = DPLData::getMetaEntity(DPL_TOKEN_REF_ARR, "Path", Shape);
 
-DPLEntity Moving = DPLMeta::getType(TestUnit, "Moving");
+DPLEntity Moving = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Moving", TestUnit);
 
-DPLEntity MovingVelocity = DPLMeta::getToken(Shape, "Velocity", DPL_TOKEN_REF_SINGLE);
-DPLEntity MovingAcceleration = DPLMeta::getToken(Shape, "Acceleration", DPL_TOKEN_REF_SINGLE);
+DPLEntity MovingVelocity = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Velocity", Moving);
+DPLEntity MovingAcceleration = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Acceleration", Moving);
 }
 
 #endif /*MAPTEST_H_*/

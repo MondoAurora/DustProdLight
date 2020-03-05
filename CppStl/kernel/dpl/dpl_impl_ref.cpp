@@ -7,7 +7,7 @@
  *      Author: Lorand Kedves
  */
 
-#include "dpl_impl.h"
+#include "dpl_impl_data.h"
 
 DustProdLightRef::DustProdLightRef(DPLEntity ptoken, DPLTokenType ptokentype, DPLEntity psource, DPLEntity ptarget,
 		int pkey) :
@@ -185,6 +185,8 @@ void DustProdLightRef::doVisit(DPLVisitor *pVisitor, int key, void *pHint, DPLFi
 		DustProdLightStore::store->getEntity(target)->optVisit(pVisitor, key, pHint);
 		break;
 	case DPL_FILTER_SKIP:
+		break;
+	case DPL_FILTER_:
 		break;
 	}
 }

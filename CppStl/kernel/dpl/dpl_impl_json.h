@@ -9,6 +9,7 @@
 #define DPL_IMPL_JSON_H_
 
 #include "dplujson.h"
+#include "dpl_impl.h"
 
 namespace JsonMeta {
 extern const DPLEntity DPLJsonUnit;

@@ -11,16 +11,16 @@
 #include "dpl_impl_json.h"
 
 
-const DPLEntity JsonMeta::DPLJsonUnit = DPLMeta::getUnit("TempJson");
-const DPLEntity JsonMeta::DPLJsonTemp = DPLMeta::getType(JsonMeta::DPLJsonUnit, "TempJson");
+const DPLEntity JsonMeta::DPLJsonUnit = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "TempJson");
+const DPLEntity JsonMeta::DPLJsonTemp = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "TempJson", JsonMeta::DPLJsonUnit);
 
-const DPLEntity JsonMeta::DPLJsonCtxJson = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "CtxJson", DPL_TOKEN_ACTION);
+const DPLEntity JsonMeta::DPLJsonCtxJson = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "CtxJson", JsonMeta::DPLJsonTemp);
 
-const DPLEntity JsonMeta::DPLJsonMainRep = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "MainRep", DPL_TOKEN_ACTION);
-const DPLEntity JsonMeta::DPLJsonMainSeq = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "MainSeq", DPL_TOKEN_ACTION);
-const DPLEntity JsonMeta::DPLJsonCharSrc = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "CharSrc", DPL_TOKEN_ACTION);
+const DPLEntity JsonMeta::DPLJsonMainRep = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "MainRep", JsonMeta::DPLJsonTemp);
+const DPLEntity JsonMeta::DPLJsonMainSeq = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "MainSeq", JsonMeta::DPLJsonTemp);
+const DPLEntity JsonMeta::DPLJsonCharSrc = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "CharSrc", JsonMeta::DPLJsonTemp);
 
-const DPLEntity JsonMeta::DPLJsonValue = DPLMeta::getToken(JsonMeta::DPLJsonTemp, "JsonValue", DPL_TOKEN_ACTION);
+const DPLEntity JsonMeta::DPLJsonValue = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "JsonValue", JsonMeta::DPLJsonTemp);
 
 using namespace JsonMeta;
 
@@ -80,7 +80,7 @@ int DPLJsonReader::getStartNode() {
 }
 
 DPLJsonLogicProvider *logicProvider = NULL;
-int JSON_LOGIC[] = {DPLJsonCtxJson, DPLJsonCharSrc, DPLJsonValue, DPL_PROCESS_NO_ACTION};
+int JSON_LOGIC[] = {DPLJsonCtxJson, DPLJsonCharSrc, DPLJsonValue, DPL_ENTITY_INVALID};
 
 DPLJsonLogicProvider::~DPLJsonLogicProvider() {
 
@@ -132,12 +132,12 @@ DPLJsonReader jsonReader;
 void DPLJson::init() {
 	if (!logicProvider) {
 		logicProvider = new DPLJsonLogicProvider(JSON_LOGIC);
-		DPLProc::registerLogicProvider(logicProvider);
+		DPLMain::registerLogicProvider(logicProvider);
 
-		DPLProc::registerNarrative(DPLJsonTemp, jsonReader);
-
-		DPLProc::registerCtrlRepeat(DPLJsonTemp, DPLJsonMainRep, DPLJsonMainSeq, 0, INT_MAX, DPL_PROCESS_NO_ACTION);
-		DPLProc::registerCtrlSequence(DPLJsonTemp, DPLJsonMainSeq, DPL_PROCESS_NO_ACTION, DPLJsonCharSrc, DPLJsonValue, DPL_PROCESS_NO_ACTION);
+//		DPLProc::registerNarrative(DPLJsonTemp, jsonReader);
+//
+//		DPLProc::registerCtrlRepeat(DPLJsonTemp, DPLJsonMainRep, DPLJsonMainSeq, 0, INT_MAX, DPL_PROCESS_NO_ACTION);
+//		DPLProc::registerCtrlSequence(DPLJsonTemp, DPLJsonMainSeq, DPL_PROCESS_NO_ACTION, DPLJsonCharSrc, DPLJsonValue, DPL_PROCESS_NO_ACTION);
 	}
 }
 void DPLJson::shutdown() {
@@ -148,5 +148,6 @@ void DPLJson::shutdown() {
 }
 void DPLJson::read(const char* fileName) {
 	init();
-	DPLProc::executeProcess(DPLJsonTemp, fileName);
+
+//	DPLProc::executeProcess(DPLJsonTemp, fileName);
 }

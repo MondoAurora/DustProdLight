@@ -7,13 +7,13 @@
  *      Author: Lorand Kedves
  */
 
-#include "dpl_impl.h"
+#include "dpl_impl_data.h"
 #include "dplujson.h"
 
 using namespace std;
 
 
-void DPLMeta::init() {
+void DPLMain::init() {
 	if ( !DustProdLightStore::store) {
 		DustProdLightStore::store = new DustProdLightStore();
 	}
@@ -22,7 +22,7 @@ void DPLMeta::init() {
 }
 
 
-void DPLMeta::shutdown() {
+void DPLMain::shutdown() {
 	if ( DustProdLightStore::store) {
 		delete DustProdLightStore::store;
 		DustProdLightStore::store = NULL;
