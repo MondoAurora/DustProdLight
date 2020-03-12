@@ -60,15 +60,19 @@ enum DPLTokenType {
 };
 
 enum DPLContext {
-	DPL_CTX_SELF = DPL_TOKEN_, DPL_CTX_CMD, DPL_CTX_MSG, DPL_CTX_APP, DPL_CTX_SYS, DPL_CTX_
+	DPL_CTX_SELF = DPL_TOKEN_, DPL_CTX_COMMAND, DPL_CTX_PARAM, DPL_CTX_AGENT, DPL_CTX_DIALOG, DPL_CTX_
 };
 
 enum DPLChange {
 	DPL_CHG_REF_SET = DPL_CTX_, DPL_CHG_REF_REMOVE, DPL_CHG_REF_CLEAR, DPL_CHG_REF_
 };
 
+enum DPLSignal {
+	DPL_SIGNAL_OVER = DPL_CHG_REF_, DPL_SIGNAL_OUT, DPL_SIGNAL_
+};
+
 enum DPLProcessResult {
-	DPL_PROCESS_REJECT = DPL_CHG_REF_, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT, DPL_PROCESS_RELAY, DPL_PROCESS_
+	DPL_PROCESS_REJECT = DPL_SIGNAL_, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT, DPL_PROCESS_RELAY, DPL_PROCESS_
 };
 
 enum DPLFilterResponse {
@@ -79,91 +83,52 @@ enum DPLFilterResponse {
 
 #define REFKEY_ARR_APPEND -1
 
+#define DPL_ERR_UNSPECIFIED -1
+
 #define DPL_SEP_ID "."
 #define DPL_SEP_STORE ":"
 
 
-class DPLErrInvalidValueType {
-};
-class DPLErrUnkownField {
-};
-class DPLErrOutOfRange {
-};
-class DPLErrIdOutOfRange {
+class DPLError {
+public:
+	const DPLEntity eEvent;
+
+	DPLError(DPLEntity eEvent_) : eEvent(eEvent_) {};
 };
 
-class DPLProcessState {
+class DPLAction {
 public:
-	virtual ~DPLProcessState() {
-	}
-	virtual void* getContext(DPLEntity ctxId) = 0;
-	virtual DPLProcessResult requestRelay(DPLEntity relayId_) = 0;
-};
-
-class DPLProcessAction {
-public:
-	virtual ~DPLProcessAction() {
+	virtual ~DPLAction() {
 	}
 
 	virtual bool dplIsReusable() {
 		return true;
 	}
-	virtual void dplInit(DPLProcessState *pState) {
+	virtual void dplInit() {
 	}
-	virtual void dplRelease(DPLProcessState *pState) {
+	virtual void dplRelease() {
 	}
 
-	virtual DPLProcessResult dplProcess(DPLProcessState *pState) = 0;
+	virtual DPLProcessResult dplProcess() = 0;
 
-	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse, DPLProcessState *pState) {
+	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse) {
 		return DPL_PROCESS_REJECT;
 	}
 };
 
-class DPLProcessDefinition {
+class DPLModule {
 public:
-	virtual ~DPLProcessDefinition() {
+	virtual ~DPLModule() {
 	}
 
-	virtual int getStartNode() = 0;
+	virtual void init() const {}
+	virtual void release() const {}
 
-	virtual void openProcessContext(int ctxId, void* pCtx, const void *pData) {
+	virtual void* createLogic(int logicId) const {
+		return NULL;
 	}
-	virtual void closeProcessContext(int ctxId, void* pCtx) {
+	virtual void releaseLogic(int logicId, void* pLogic) const {
 	}
-};
-
-class DPLLogicProvider {
-	vector<int> providedIDs;
-	map<int, int> idMap;
-
-public:
-	DPLLogicProvider(int *ids_) {
-		int mId;
-
-		for (int idx = 0; DPL_ENTITY_INVALID != (mId = ids_[idx]); ++idx) {
-			idMap[mId] = idx;
-			providedIDs.push_back(mId);
-		}
-	}
-
-	virtual ~DPLLogicProvider() {
-	}
-
-	int getCount() {
-		return providedIDs.size();
-	}
-
-	int getId(int idx) {
-		return providedIDs[idx];
-	}
-
-	int indexOf(int logicId) {
-		return idMap[logicId];
-	}
-
-	virtual void* createLogic(int logicId) = 0;
-	virtual void releaseLogic(int logicId, void* pLogic) = 0;
 };
 
 class DPLVisitor {
@@ -205,20 +170,12 @@ public:
 class DPLMain {
 public:
 	static void init();
-	static void registerLogicProvider(DPLLogicProvider *pLogicFactory);
-	static DPLProcessResult send(DPLEntity target, DPLEntity command, DPLEntity param);
+	static void registerLogicProvider(const DPLModule *pLogicProvider, ...);
 	static void shutdown();
-};
 
-//class DPLMeta {
-//public:
-//// meta initialization
-//	static DPLEntity getUnit(string unitName);
-//	static DPLEntity getType(DPLEntity unit, string typeName);
-//	static DPLEntity getToken(DPLEntity type, string tokenName, DPLTokenType tokenType);
-//
-//	static DPLEntity getToken(string tokenId);
-//};
+	static DPLProcessResult send(DPLEntity target, DPLEntity command, DPLEntity param);
+	static void signal(DPLSignal signal = DPL_SIGNAL_OUT);
+};
 
 class DPLData {
 public:
@@ -255,19 +212,5 @@ public:
 	static bool setRef(DPLEntity entity, DPLEntity token, DPLEntity target, int key);
 };
 
-//class DPLProc {
-//public:
-//	static bool isRunning(DPLProcessResult result) {
-//		return (DPL_PROCESS_ACCEPT == result) || (DPL_PROCESS_RELAY == result);
-//	}
-//	static void registerNarrative(DPLEntity narrative, DPLProcessDefinition &procDef);
-//
-//	static void registerCtrlRepeat(DPLEntity narrative, int nodeId, int what, int minCount, int maxCount, int optSep);
-//	static void registerCtrlSequence(DPLEntity narrative, int nodeId, int optSep, ...);
-//	static void registerCtrlSelection(DPLEntity narrative, int nodeId, int members_...);
-//
-//	static DPLProcessResult executeProcess(DPLEntity narrative, const void *initData);
-//
-//};
 
 #endif /* DPL_H_ */

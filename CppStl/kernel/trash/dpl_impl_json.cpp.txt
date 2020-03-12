@@ -79,75 +79,47 @@ int DPLJsonReader::getStartNode() {
 	return DPLJsonMainRep;
 }
 
-DPLJsonLogicProvider *logicProvider = NULL;
-int JSON_LOGIC[] = {DPLJsonCtxJson, DPLJsonCharSrc, DPLJsonValue, DPL_ENTITY_INVALID};
+DPLJsonLogicProvider* DPLJsonLogicProvider::logicProvider = NULL;
+
+void DPLJsonLogicProvider::init() {
+	if (!logicProvider) {
+		logicProvider = new DPLJsonLogicProvider();
+		DPLMain::registerLogicProvider(logicProvider, DPLJsonCtxJson, DPLJsonCharSrc, DPLJsonValue, DPL_ENTITY_INVALID);
+	}
+}
+
+void DPLJsonLogicProvider::release() {
+	if (!logicProvider) {
+		delete logicProvider;
+		logicProvider = NULL;
+	}
+}
 
 DPLJsonLogicProvider::~DPLJsonLogicProvider() {
 
 }
 
 void* DPLJsonLogicProvider::createLogic(int logicId) {
-	switch (indexOf(logicId)) {
-	case 0:
+	if (DPLJsonCtxJson == logicId) {
 		return new DPLUProcCtxJson();
-	case 1:
+	} else if ( DPLJsonCharSrc == logicId) {
 		return new DPLUActionStreamReader();
-	case 2:
+	}	else if ( DPLJsonValue == logicId ) {
 		return new DPLUActionDump();
-	default:
-		return NULL;
 	}
+
+	return NULL;
 }
 
 void DPLJsonLogicProvider::releaseLogic(int logicId, void* pLogic) {
-	switch (indexOf(logicId)) {
-	case 0:
+	if (DPLJsonCtxJson == logicId) {
 		delete (DPLUProcCtxJson*) pLogic;
-		break;
-	case 1:
+	} else if ( DPLJsonCharSrc == logicId) {
 		delete (DPLUActionStreamReader*) pLogic;
-		break;
-	case 2:
+	}	else if ( DPLJsonValue == logicId ) {
 		delete (DPLUActionDump*) pLogic;
-		break;
-	default:
-		break;
-	}
-}
-
-void DPLJsonReader::openProcessContext(int ctxId, void* pCtx, const void *pData) {
-	switch (logicProvider->indexOf(ctxId)) {
-	case 0: {
-		((DPLUProcCtxJson*)pCtx)->fName = (const char*) pData;
-	}
-		break;
-	default:
-		break;
 	}
 }
 
 DPLJsonReader jsonReader;
 
-
-void DPLJson::init() {
-	if (!logicProvider) {
-		logicProvider = new DPLJsonLogicProvider(JSON_LOGIC);
-		DPLMain::registerLogicProvider(logicProvider);
-
-//		DPLProc::registerNarrative(DPLJsonTemp, jsonReader);
-//
-//		DPLProc::registerCtrlRepeat(DPLJsonTemp, DPLJsonMainRep, DPLJsonMainSeq, 0, INT_MAX, DPL_PROCESS_NO_ACTION);
-//		DPLProc::registerCtrlSequence(DPLJsonTemp, DPLJsonMainSeq, DPL_PROCESS_NO_ACTION, DPLJsonCharSrc, DPLJsonValue, DPL_PROCESS_NO_ACTION);
-	}
-}
-void DPLJson::shutdown() {
-	if (!logicProvider) {
-		delete logicProvider;
-		logicProvider = NULL;
-	}
-}
-void DPLJson::read(const char* fileName) {
-	init();
-
-//	DPLProc::executeProcess(DPLJsonTemp, fileName);
-}

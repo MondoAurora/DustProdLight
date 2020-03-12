@@ -1,7 +1,7 @@
 #ifndef MAPTEST_H_
 #define MAPTEST_H_
 
-#include "dpl/dpl_impl.h"
+#include "dpl/dpl.h"
 
 namespace MapMeta {
 DPLEntity TestUnit = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "Test");

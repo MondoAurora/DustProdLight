@@ -15,10 +15,7 @@
 #include <map>
 #include <set>
 
-#include "dpl.h"
-#include "dpl_impl.h"
-#include "dplutils.h"
-//#include "dplujson.h"
+#include "../dpl_impl_meta.h"
 
 using namespace std;
 
@@ -140,6 +137,9 @@ protected:
 	DustProdLightEntity* getEntity(DPLEntity entity);
 
 public:
+	static void init();
+	static void release();
+
 	DustProdLightStore();
 
 	virtual ~DustProdLightStore();

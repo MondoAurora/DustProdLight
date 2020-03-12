@@ -7,7 +7,7 @@
  *      Author: Lorand Kedves
  */
 
-#include "dpl_impl_data.h"
+#include "data.h"
 
 DustProdLightRef::DustProdLightRef(DPLEntity ptoken, DPLTokenType ptokentype, DPLEntity psource, DPLEntity ptarget,
 		int pkey) :

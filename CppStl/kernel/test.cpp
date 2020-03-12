@@ -9,7 +9,9 @@
 
 #include "maptest.h"
 
-#include "dpl/dplujson.h"
+#include "dpl/impl/temp/dplujson.h"
+
+//#include "dpl/impl/dpl_impl_meta.h"
 
 using namespace std;
 
@@ -58,6 +60,12 @@ int test() {
 }
 
 int main() {
+	DPLMain::init();
+
+//	int a = DPL_MBI_TYPE_IDEA_ATTRIBUTE;
+//	int b = DPLImplMeta::TypeAttribute;
+//	int c = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Attribute", DPLImplMeta::UnitIdea);
+
 	DPLEntity e = test();
 
 	DPLUEntityToJSON dumper(cout, true);
@@ -65,7 +73,7 @@ int main() {
 
 	cout << endl << "----" << endl;
 
-	DPLJson::read("test1.json");
+//	DPLJson::read("test1.json");
 
 	cout << endl << "----" << endl;
 

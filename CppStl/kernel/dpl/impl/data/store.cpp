@@ -8,7 +8,7 @@
  */
 #include <iostream>
 
-#include "dpl_impl_data.h"
+#include "data.h"
 
 void DustProdLightStore::createBootEntity(DPLEntity entity, const char* name, DPLEntity primaryType, int owner,
 		int hint) {
@@ -43,6 +43,8 @@ void DustProdLightStore::createBootEntity(DPLEntity entity, const char* name, DP
 	pe->types.insert(primaryType);
 
 	string globalId = getMetaEntityId(pe->tokenType, name, owner);
+	dataGlobal[globalId] = entity;
+
 //	pe->values[DPL_MBI_ATT_ENTITY_GLOBALID].valStr = globalId;
 	pe->values[DPL_MBI_ATT_ENTITY_GLOBALID].set(DPL_TOKEN_VAL_STRING, &globalId);
 
@@ -74,6 +76,7 @@ DustProdLightStore::DustProdLightStore() {
 
 	createBootEntity(DPL_MBI_STORE_SOURCE, "Source", DPL_MBI_TYPE_MODEL_STORE);
 
+	createBootEntity(DPL_MBI_UNIT_TOOLS, "Tools", DPL_MBI_TYPE_MODEL_UNIT);
 	createBootEntity(DPL_MBI_UNIT_MODEL, "Model", DPL_MBI_TYPE_MODEL_UNIT);
 	createBootEntity(DPL_MBI_UNIT_IDEA, "Idea", DPL_MBI_TYPE_MODEL_UNIT);
 	createBootEntity(DPL_MBI_UNIT_NARRATIVE, "Narrative", DPL_MBI_TYPE_MODEL_UNIT);
@@ -87,8 +90,15 @@ DustProdLightStore::DustProdLightStore() {
 	createBootEntity(DPL_MBI_TYPE_IDEA_ATTRIBUTE, "Attribute", DPL_MBI_TYPE_IDEA_TYPE, DPL_MBI_UNIT_IDEA);
 	createBootEntity(DPL_MBI_TYPE_IDEA_REFERENCE, "Reference", DPL_MBI_TYPE_IDEA_TYPE, DPL_MBI_UNIT_IDEA);
 
+	createBootEntity(DPL_MBI_TYPE_TOOLS_CONNECTED, "Connected", DPL_MBI_TYPE_IDEA_TYPE, DPL_MBI_UNIT_TOOLS);
+
 	createBootEntity(DPL_MBI_ATT_ENTITY_GLOBALID, "GlobalId", DPL_MBI_TYPE_IDEA_ATTRIBUTE, DPL_MBI_TYPE_MODEL_ENTITY,
 			DPL_TOKEN_VAL_STRING);
+
+	createBootEntity(DPL_MBI_REF_CONNECTED_OWNER, "Owner", DPL_MBI_TYPE_IDEA_REFERENCE, DPL_MBI_TYPE_TOOLS_CONNECTED,
+			DPL_TOKEN_REF_SINGLE);
+	createBootEntity(DPL_MBI_REF_CONNECTED_EXTENDS, "Extends", DPL_MBI_TYPE_IDEA_REFERENCE, DPL_MBI_TYPE_TOOLS_CONNECTED,
+			DPL_TOKEN_REF_SET);
 
 	cout << "DustProdLightStore - Initialized" << endl;
 }
@@ -154,7 +164,7 @@ DustProdLightEntity *DustProdLightStore::validateGetToken(DPLEntity token, DPLTo
 	DustProdLightEntity *pToken = &dataLocal[token];
 
 	if (pToken->tokenType != tokenType) {
-		throw DPLErrInvalidValueType();
+		throw DPLError(DPL_ERR_UNSPECIFIED);
 	}
 
 	return pToken;
@@ -210,6 +220,18 @@ DustProdLightEntity* DustProdLightStore::getEntity(DPLEntity entity) {
 	return &store->dataLocal[entity];
 }
 
+void DustProdLightStore::init() {
+	if ( !DustProdLightStore::store) {
+		DustProdLightStore::store = new DustProdLightStore();
+	}
+}
+void DustProdLightStore::release() {
+	if ( DustProdLightStore::store) {
+		delete DustProdLightStore::store;
+		DustProdLightStore::store = NULL;
+	}
+}
+
 /******************************************************
  *
  * Implementing DPL functions with DustProdLightStore
@@ -237,7 +259,7 @@ DustProdLightEntity* DustProdLightStore::getEntity(DPLEntity entity) {
 //}
 
 DPLEntity DPLData::getMetaEntity(DPLTokenType tokenType, string name, DPLEntity parent) {
-	DPLMain::init();
+	DustProdLightStore::init();
 
 	return DustProdLightStore::store->getMetaEntity(tokenType, name, parent);
 

@@ -8,8 +8,7 @@
 #ifndef DPL_IMPL_JSON_H_
 #define DPL_IMPL_JSON_H_
 
-#include "dplujson.h"
-#include "dpl_impl.h"
+#include "../dpl_impl.h"
 
 namespace JsonMeta {
 extern const DPLEntity DPLJsonUnit;
@@ -41,23 +40,23 @@ public:
 	int pos;
 };
 
-class DPLUActionDump: public DPLProcessAction {
-public:
-	virtual ~DPLUActionDump() {
-	}
-	virtual DPLProcessResult dplProcess(DPLProcessState *pState);
-};
-
-class DPLUActionStreamReader: public DPLProcessAction {
-	ifstream inStream;
-
-public:
-	virtual ~DPLUActionStreamReader() {
-	}
-//	virtual void dplInit(DPLProcessState *pState);
-	virtual DPLProcessResult dplProcess(DPLProcessState *pState);
-//	virtual void dplRelease(DPLProcessState *pState);
-};
+//class DPLUActionDump: public DPLAction {
+//public:
+//	virtual ~DPLUActionDump() {
+//	}
+//	virtual DPLProcessResult dplProcess(DPLProcessState *pState);
+//};
+//
+//class DPLUActionStreamReader: public DPLAction {
+//	ifstream inStream;
+//
+//public:
+//	virtual ~DPLUActionStreamReader() {
+//	}
+////	virtual void dplInit(DPLProcessState *pState);
+//	virtual DPLProcessResult dplProcess(DPLProcessState *pState);
+////	virtual void dplRelease(DPLProcessState *pState);
+//};
 
 class DPLJsonReader: public DPLProcessDefinition {
 public:
@@ -65,15 +64,20 @@ public:
 
 	virtual int getStartNode();
 
-	virtual void openProcessContext(int ctxId, void* pCtx, const void *pData);
+//	virtual void openProcessContext(int ctxId, void* pCtx, const void *pData);
 };
 
-class DPLJsonLogicProvider: public DPLLogicProvider {
+class DPLJsonLogicProvider: public DPLModule {
+	static DPLJsonLogicProvider *logicProvider;
+
 public:
-	DPLJsonLogicProvider(int *ids_) : DPLLogicProvider(ids_) {}
+	virtual void init();
+
 	virtual ~DPLJsonLogicProvider();
 	virtual void* createLogic(int logicId);
 	virtual void releaseLogic(int logicId, void* pLogic);
+
+	virtual void release();
 };
 
 #endif /* DPL_IMPL_JSON_H_ */

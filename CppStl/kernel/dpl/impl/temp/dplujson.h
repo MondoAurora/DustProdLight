@@ -13,7 +13,7 @@
 #include <string>
 #include <cstdarg>
 
-#include "dplutils.h"
+#include "../dpl_impl.h"
 
 using namespace std;
 
@@ -99,9 +99,7 @@ public:
 };
 
 namespace DPLJson {
-	void init();
 	void shutdown();
-
 	void read(const char* fileName);
 }
 
