@@ -13,40 +13,24 @@
 #include "../dpl.h"
 #include "../dplutils.h"
 
+#include "data/data.h"
+
+#include "dpl_impl_boot.h"
+
 using namespace std;
 
-enum MontruBootItem {
-//	DPL_MBI_INVALID,
-
-	DPL_MBI_STORE_SOURCE = DPL_LAST_CONST,
-
-	DPL_MBI_UNIT_TOOLS,
-
-	DPL_MBI_UNIT_MODEL,
-	DPL_MBI_UNIT_IDEA,
-	DPL_MBI_UNIT_NARRATIVE,
-	DPL_MBI_UNIT_DIALOG,
-
-	DPL_MBI_TYPE_MODEL_STORE,
-	DPL_MBI_TYPE_MODEL_UNIT,
-	DPL_MBI_TYPE_MODEL_ENTITY,
-
-	DPL_MBI_TYPE_IDEA_TYPE,
-	DPL_MBI_TYPE_IDEA_ATTRIBUTE,
-	DPL_MBI_TYPE_IDEA_REFERENCE,
-
-	DPL_MBI_TYPE_TOOLS_CONNECTED,
-
-	DPL_MBI_ATT_ENTITY_GLOBALID,
-	DPL_MBI_REF_CONNECTED_OWNER,
-	DPL_MBI_REF_CONNECTED_EXTENDS,
-
-	DPL_MBI_, // end of list, USED in init cycle!
-};
-
-class DustProdLightContext {
+class DustProdLightImplementation {
 public:
-	static DPLEntity optResolveContext(DPLEntity entity);
+	static void createBootEntities();
+
+	static DustProdLightEntity* resolveEntity(DPLEntity entity);
+	static string getMetaEntityId(DPLTokenType tokenType, const char* name, DPLEntity parent);
+	static void initMetaEntity(DPLEntity entity, DPLTokenType tokenType, const char* name, DPLEntity parent = 0);
+
+	static DustProdLightEntity* cloneEntity(DustProdLightEntity* entity);
+	static void initMetaEntity(DustProdLightEntity *pEntity, DPLEntity entity, DPLTokenType tokenType, const char* name, DPLEntity parent);
+	static string getString(DustProdLightEntity *pEntity, DPLEntity token);
+	static void setString(DustProdLightEntity *pEntity, DPLEntity token, const char* name);
 };
 
 #endif /* DPL_IMPL_H_ */

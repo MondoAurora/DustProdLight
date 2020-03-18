@@ -40,6 +40,7 @@ public:
 
 	friend DustProdLightStore;
 	friend DPLData;
+	friend class DustProdLightImplementation;
 };
 
 class DustProdLightEntity {
@@ -60,6 +61,7 @@ class DustProdLightEntity {
 	friend DustProdLightStore;
 	friend DustProdLightRef;
 	friend DPLData;
+	friend class DustProdLightImplementation;
 
 
 public:
@@ -144,11 +146,11 @@ public:
 
 	virtual ~DustProdLightStore();
 
-	friend DustProdLightRef;
-	friend DustProdLightEntity;
-	friend DPLMain;
-	friend DPLData;
-	friend DPLUtils;
+	friend class DustProdLightRef;
+	friend class DustProdLightEntity;
+	friend class DPLMain;
+	friend class DPLData;
+	friend class DPLUtils;
 };
 
 #endif /* DPL_IMPL_DATA_H_ */

@@ -17,10 +17,12 @@
 #include <array>
 
 #include "../dpl_impl_meta.h"
+#include "../dpl_impl.h"
 
 using namespace std;
 
 class DustProdLightDialog;
+class DustProdLightAgent;
 
 class DPLUActionDump: public DPLAction {
 public:
@@ -31,66 +33,171 @@ public:
 
 class DPLUActionStreamReader: public DPLAction {
 	ifstream inStream;
+	int pos;
 
 public:
 	virtual ~DPLUActionStreamReader() {
 	}
 	virtual DPLProcessResult dplProcess();
+	virtual void dplRelease();
 };
 
 
-class ProcActionBase : public DPLAction {
-
+class ProcActionSignal : public DPLAction {
+public:
+	virtual ~ProcActionSignal() {
+	}
+	virtual DPLProcessResult dplProcess();
 };
 
-class ProcActionSequence : public ProcActionBase {
+
+class ProcActionControl : public DPLAction {
+public:
+	virtual ~ProcActionControl() {
+	}
+};
+
+class ProcActionSequence : public ProcActionControl {
 	unsigned int pos = 0;
 	bool inSep = false;
+
+public:
+	virtual ~ProcActionSequence() {
+	}
+	virtual DPLProcessResult dplProcess();
+	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
 };
 
-class ProcActionSelect : public ProcActionBase {
+class ProcActionSelect : public ProcActionControl {
 	unsigned int pos = 0;
+
+public:
+	virtual ~ProcActionSelect() {
+	}
+	virtual DPLProcessResult dplProcess();
+	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
 };
 
-class ProcActionRepeat : public ProcActionBase {
+class ProcActionRepeat : public ProcActionControl {
 	unsigned int pos = 0;
 	bool inSep = false;
+	int min = 0;
+	int max = INT_MAX;
+	int count = 0;
+
+public:
+	virtual ~ProcActionRepeat() {
+	}
+	virtual DPLProcessResult dplProcess();
+	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
 };
 
-class DustProdLightAgent {
+typedef map<int, DustProdLightEntity*>::iterator EntityPtrIterator;
+typedef map<int, DustProdLightEntity>::iterator EntityIterator;
+
+class DustProdLightProcess {
+	DustProdLightProcess *pParent;
+	map<int, DustProdLightEntity> emapHeap;
+
+public:
+	DustProdLightProcess(DustProdLightProcess *pParent_) : pParent(pParent_){}
+	~DustProdLightProcess(){}
+
+	friend class DPLData;
+	friend class DPLMain;
+	friend class DustProdLightImplementation;
+};
+
+class DustProdLightThread {
+	DustProdLightProcess *pProcess;
+
+	DustProdLightAgent* pAgent = NULL;
+	volatile bool requestSuspend = false;
+	DPLProcessResult result = DPL_PROCESS_ACCEPT;
+
+public:
+	DustProdLightThread(DustProdLightProcess *pProcess_) : pProcess(pProcess_) {}
+	~DustProdLightThread(){};
+};
+
+class DustProdLightBlock {
+private:
+	DPLBlock blockType;
+	map<int, DustProdLightEntity*> emapRef;
+	map<int, DustProdLightEntity> emapLocal;
+
+	DPLAction* pAction;
+
+public:
+	DustProdLightEntity* getEntity(DPLEntity e) {
+		EntityIterator i = emapLocal.find(e);
+		DustProdLightEntity* ret;
+
+		if ( i == emapLocal.end() ) {
+			EntityPtrIterator pi = emapRef.find(e);
+			ret = ( pi == emapRef.end()) ? NULL : pi->second;
+		} else {
+			ret = &i->second;
+		}
+
+		return ret;
+	}
+};
+
+class DustProdLightAgent : public DPLAction {
 	DustProdLightDialog *pDialog;
 
-	stack<DPLEntity*> stack;
-	map<DPLEntity, map<DPLEntity, DPLAction*>> actionByOwnerAndCommand;
+	stack<DustProdLightBlock*> stack;
 
 	DPLProcessResult result;
 
-	void open(const void* pInitData);
+	void init(DPLEntity eAgentDef, DustProdLightDialog *pDialog_);
 	void step();
 	void stepUp();
 	void finish(bool error);
 
 public:
-	DustProdLightAgent(DustProdLightDialog *pDialog_);
+	DustProdLightAgent();
 	virtual ~DustProdLightAgent();
 
+	virtual DPLProcessResult dplProcess();
 };
 
 
-class DustProdLightDialog {
-	static map<DPLEntity, const DPLModule*> logicFactory;
-
-protected:
-	DustProdLightDialog() {}
-	virtual ~DustProdLightDialog();
+class DustProdLightDialog : public DPLAction {
+	map<DPLEntity, DustProdLightAgent*> agents;
+	DustProdLightAgent* pActiveAgent;
 
 public:
-	DPLProcessResult executeProcess();
+	DustProdLightDialog();
+	virtual ~DustProdLightDialog();
+
+	virtual DPLProcessResult dplProcess();
 
 	friend class DPLMain;
 	friend class DPLProc;
 };
 
+
+class DustProdLightRuntime {
+	static map<DPLEntity, const DPLModule*> logicFactory;
+
+	static DustProdLightProcess *pProcessMain;
+	static DustProdLightThread *pThreadActive;
+
+	static int nextEntityId;
+	static map<string, int> dataGlobal;
+
+public:
+	static void init();
+	static void release();
+
+	static DustProdLightEntity *resolveEntity(DPLEntity e);
+
+	friend class DPLData;
+	friend class DPLMain;
+	friend class DustProdLightImplementation;
+};
 
 
 

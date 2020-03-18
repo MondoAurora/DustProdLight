@@ -9,8 +9,9 @@
 #include <iostream>
 
 #include "data.h"
+#include "../dpl_impl.h"
 
-void DustProdLightStore::createBootEntity(DPLEntity entity, const char* name, DPLEntity primaryType, int owner,
+void DustProdLightStore::createBootEntity(DPLEntity entity, const char* name, DPLEntity primaryType, DPLEntity owner,
 		int hint) {
 	DustProdLightEntity *pe = &dataLocal[entity];
 
@@ -238,39 +239,6 @@ void DustProdLightStore::release() {
  *
  ******************************************************/
 
-//
-//DPLEntity DPLMeta::getUnit(string unitName) {
-//	init();
-//
-//	return DustProdLightStore::store->getMetaEntity(DPL_TOKEN_UNIT, unitName, 0);
-//}
-//
-//DPLEntity DPLMeta::getType(DPLEntity unit, string typeName) {
-//	return DustProdLightStore::store->getMetaEntity(DPL_TOKEN_TYPE, typeName, unit);
-//}
-//
-//DPLEntity DPLMeta::getToken(DPLEntity type, string tokenName, DPLTokenType tokenType) {
-//	return DustProdLightStore::store->getMetaEntity(tokenType, tokenName, type);
-//}
-//
-//DPLEntity DPLMeta::getToken(string tokenId) {
-//	map<string, int>::iterator i = DustProdLightStore::store->dataGlobal.find(tokenId);
-//	return (DustProdLightStore::store->dataGlobal.end() == i) ? 0 : i->second;
-//}
-
-DPLEntity DPLData::getMetaEntity(DPLTokenType tokenType, string name, DPLEntity parent) {
-	DustProdLightStore::init();
-
-	return DustProdLightStore::store->getMetaEntity(tokenType, name, parent);
-
-}
-
-DPLEntity DPLData::getEntityById(string globalId) {
-	map<string, int>::iterator i = DustProdLightStore::store->dataGlobal.find(globalId);
-	return (DustProdLightStore::store->dataGlobal.end() == i) ? 0 : i->second;
-
-}
-
 void DPLData::setBool(DPLEntity entity, DPLEntity token, bool b) {
 	DustProdLightStore::store->setValue(entity, token, DPL_TOKEN_VAL_BOOL, &b);
 }
@@ -311,7 +279,7 @@ bool DPLData::setRef(DPLEntity entity, DPLEntity token, DPLEntity target, int ke
 	return DustProdLightStore::store->chgRef(DPL_CHG_REF_SET, entity, token, target, key);
 }
 
-int DPLData::getRefCount(DPLEntity entity, DPLEntity token) {
+unsigned int DPLData::getRefCount(DPLEntity entity, DPLEntity token) {
 	DustProdLightRef *pR = DustProdLightStore::store->getRef(entity, token);
 	return pR ? pR->getCount() : 0;
 }
@@ -327,7 +295,8 @@ DPLEntity DPLData::getRefKey(DPLEntity entity, DPLEntity token, int idx) {
 }
 
 DPLEntity DPLData::getEntityByPath(DPLContext ctx, ...) {
-	DPLEntity e = DustProdLightContext::optResolveContext(ctx);
+	DPLEntity e = ctx;
+//	DPLEntity e = DustProdLightImplementation::optResolveContext(ctx);
 
 	DustProdLightRef *pR = NULL;
 

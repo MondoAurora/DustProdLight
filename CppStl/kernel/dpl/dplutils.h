@@ -22,6 +22,9 @@ enum DPLUtilsIndent {
 	DPL_INDENT_KEEP, DPL_INDENT_INC, DPL_INDENT_DEC,
 };
 
+#define mapContains(m, k) (m.find( k ) != m.end())
+#define mapOptGet(m, k) ((m.find( k ) != m.end()) ? m[k] : NULL)
+#define mapOptGetDef(m, k, d) ((m.find( k ) != m.end()) ? m[k] : d)
 
 class DPLUtils {
 public:

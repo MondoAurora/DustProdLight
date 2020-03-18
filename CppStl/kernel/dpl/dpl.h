@@ -63,8 +63,12 @@ enum DPLContext {
 	DPL_CTX_SELF = DPL_TOKEN_, DPL_CTX_COMMAND, DPL_CTX_PARAM, DPL_CTX_AGENT, DPL_CTX_DIALOG, DPL_CTX_
 };
 
+enum DPLBlock {
+	DPL_BLOCK_INTERNAL = DPL_CTX_, DPL_BLOCK_EXTERNAL, DPL_BLOCK_TRANSACTION, DPL_BLOCK_
+};
+
 enum DPLChange {
-	DPL_CHG_REF_SET = DPL_CTX_, DPL_CHG_REF_REMOVE, DPL_CHG_REF_CLEAR, DPL_CHG_REF_
+	DPL_CHG_REF_SET = DPL_BLOCK_, DPL_CHG_REF_REMOVE, DPL_CHG_REF_CLEAR, DPL_CHG_REF_
 };
 
 enum DPLSignal {
@@ -180,8 +184,8 @@ public:
 class DPLData {
 public:
 // meta access
-	static DPLEntity getMetaEntity(DPLTokenType tokenType, string name, DPLEntity parent = DPL_ENTITY_INVALID);
-	static DPLEntity getEntityById(string globalId);
+	static DPLEntity getMetaEntity(DPLTokenType tokenType, const char* name, DPLEntity parent = DPL_ENTITY_INVALID);
+	static DPLEntity getEntityById(const char* globalId);
 
 // meta detection on Entity
 	static DPLEntity getPrimaryType(DPLEntity entity);
@@ -205,7 +209,7 @@ public:
 	static void setString(DPLEntity entity, DPLEntity token, string val);
 
 // Entity reference access
-	static int getRefCount(DPLEntity entity, DPLEntity token);
+	static unsigned int getRefCount(DPLEntity entity, DPLEntity token);
 	static DPLEntity getRefKey(DPLEntity entity, DPLEntity token, int idx);
 	static DPLEntity getRef(DPLEntity entity, DPLEntity token, int key);
 
