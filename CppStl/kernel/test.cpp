@@ -11,7 +11,7 @@
 
 #include "dpl/impl/temp/dplujson.h"
 
-//#include "dpl/impl/dpl_impl_meta.h"
+//#include "dpl/impl/dpl_meta.h"
 
 using namespace std;
 
@@ -60,24 +60,32 @@ int test() {
 }
 
 int main() {
+	cout << endl << "-- init --" << endl;
+
 	DPLMain::init();
 
 //	int a = DPL_MBI_TYPE_IDEA_ATTRIBUTE;
 //	int b = DPLImplMeta::TypeAttribute;
 //	int c = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Attribute", DPLImplMeta::UnitIdea);
 
+	cout << endl << "-- test --" << endl;
+
 	DPLEntity e = test();
+
+	cout << endl << "-- dump --" << endl;
 
 	DPLUEntityToJSON dumper(cout, true);
 	DPLData::visit(e, &dumper, NULL);
 
-	cout << endl << "----" << endl;
+	cout << endl << "-- json --" << endl;
 
 //	DPLJson::read("test1.json");
 
-	cout << endl << "----" << endl;
+	cout << endl << "-- shutdown --" << endl;
 
 	DPLMain::shutdown();
+
+	cout << endl << "-- exit --" << endl;
 
 	return 0;
 }

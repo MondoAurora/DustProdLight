@@ -15,9 +15,11 @@
 #include <set>
 #include <vector>
 #include <array>
+#include <fstream>
 
-#include "../dpl_impl_meta.h"
-#include "../dpl_impl.h"
+#include "dpl_boot.h"
+#include "dpl_meta.h"
+#include "dpl_data.h"
 
 using namespace std;
 
@@ -106,6 +108,7 @@ public:
 	friend class DPLData;
 	friend class DPLMain;
 	friend class DustProdLightImplementation;
+	friend class DustProdLightRuntime;
 };
 
 class DustProdLightThread {
@@ -180,23 +183,40 @@ public:
 
 
 class DustProdLightRuntime {
-	static map<DPLEntity, const DPLModule*> logicFactory;
+	static DustProdLightRuntime *pRuntime;
 
-	static DustProdLightProcess *pProcessMain;
-	static DustProdLightThread *pThreadActive;
+	map<DPLEntity, const DPLModule*> logicFactory;
 
-	static int nextEntityId;
-	static map<string, int> dataGlobal;
+	DustProdLightProcess *pProcessMain;
+	DustProdLightThread *pThreadActive;
+
+	int nextEntityId;
+	map<string, int> dataGlobal;
+
+	DustProdLightRuntime();
+	~DustProdLightRuntime();
 
 public:
 	static void init();
 	static void release();
 
-	static DustProdLightEntity *resolveEntity(DPLEntity e);
+	DustProdLightEntity *resolveEntity(DPLEntity e);
+
+	static string getMetaEntityId(DPLTokenType tokenType, string name, DPLEntity parent);
+	static void initMetaEntity(DPLEntity entity, DPLTokenType tokenType, string name, DPLEntity parent = DPL_ENTITY_INVALID);
+
+	void validateToken(DPLEntity token, DPLTokenType tokenType);
+	DustProdLightValue* getValue(DPLEntity entity, DPLTokenType tokenType, DPLEntity token);
+	void setValue(DPLEntity entity, DPLEntity token, DPLTokenType tokenType, void* pVal);
+
+	bool chgRef(DPLChange chg, DPLEntity entity, DPLEntity token, DPLEntity target, int key);
+	DustProdLightRef* getRef(DPLEntity entity, DPLEntity token);
+	DustProdLightEntity *createEntity(DPLEntity primaryType);
 
 	friend class DPLData;
 	friend class DPLMain;
-	friend class DustProdLightImplementation;
+	friend class DustProdLightEntity;
+	friend class DustProdLightRef;
 };
 
 

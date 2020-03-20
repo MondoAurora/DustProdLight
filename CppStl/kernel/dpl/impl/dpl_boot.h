@@ -1,5 +1,5 @@
 #ifndef DPL_IMPL_BOOT_H_
-#define DPL_IMPL_H_
+#define DPL_IMPL_BOOT_H_
 
 #include "../dpl.h"
 
@@ -29,6 +29,5 @@ enum MontruBootItem {
 
 	DPL_MBI_, // end of list, USED in init cycle!
 };
-
 
 #endif /* DPL_IMPL_BOOT_H_ */

@@ -1,10 +1,11 @@
 #include <vector>
 
 #include <iostream>
-#include "proc.h"
+#include "dpl_meta.h"
+#include "dpl_proc.h"
 
 using namespace std;
-using namespace DPLImplMeta;
+using namespace DPLMetaDPLMain;
 
 
 DPLProcessResult DPLUActionStreamReader::dplProcess() {

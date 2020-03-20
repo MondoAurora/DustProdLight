@@ -7,8 +7,8 @@
  *      Author: Lorand Kedves
  */
 
-#include "data.h"
-#include "../dpl_impl.h"
+#include "dpl_data.h"
+#include "dpl_proc.h"
 
 void DustProdLightEntity::updated() {
 	changed = true;
@@ -63,45 +63,48 @@ void* DustProdLightEntity::optVisit(DPLVisitor *pVisitor, int key, void *pHint) 
 	return pRet;
 }
 
-string DustProdLightImplementation::getString(DustProdLightEntity *pEntity, DPLEntity token) {
-	return pEntity->values[token].valStr;
+string DustProdLightEntity::getString(DPLEntity token) {
+	return values[token].valStr;
 }
 
-void DustProdLightImplementation::initMetaEntity(DustProdLightEntity *pEntity, DPLEntity entity, DPLTokenType tokenType, const char* id,
+void DustProdLightEntity::initMetaEntity(DPLEntity entity, DPLTokenType tokenType_, string name,
 		DPLEntity parent) {
-	pEntity->localId = entity;
-	pEntity->tokenType = tokenType;
+	localId = entity;
+	tokenType = tokenType_;
 
 	switch (tokenType) {
 	case DPL_ENTITY_INVALID:
-		pEntity->primaryType = DPL_ENTITY_INVALID;
+		primaryType = DPL_ENTITY_INVALID;
 		break;
 	case DPL_TOKEN_STORE:
-		pEntity->primaryType = DPL_MBI_TYPE_MODEL_STORE;
+		primaryType = DPL_MBI_TYPE_MODEL_STORE;
 		break;
 	case DPL_TOKEN_UNIT:
-		pEntity->primaryType = DPL_MBI_TYPE_MODEL_UNIT;
+		primaryType = DPL_MBI_TYPE_MODEL_UNIT;
 		break;
 	case DPL_TOKEN_TYPE:
-		pEntity->primaryType = DPL_MBI_TYPE_IDEA_TYPE;
+		primaryType = DPL_MBI_TYPE_IDEA_TYPE;
 		break;
 	case DPL_TOKEN_VAL_BOOL:
 	case DPL_TOKEN_VAL_DOUBLE:
 	case DPL_TOKEN_VAL_INT:
 	case DPL_TOKEN_VAL_STRING:
-		pEntity->primaryType = DPL_MBI_TYPE_IDEA_ATTRIBUTE;
+		primaryType = DPL_MBI_TYPE_IDEA_ATTRIBUTE;
 		break;
 	case DPL_TOKEN_REF_SINGLE:
 	case DPL_TOKEN_REF_SET:
 	case DPL_TOKEN_REF_ARR:
 	case DPL_TOKEN_REF_MAP:
-		pEntity->primaryType = DPL_MBI_TYPE_IDEA_REFERENCE;
+		primaryType = DPL_MBI_TYPE_IDEA_REFERENCE;
 		break;
 	default:
-		pEntity->primaryType = DPL_ENTITY_INVALID;
+		primaryType = DPL_ENTITY_INVALID;
 		break;
 	}
 
-	pEntity->types.insert(pEntity->primaryType);
-	pEntity->values[DPL_MBI_ATT_ENTITY_GLOBALID].set(DPL_TOKEN_VAL_STRING, &id);
+	types.insert(primaryType);
+	string id = DustProdLightRuntime::getMetaEntityId(tokenType, name, parent);
+	values[DPL_MBI_ATT_ENTITY_GLOBALID].set(DPL_TOKEN_VAL_STRING, &id);
+
+	DustProdLightRuntime::pRuntime->dataGlobal[id] = entity;
 }

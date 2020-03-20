@@ -4,33 +4,33 @@
 #include "dpl/dpl.h"
 
 namespace MapMeta {
-DPLEntity TestUnit = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "Test");
-DPLEntity Test = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Test", TestUnit);
+extern const DPLEntity TestUnit;
+extern const DPLEntity Test;
 
-DPLEntity TestOdd = DPLData::getMetaEntity(DPL_TOKEN_VAL_BOOL, "Odd", Test);
+extern const DPLEntity TestOdd;
 
-DPLEntity Vector = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Vector", TestUnit);
+extern const DPLEntity Vector;
 
-DPLEntity VectorX = DPLData::getMetaEntity(DPL_TOKEN_VAL_DOUBLE, "X", Vector);
-DPLEntity VectorY = DPLData::getMetaEntity(DPL_TOKEN_VAL_DOUBLE, "Y", Vector);
+extern const DPLEntity VectorX;
+extern const DPLEntity VectorY;
 
-DPLEntity Id = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Identified", TestUnit);
+extern const DPLEntity Id;
 
-DPLEntity IdName = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "Name", Id);
-DPLEntity IdNum = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "Num", Id);
+extern const DPLEntity IdName;
+extern const DPLEntity IdNum;
 
-DPLEntity Position = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Position", TestUnit);
+extern const DPLEntity Position;
 
-DPLEntity Shape = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Shape", TestUnit);
+extern const DPLEntity Shape;
 
-DPLEntity ShapeDirection = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Direction", Shape);
+extern const DPLEntity ShapeDirection;
 
-DPLEntity ShapePath = DPLData::getMetaEntity(DPL_TOKEN_REF_ARR, "Path", Shape);
+extern const DPLEntity ShapePath;
 
-DPLEntity Moving = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Moving", TestUnit);
+extern const DPLEntity Moving;
 
-DPLEntity MovingVelocity = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Velocity", Moving);
-DPLEntity MovingAcceleration = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Acceleration", Moving);
+extern const DPLEntity MovingVelocity;
+extern const DPLEntity MovingAcceleration;
 }
 
 #endif /*MAPTEST_H_*/

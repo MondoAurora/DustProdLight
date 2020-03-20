@@ -174,6 +174,7 @@ public:
 class DPLMain {
 public:
 	static void init();
+	static void createBootEntities();
 	static void registerLogicProvider(const DPLModule *pLogicProvider, ...);
 	static void shutdown();
 
@@ -184,8 +185,8 @@ public:
 class DPLData {
 public:
 // meta access
-	static DPLEntity getMetaEntity(DPLTokenType tokenType, const char* name, DPLEntity parent = DPL_ENTITY_INVALID);
-	static DPLEntity getEntityById(const char* globalId);
+	static DPLEntity getMetaEntity(DPLTokenType tokenType, string name, DPLEntity parent = DPL_ENTITY_INVALID);
+	static DPLEntity getEntityById(string globalId);
 
 // meta detection on Entity
 	static DPLEntity getPrimaryType(DPLEntity entity);

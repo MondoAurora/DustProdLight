@@ -1,8 +1,7 @@
-#include "../dpl_impl_meta.h"
-#include "module.h"
-#include "proc.h"
+#include "dpl_module.h"
+#include "dpl_proc.h"
 
-using namespace DPLImplMeta;
+using namespace DPLMetaDPLMain;
 
 class DustProdLightProcModule: public DPLModule {
 public:
@@ -59,6 +58,8 @@ public:
 	}
 
 	virtual void init() const {
+		DustProdLightRuntime::init();
+
 		DPLMain::registerLogicProvider(this,
 				ActionSequence, ActionSelect, ActionRepeat, ActionSignal,
 				ActionAgent, ActionDialog,
@@ -66,9 +67,9 @@ public:
 				DPL_ENTITY_INVALID);
 	}
 	virtual void release() const {
-
+		DustProdLightRuntime::release();
 	}
 };
 
-const DPLModule* DPLModuleProc = new DustProdLightProcModule();
+const DPLModule* DPLModuleDPLMain = new DustProdLightProcModule();
 

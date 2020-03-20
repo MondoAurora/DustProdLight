@@ -14,7 +14,7 @@
 
 #include "../dpl.h"
 
-namespace DPLImplMeta {
+namespace DPLMetaDPLMain {
 extern const DPLEntity UnitModel;
 
 extern const DPLEntity TypeStore;
@@ -68,13 +68,11 @@ extern const DPLEntity AttStreamOK;
 extern const DPLEntity ActionReadStream;
 extern const DPLEntity ActionDumpChar;
 
-
 extern const DPLEntity UnitText;
 
 extern const DPLEntity TypeCharacter;
 extern const DPLEntity AttCharacterChar;
 
 }
-
 
 #endif /* DPL_IMPL_META_H_ */

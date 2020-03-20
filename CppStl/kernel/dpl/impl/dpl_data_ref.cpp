@@ -7,7 +7,8 @@
  *      Author: Lorand Kedves
  */
 
-#include "data.h"
+#include "dpl_data.h"
+#include "dpl_proc.h"
 
 DustProdLightRef::DustProdLightRef(DPLEntity ptoken, DPLTokenType ptokentype, DPLEntity psource, DPLEntity ptarget,
 		int pkey) :
@@ -15,8 +16,6 @@ DustProdLightRef::DustProdLightRef(DPLEntity ptoken, DPLTokenType ptokentype, DP
 	if (DPL_TOKEN_REF_MAP == tokenType) {
 		mapKey = pkey;
 	}
-
-	DustProdLightStore::store->refs.insert(this);
 }
 
 DustProdLightRef::DustProdLightRef(DustProdLightEntity* ptoken, DPLEntity psource, DPLEntity ptarget, int pkey) :
@@ -33,7 +32,6 @@ DustProdLightRef::~DustProdLightRef() {
 	if (collection) {
 		if (1 == collection->size()) {
 			delete collection;
-			DustProdLightStore::store->dataLocal[source].refs.erase(token);
 		} else {
 			for (RefVectorIterator it = collection->begin(); it != collection->end(); ++it) {
 				DustProdLightRef* pl = *it;
@@ -43,15 +41,14 @@ DustProdLightRef::~DustProdLightRef() {
 				}
 			}
 
-			DustProdLightRef *pEntry = DustProdLightStore::store->dataLocal[source].refs[token];
+			DustProdLightEntity* pE = DustProdLightRuntime::pRuntime->resolveEntity(source);
+			DustProdLightRef *pEntry = pE->refs[token];
 			if (pEntry == this) {
 				pEntry = *collection->begin();
-				DustProdLightStore::store->dataLocal[source].refs[token] = pEntry;
+				pE->refs[token] = pEntry;
 			}
 		}
 	}
-
-	DustProdLightStore::store->refs.erase(this);
 }
 
 void DustProdLightRef::append(DustProdLightRef* pRef, int key) {
@@ -182,7 +179,7 @@ void DustProdLightRef::doVisit(DPLVisitor *pVisitor, int key, void *pHint, DPLFi
 		pVisitor->processEndEntity(target, key, pHint);
 		break;
 	case DPL_FILTER_VISIT:
-		DustProdLightStore::store->getEntity(target)->optVisit(pVisitor, key, pHint);
+		DustProdLightRuntime::pRuntime->resolveEntity(target)->optVisit(pVisitor, key, pHint);
 		break;
 	case DPL_FILTER_SKIP:
 		break;

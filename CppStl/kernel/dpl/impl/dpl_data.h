@@ -15,11 +15,9 @@
 #include <map>
 #include <set>
 
-#include "../dpl_impl_meta.h"
+#include "../dpl.h"
 
-using namespace std;
 
-class DustProdLightStore;
 class DustProdLightRef;
 class DustProdLightEntity;
 class DustProdLightRef;
@@ -38,9 +36,8 @@ public:
 	void set(DPLTokenType tokenType, const void* pVal);
 	void optVisit(DPLVisitor *pVisitor, DPLEntity entity, DPLEntity token, void *pHint);
 
-	friend DustProdLightStore;
 	friend DPLData;
-	friend class DustProdLightImplementation;
+	friend class DustProdLightEntity;
 };
 
 class DustProdLightEntity {
@@ -58,11 +55,12 @@ class DustProdLightEntity {
 	void updated();
 	void optReloadMeta();
 
-	friend DustProdLightStore;
+	void initMetaEntity(DPLEntity entity, DPLTokenType tokenType, string name, DPLEntity parent);
+
 	friend DustProdLightRef;
 	friend DPLData;
 	friend class DustProdLightImplementation;
-
+	friend class DustProdLightRuntime;
 
 public:
 	~DustProdLightEntity();
@@ -71,6 +69,8 @@ public:
 	void getAllTypes(set<DPLEntity>& typeSet);
 
 	void* optVisit(DPLVisitor *pVisitor, int key, void *pHint);
+
+	string getString(DPLEntity token);
 };
 
 typedef vector<DustProdLightRef*>::iterator RefVectorIterator;
@@ -106,51 +106,9 @@ class DustProdLightRef {
 public:
 	~DustProdLightRef();
 
-	friend DustProdLightStore;
 	friend DustProdLightEntity;
 	friend DPLData;
-};
-
-class DustProdLightStore {
-private:
-	static DustProdLightStore* store;
-
-	map<int, DustProdLightEntity> dataLocal;
-	map<string, int> dataGlobal;
-	set<DustProdLightRef*> refs;
-
-	int nextEntityId;
-
-	void createBootEntity(DPLEntity entity, const char* name, DPLEntity primaryType, int owner = 0, int hint = 0);
-
-protected:
-	string getMetaEntityId(DPLTokenType tokenType, string name, DPLEntity parent);
-	DPLEntity getMetaEntity(DPLTokenType tokenType, string name, DPLEntity parent);
-
-	DustProdLightEntity *validateGetToken(DPLEntity token, DPLTokenType tokenType);
-
-	DustProdLightValue *getValue(DPLEntity entity, DPLTokenType tokenType, DPLEntity token);
-	void setValue(DPLEntity entity, DPLEntity token, DPLTokenType tokenType, void* pVal);
-
-	bool chgRef(DPLChange chg, DPLEntity entity, DPLEntity token, DPLEntity target, int key);
-	DustProdLightRef* getRef(DPLEntity, DPLEntity);
-
-	DustProdLightEntity* createEntity(DPLEntity primaryType);
-	DustProdLightEntity* getEntity(DPLEntity entity);
-
-public:
-	static void init();
-	static void release();
-
-	DustProdLightStore();
-
-	virtual ~DustProdLightStore();
-
-	friend class DustProdLightRef;
-	friend class DustProdLightEntity;
-	friend class DPLMain;
-	friend class DPLData;
-	friend class DPLUtils;
+	friend class DustProdLightRuntime;
 };
 
 #endif /* DPL_IMPL_DATA_H_ */

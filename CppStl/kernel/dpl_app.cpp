@@ -7,19 +7,16 @@
  *      Author: Lorand Kedves
  */
 
-#include "dpl/impl/data/module.h"
-#include "dpl/impl/proc/module.h"
+#include "dpl/impl/dpl_module.h"
 
 using namespace std;
 
 
 void DPLMain::init() {
-	DPLModuleData->init();
-	DPLModuleProc->init();
+	DPLModuleDPLMain->init();
 }
 
 void DPLMain::shutdown() {
-	DPLModuleProc->release();
-	DPLModuleData->release();
+	DPLModuleDPLMain->release();
 }
 
