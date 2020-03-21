@@ -14,25 +14,36 @@
 
 #include "../dpl.h"
 
-namespace DPLMetaDPLMain {
+namespace DPLUnitModel {
 extern const DPLEntity UnitModel;
 
 extern const DPLEntity TypeStore;
 extern const DPLEntity TypeUnit;
 extern const DPLEntity TypeEntity;
 extern const DPLEntity AttEntityGlobalId;
+}
 
+namespace DPLUnitIdea {
 extern const DPLEntity UnitIdea;
 
 extern const DPLEntity TypeType;
 extern const DPLEntity TypeAttribute;
 extern const DPLEntity TypeReference;
+}
+
+namespace DPLUnitNarrative {
 
 extern const DPLEntity UnitNarrative;
 
 extern const DPLEntity ActionSequence;
 extern const DPLEntity ActionSelect;
 extern const DPLEntity ActionRepeat;
+
+extern const DPLEntity SvcProcessor;
+extern const DPLEntity CmdProcess;
+}
+
+namespace DPLUnitDialog {
 
 extern const DPLEntity UnitDialog;
 
@@ -42,10 +53,12 @@ extern const DPLEntity AttDialogActiveAgent;
 extern const DPLEntity TypeAgent;
 extern const DPLEntity RefAgentRelay;
 
-extern const DPLEntity ActionDialog;
+extern const DPLEntity ActionDialogTokenRing;
 extern const DPLEntity ActionAgent;
 extern const DPLEntity ActionSignal;
+}
 
+namespace DPLUnitTools {
 extern const DPLEntity UnitTools;
 
 extern const DPLEntity TypeConnected;
@@ -66,13 +79,17 @@ extern const DPLEntity AttStreamPos;
 extern const DPLEntity AttStreamOK;
 
 extern const DPLEntity ActionReadStream;
-extern const DPLEntity ActionDumpChar;
+extern const DPLEntity ActionDump;
+}
 
+namespace DPLUnitText {
 extern const DPLEntity UnitText;
 
 extern const DPLEntity TypeCharacter;
 extern const DPLEntity AttCharacterChar;
 
+extern const DPLEntity TypeTextPlain;
+extern const DPLEntity AttTextString;
 }
 
 #endif /* DPL_IMPL_META_H_ */

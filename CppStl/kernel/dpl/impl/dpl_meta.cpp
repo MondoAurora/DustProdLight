@@ -12,60 +12,65 @@
 
 using namespace std;
 
-const DPLEntity DPLMetaDPLMain::UnitModel = DPL_MBI_UNIT_MODEL;
-const DPLEntity DPLMetaDPLMain::TypeStore = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Store", DPLMetaDPLMain::UnitModel);
-const DPLEntity DPLMetaDPLMain::TypeUnit = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Unit", DPLMetaDPLMain::UnitModel);
+const DPLEntity DPLUnitModel::UnitModel = DPL_MBI_UNIT_MODEL;
+const DPLEntity DPLUnitModel::TypeStore = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Store", DPLUnitModel::UnitModel);
+const DPLEntity DPLUnitModel::TypeUnit = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Unit", DPLUnitModel::UnitModel);
 
-const DPLEntity DPLMetaDPLMain::TypeEntity = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Entity", DPLMetaDPLMain::UnitModel);
-const DPLEntity DPLMetaDPLMain::AttEntityGlobalId = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "GlobalId", DPLMetaDPLMain::TypeEntity);
-
-
-const DPLEntity DPLMetaDPLMain::UnitIdea = DPL_MBI_UNIT_IDEA;
-const DPLEntity DPLMetaDPLMain::TypeType = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Type", DPLMetaDPLMain::UnitIdea);
-const DPLEntity DPLMetaDPLMain::TypeAttribute = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Attribute", DPLMetaDPLMain::UnitIdea);
-const DPLEntity DPLMetaDPLMain::TypeReference = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Reference", DPLMetaDPLMain::UnitIdea);
-
-const DPLEntity DPLMetaDPLMain::UnitNarrative = DPL_MBI_UNIT_NARRATIVE;
-
-const DPLEntity DPLMetaDPLMain::ActionSequence = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Sequence", DPLMetaDPLMain::UnitNarrative);
-const DPLEntity DPLMetaDPLMain::ActionSelect = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Select", DPLMetaDPLMain::UnitNarrative);
-const DPLEntity DPLMetaDPLMain::ActionRepeat = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Repeat", DPLMetaDPLMain::UnitNarrative);
-
-const DPLEntity DPLMetaDPLMain::UnitDialog = DPL_MBI_UNIT_DIALOG;
-
-const DPLEntity DPLMetaDPLMain::ActionDialog = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Dialog", DPLMetaDPLMain::UnitDialog);
-const DPLEntity DPLMetaDPLMain::ActionAgent = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Agent", DPLMetaDPLMain::UnitDialog);
-const DPLEntity DPLMetaDPLMain::ActionSignal = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Signal", DPLMetaDPLMain::UnitDialog);
-
-const DPLEntity DPLMetaDPLMain::UnitTools = DPL_MBI_UNIT_TOOLS;
-
-const DPLEntity DPLMetaDPLMain::TypeConnected = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Connected", DPLMetaDPLMain::UnitTools);
-const DPLEntity DPLMetaDPLMain::RefConnectedOwner = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Owner", DPLMetaDPLMain::TypeConnected);
-const DPLEntity DPLMetaDPLMain::RefConnectedExtends = DPLData::getMetaEntity(DPL_TOKEN_REF_SET, "Extends", DPLMetaDPLMain::TypeConnected);
-
-const DPLEntity DPLMetaDPLMain::TypeDialog = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Dialog", DPLMetaDPLMain::UnitDialog);
-const DPLEntity DPLMetaDPLMain::AttDialogActiveAgent = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "ActiveAgentPos", DPLMetaDPLMain::TypeDialog);
-
-const DPLEntity DPLMetaDPLMain::TypeAgent = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Agent", DPLMetaDPLMain::UnitDialog);
-const DPLEntity DPLMetaDPLMain::RefAgentRelay = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Relay", DPLMetaDPLMain::TypeAgent);
-
-const DPLEntity DPLMetaDPLMain::TypeCollection = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Collection", DPLMetaDPLMain::UnitTools);
-const DPLEntity DPLMetaDPLMain::RefCollectionMembers = DPLData::getMetaEntity(DPL_TOKEN_REF_ARR, "Members", DPLMetaDPLMain::TypeCollection);
-const DPLEntity DPLMetaDPLMain::RefCollectionSeparator = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Separator", DPLMetaDPLMain::TypeCollection);
-
-const DPLEntity DPLMetaDPLMain::TypeLink = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Link", DPLMetaDPLMain::UnitTools);
-const DPLEntity DPLMetaDPLMain::RefLinkSource = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Source", DPLMetaDPLMain::TypeLink);
-const DPLEntity DPLMetaDPLMain::RefLinkTarget = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Target", DPLMetaDPLMain::TypeLink);
+const DPLEntity DPLUnitModel::TypeEntity = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Entity", DPLUnitModel::UnitModel);
+const DPLEntity DPLUnitModel::AttEntityGlobalId = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "GlobalId", DPLUnitModel::TypeEntity);
 
 
-const DPLEntity DPLMetaDPLMain::UnitText = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "Text");
-const DPLEntity DPLMetaDPLMain::TypeCharacter = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Agent", DPLMetaDPLMain::UnitText);
-const DPLEntity DPLMetaDPLMain::AttCharacterChar = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "Char", DPLMetaDPLMain::TypeCharacter);
+const DPLEntity DPLUnitIdea::UnitIdea = DPL_MBI_UNIT_IDEA;
+const DPLEntity DPLUnitIdea::TypeType = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Type", DPLUnitIdea::UnitIdea);
+const DPLEntity DPLUnitIdea::TypeAttribute = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Attribute", DPLUnitIdea::UnitIdea);
+const DPLEntity DPLUnitIdea::TypeReference = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Reference", DPLUnitIdea::UnitIdea);
 
-const DPLEntity DPLMetaDPLMain::TypeStream = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Stream", DPLMetaDPLMain::UnitTools);
-const DPLEntity DPLMetaDPLMain::AttStreamPos = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "Pos", DPLMetaDPLMain::TypeStream);
-const DPLEntity DPLMetaDPLMain::AttStreamOK = DPLData::getMetaEntity(DPL_TOKEN_VAL_BOOL, "StatusOK", DPLMetaDPLMain::TypeStream);
-const DPLEntity DPLMetaDPLMain::AttStreamURL = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "URL", DPLMetaDPLMain::TypeStream);
+const DPLEntity DPLUnitNarrative::UnitNarrative = DPL_MBI_UNIT_NARRATIVE;
 
-const DPLEntity DPLMetaDPLMain::ActionDumpChar = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "DumpChar", DPLMetaDPLMain::UnitTools);
-const DPLEntity DPLMetaDPLMain::ActionReadStream = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "ReadStream", DPLMetaDPLMain::UnitTools);
+const DPLEntity DPLUnitNarrative::ActionSequence = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Sequence", DPLUnitNarrative::UnitNarrative);
+const DPLEntity DPLUnitNarrative::ActionSelect = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Select", DPLUnitNarrative::UnitNarrative);
+const DPLEntity DPLUnitNarrative::ActionRepeat = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Repeat", DPLUnitNarrative::UnitNarrative);
+
+const DPLEntity DPLUnitNarrative::SvcProcessor = DPL_MBI_SVC_PROCESSOR;
+const DPLEntity DPLUnitNarrative::CmdProcess = DPL_MBI_CMD_PROCESS;
+
+const DPLEntity DPLUnitDialog::UnitDialog = DPL_MBI_UNIT_DIALOG;
+
+const DPLEntity DPLUnitDialog::ActionDialogTokenRing = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "DialogTokenRing", DPLUnitDialog::UnitDialog);
+const DPLEntity DPLUnitDialog::ActionAgent = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Agent", DPLUnitDialog::UnitDialog);
+const DPLEntity DPLUnitDialog::ActionSignal = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Signal", DPLUnitDialog::UnitDialog);
+
+const DPLEntity DPLUnitDialog::TypeDialog = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Dialog", DPLUnitDialog::UnitDialog);
+const DPLEntity DPLUnitDialog::AttDialogActiveAgent = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "ActiveAgentPos", DPLUnitDialog::TypeDialog);
+
+const DPLEntity DPLUnitDialog::TypeAgent = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Agent", DPLUnitDialog::UnitDialog);
+const DPLEntity DPLUnitDialog::RefAgentRelay = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Relay", DPLUnitDialog::TypeAgent);
+
+const DPLEntity DPLUnitTools::UnitTools = DPL_MBI_UNIT_TOOLS;
+
+const DPLEntity DPLUnitTools::TypeConnected = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Connected", DPLUnitTools::UnitTools);
+const DPLEntity DPLUnitTools::RefConnectedOwner = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Owner", DPLUnitTools::TypeConnected);
+const DPLEntity DPLUnitTools::RefConnectedExtends = DPLData::getMetaEntity(DPL_TOKEN_REF_SET, "Extends", DPLUnitTools::TypeConnected);
+
+const DPLEntity DPLUnitTools::TypeCollection = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Collection", DPLUnitTools::UnitTools);
+const DPLEntity DPLUnitTools::RefCollectionMembers = DPLData::getMetaEntity(DPL_TOKEN_REF_ARR, "Members", DPLUnitTools::TypeCollection);
+const DPLEntity DPLUnitTools::RefCollectionSeparator = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Separator", DPLUnitTools::TypeCollection);
+
+const DPLEntity DPLUnitTools::TypeLink = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Link", DPLUnitTools::UnitTools);
+const DPLEntity DPLUnitTools::RefLinkSource = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Source", DPLUnitTools::TypeLink);
+const DPLEntity DPLUnitTools::RefLinkTarget = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Target", DPLUnitTools::TypeLink);
+
+
+const DPLEntity DPLUnitText::UnitText = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "Text");
+const DPLEntity DPLUnitText::TypeCharacter = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Character", DPLUnitText::UnitText);
+const DPLEntity DPLUnitText::AttCharacterChar = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "Char", DPLUnitText::TypeCharacter);
+const DPLEntity DPLUnitText::TypeTextPlain = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "TextPlain", DPLUnitText::UnitText);
+const DPLEntity DPLUnitText::AttTextString = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "String", DPLUnitText::TypeTextPlain);
+
+const DPLEntity DPLUnitTools::TypeStream = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Stream", DPLUnitTools::UnitTools);
+const DPLEntity DPLUnitTools::AttStreamPos = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "Pos", DPLUnitTools::TypeStream);
+const DPLEntity DPLUnitTools::AttStreamOK = DPLData::getMetaEntity(DPL_TOKEN_VAL_BOOL, "StatusOK", DPLUnitTools::TypeStream);
+const DPLEntity DPLUnitTools::AttStreamURL = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "URL", DPLUnitTools::TypeStream);
+
+const DPLEntity DPLUnitTools::ActionDump = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "DumpChar", DPLUnitTools::UnitTools);
+const DPLEntity DPLUnitTools::ActionReadStream = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "ReadStream", DPLUnitTools::UnitTools);

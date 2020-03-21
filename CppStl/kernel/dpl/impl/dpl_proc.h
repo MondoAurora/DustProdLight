@@ -23,7 +23,7 @@
 
 using namespace std;
 
-class DustProdLightDialog;
+class DustProdLightDialogTokenRing;
 class DustProdLightAgent;
 
 class DPLUActionDump: public DPLAction {
@@ -81,11 +81,10 @@ public:
 };
 
 class ProcActionRepeat : public ProcActionControl {
-	unsigned int pos = 0;
+	unsigned int count = 0;
 	bool inSep = false;
-	int min = 0;
-	int max = INT_MAX;
-	int count = 0;
+	unsigned int min = 0;
+	unsigned int max = INT_MAX;
 
 public:
 	virtual ~ProcActionRepeat() {
@@ -107,7 +106,6 @@ public:
 
 	friend class DPLData;
 	friend class DPLMain;
-	friend class DustProdLightImplementation;
 	friend class DustProdLightRuntime;
 };
 
@@ -121,6 +119,10 @@ class DustProdLightThread {
 public:
 	DustProdLightThread(DustProdLightProcess *pProcess_) : pProcess(pProcess_) {}
 	~DustProdLightThread(){};
+
+	friend class DPLData;
+	friend class DPLMain;
+	friend class DustProdLightRuntime;
 };
 
 class DustProdLightBlock {
@@ -132,6 +134,11 @@ private:
 	DPLAction* pAction;
 
 public:
+	void release() {
+		emapLocal.clear();
+		emapRef.clear();
+	}
+
 	DustProdLightEntity* getEntity(DPLEntity e) {
 		EntityIterator i = emapLocal.find(e);
 		DustProdLightEntity* ret;
@@ -145,35 +152,44 @@ public:
 
 		return ret;
 	}
+
+	friend class DPLData;
+	friend class DPLMain;
+	friend class DustProdLightRuntime;
+
 };
 
 class DustProdLightAgent : public DPLAction {
-	DustProdLightDialog *pDialog;
+	map<int, DustProdLightEntity> *pHeap = NULL;
 
-	stack<DustProdLightBlock*> stack;
+	map<int, DustProdLightBlock> stack;
+	int stackPos = 0;
 
-	DPLProcessResult result;
+	DPLProcessResult result = DPL_PROCESS_ACCEPT;
 
-	void init(DPLEntity eAgentDef, DustProdLightDialog *pDialog_);
 	void step();
 	void stepUp();
 	void finish(bool error);
 
 public:
-	DustProdLightAgent();
 	virtual ~DustProdLightAgent();
+
+	DustProdLightBlock* init(DPLEntity eAgentStart, map<int, DustProdLightEntity> *pHeap);
+	DustProdLightBlock* getCurrBlock() {
+		return &stack[stackPos];
+	}
 
 	virtual DPLProcessResult dplProcess();
 };
 
 
-class DustProdLightDialog : public DPLAction {
-	map<DPLEntity, DustProdLightAgent*> agents;
-	DustProdLightAgent* pActiveAgent;
+class DustProdLightDialogTokenRing : public DPLAction {
+	vector<DustProdLightAgent*> agents;
+	int currAgent;
 
 public:
-	DustProdLightDialog();
-	virtual ~DustProdLightDialog();
+	DustProdLightDialogTokenRing();
+	virtual ~DustProdLightDialogTokenRing();
 
 	virtual DPLProcessResult dplProcess();
 
@@ -185,7 +201,7 @@ public:
 class DustProdLightRuntime {
 	static DustProdLightRuntime *pRuntime;
 
-	map<DPLEntity, const DPLModule*> logicFactory;
+	map<DPLEntity, DPLModule*> logicFactory;
 
 	DustProdLightProcess *pProcessMain;
 	DustProdLightThread *pThreadActive;

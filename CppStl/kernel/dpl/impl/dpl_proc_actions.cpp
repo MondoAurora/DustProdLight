@@ -5,7 +5,9 @@
 #include "dpl_proc.h"
 
 using namespace std;
-using namespace DPLMetaDPLMain;
+using namespace DPLUnitText;
+using namespace DPLUnitTools;
+using namespace DPLUnitDialog;
 
 
 DPLProcessResult DPLUActionStreamReader::dplProcess() {
@@ -42,12 +44,15 @@ void DPLUActionStreamReader::dplRelease() {
 }
 
 DPLProcessResult DPLUActionDump::dplProcess() {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_DIALOG);
-
-	if (DPLData::getBool(ctx, AttStreamOK, false)) {
-		cout << (char) DPLData::getInt(ctx, AttCharacterChar, 0);
+	if (DPLData::getBool(DPL_CTX_PARAM, AttStreamOK, false)) {
+		cout << (char) DPLData::getInt(DPL_CTX_PARAM, AttCharacterChar, 0);
 		return DPL_PROCESS_SUCCESS;
 	} else {
+		string str = DPLData::getString(DPL_CTX_PARAM, AttTextString, "");
+		if ( str.length() ) {
+			cout << str << endl;
+			return DPL_PROCESS_SUCCESS;
+		}
 		return DPL_PROCESS_REJECT;
 	}
 }

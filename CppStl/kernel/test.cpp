@@ -11,7 +11,7 @@
 
 #include "dpl/impl/temp/dplujson.h"
 
-//#include "dpl/impl/dpl_meta.h"
+#include "dpl/impl/dpl_meta.h"
 
 using namespace std;
 
@@ -59,10 +59,23 @@ int test() {
 	return e;
 }
 
+int testProc() {
+	DPLEntity eParam = DPLData::createEntity(DPLUnitText::TypeTextPlain);
+	DPLData::setString(eParam, DPLUnitText::AttTextString, "Hello world!");
+
+	DPLEntity eProc = DPLData::createEntity(DPLUnitTools::ActionDump);
+
+	return DPLMain::process(eProc, DPLUnitNarrative::CmdProcess, eParam);
+}
+
 int main() {
 	cout << endl << "-- init --" << endl;
 
 	DPLMain::init();
+
+	cout << endl << "-- testProc --" << endl;
+
+	testProc();
 
 //	int a = DPL_MBI_TYPE_IDEA_ATTRIBUTE;
 //	int b = DPLImplMeta::TypeAttribute;

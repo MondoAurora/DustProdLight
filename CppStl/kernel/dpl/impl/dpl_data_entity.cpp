@@ -97,7 +97,19 @@ void DustProdLightEntity::initMetaEntity(DPLEntity entity, DPLTokenType tokenTyp
 	case DPL_TOKEN_REF_MAP:
 		primaryType = DPL_MBI_TYPE_IDEA_REFERENCE;
 		break;
-	default:
+	case DPL_TOKEN_ACTION:
+		primaryType = DPL_MBI_TYPE_NARRATIVE_ACTION;
+		break;
+	case DPL_TOKEN_SERVICE:
+		primaryType = DPL_MBI_TYPE_IDEA_SERVICE;
+		break;
+	case DPL_TOKEN_COMMAND:
+		primaryType = DPL_MBI_TYPE_IDEA_COMMAND;
+		break;
+	case DPL_TOKEN_ENTITY:
+		primaryType = DPL_ENTITY_INVALID;
+		break;
+	case DPL_TOKEN_:
 		primaryType = DPL_ENTITY_INVALID;
 		break;
 	}

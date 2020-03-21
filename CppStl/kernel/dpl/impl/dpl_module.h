@@ -4,7 +4,7 @@
 #include "../dpl.h"
 
 
-extern const DPLModule* DPLModuleDPLMain;
+extern DPLModule* DPLModuleDPLMain;
 
 
 #endif /* DPL_IMPL_PROC_MODULE_H_ */

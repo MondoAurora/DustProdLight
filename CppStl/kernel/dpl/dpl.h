@@ -41,7 +41,6 @@ enum DPLTokenType {
 	DPL_TOKEN_STORE,
 	DPL_TOKEN_UNIT,
 
-	DPL_TOKEN_NARRATIVE,
 	DPL_TOKEN_ACTION,
 
 	DPL_TOKEN_TYPE,
@@ -55,6 +54,9 @@ enum DPLTokenType {
 	DPL_TOKEN_REF_SET,
 	DPL_TOKEN_REF_ARR,
 	DPL_TOKEN_REF_MAP,
+
+	DPL_TOKEN_SERVICE,
+	DPL_TOKEN_COMMAND,
 
 	DPL_TOKEN_
 };
@@ -125,13 +127,13 @@ public:
 	virtual ~DPLModule() {
 	}
 
-	virtual void init() const {}
-	virtual void release() const {}
+	virtual void init() {}
+	virtual void release() {}
 
-	virtual void* createLogic(int logicId) const {
+	virtual DPLAction* createLogic(int logicId) const {
 		return NULL;
 	}
-	virtual void releaseLogic(int logicId, void* pLogic) const {
+	virtual void releaseLogic(int logicId, DPLAction* pLogic) const {
 	}
 };
 
@@ -175,10 +177,10 @@ class DPLMain {
 public:
 	static void init();
 	static void createBootEntities();
-	static void registerLogicProvider(const DPLModule *pLogicProvider, ...);
+	static void registerLogicProvider(DPLModule *pLogicProvider, ...);
 	static void shutdown();
 
-	static DPLProcessResult send(DPLEntity target, DPLEntity command, DPLEntity param);
+	static DPLProcessResult process(DPLEntity target, DPLEntity command, DPLEntity param);
 	static void signal(DPLSignal signal = DPL_SIGNAL_OUT);
 };
 

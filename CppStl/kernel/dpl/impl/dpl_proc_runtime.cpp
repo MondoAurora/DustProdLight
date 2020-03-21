@@ -21,9 +21,6 @@ using namespace std;
  *
  ****************************/
 
-DustProdLightAgent::DustProdLightAgent() :
-		pDialog(NULL), result(DPL_PROCESS_ACCEPT) {
-}
 DustProdLightAgent::~DustProdLightAgent() {
 
 }
@@ -32,8 +29,13 @@ DPLProcessResult DustProdLightAgent::dplProcess() {
 	return DPL_PROCESS_ACCEPT;
 }
 
-void DustProdLightAgent::init(DPLEntity eAgentDef, DustProdLightDialog *pDialog_) {
+DustProdLightBlock* DustProdLightAgent::init(DPLEntity eAgentStart, map<int, DustProdLightEntity> *pHeap_) {
+	this->pHeap = pHeap_;
+	stackPos = 0;
+
+	return &stack[0];
 }
+
 void DustProdLightAgent::step() {
 }
 void DustProdLightAgent::stepUp() {
@@ -47,14 +49,14 @@ void DustProdLightAgent::finish(bool error) {
  *
  ****************************/
 
-DustProdLightDialog::DustProdLightDialog() {
+DustProdLightDialogTokenRing::DustProdLightDialogTokenRing() {
 }
 
-DustProdLightDialog::~DustProdLightDialog() {
+DustProdLightDialogTokenRing::~DustProdLightDialogTokenRing() {
 
 }
 
-DPLProcessResult DustProdLightDialog::dplProcess() {
+DPLProcessResult DustProdLightDialogTokenRing::dplProcess() {
 	return DPL_PROCESS_ACCEPT;
 }
 
@@ -64,14 +66,6 @@ DPLProcessResult DustProdLightDialog::dplProcess() {
  *
  ****************************/
 DustProdLightRuntime *DustProdLightRuntime::pRuntime = NULL;
-
-//map<DPLEntity, const DPLModule*> DustProdLightRuntime::logicFactory;
-//map<string, int> DustProdLightRuntime::dataGlobal;
-//
-//DustProdLightProcess* DustProdLightRuntime::pProcessMain = NULL;
-//DustProdLightThread* DustProdLightRuntime::pThreadActive = NULL;
-//
-//int DustProdLightRuntime::nextEntityId = DPL_MBI_;
 
 DustProdLightRuntime::DustProdLightRuntime() {
 	nextEntityId = DPL_MBI_;
@@ -102,7 +96,8 @@ void DustProdLightRuntime::release() {
 }
 
 DustProdLightEntity* DustProdLightRuntime::resolveEntity(DPLEntity entity) {
-	return &pProcessMain->emapHeap[entity];
+	DustProdLightEntity *pE = pThreadActive->pAgent ? pThreadActive->pAgent->getCurrBlock()->getEntity(entity) : NULL;
+	return pE ? pE : &pProcessMain->emapHeap[entity];
 }
 
 void DustProdLightRuntime::validateToken(DPLEntity token, DPLTokenType tokenType) {
@@ -350,11 +345,33 @@ DPLEntity DPLData::getMetaEntity(DPLTokenType tokenType, string name, DPLEntity 
 	return entity;
 }
 
-DPLProcessResult DPLMain::send(DPLEntity target, DPLEntity command, DPLEntity param) {
-	return DPL_PROCESS_REJECT;
+DPLProcessResult DPLMain::process(DPLEntity target, DPLEntity command, DPLEntity param) {
+	DustProdLightAgent agent;
+
+	DustProdLightRuntime::pRuntime->pThreadActive->pAgent = &agent;
+	map<int, DustProdLightEntity> *pHeap = &DustProdLightRuntime::pRuntime->pProcessMain->emapHeap;
+
+	DustProdLightBlock* b = agent.init(target, pHeap);
+
+	DPLEntity ePT = DPLData::getPrimaryType(target);
+	DPLModule *pMod = DustProdLightRuntime::pRuntime->logicFactory[ePT];
+	DPLAction *pA = pMod->createLogic(ePT);
+
+	b->pAction = pA;
+
+	b->emapRef[DPL_CTX_SELF] = &((*pHeap)[target]);
+	b->emapRef[DPL_CTX_COMMAND] = &((*pHeap)[command]);
+	b->emapRef[DPL_CTX_PARAM] = &((*pHeap)[param]);
+
+	DPLProcessResult ret = b->pAction->dplProcess();
+
+	pMod->releaseLogic(ePT, pA);
+	DustProdLightRuntime::pRuntime->pThreadActive->pAgent = NULL;
+
+	return ret;
 }
 
-void DPLMain::registerLogicProvider(const DPLModule *pLogicFactory, ...) {
+void DPLMain::registerLogicProvider(DPLModule *pLogicFactory, ...) {
 
 	va_list args;
 	va_start(args, pLogicFactory);
