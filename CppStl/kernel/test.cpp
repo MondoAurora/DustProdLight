@@ -23,7 +23,7 @@ void addPoint(DPLEntity shape, double x, double y) {
 	DPLData::setDouble(p, MapMeta::VectorX, x);
 	DPLData::setDouble(p, MapMeta::VectorY, y);
 
-	DPLData::setRef(shape, MapMeta::ShapePath, p, REFKEY_ARR_APPEND);
+	DPLData::setRef(shape, MapMeta::ShapePath, p, DPL_REFKEY_ARR_APPEND);
 
 	bool odd = DPLData::getRefCount(shape, MapMeta::ShapePath) % 2;
 	DPLData::setBool(p, MapMeta::TestOdd, odd);
@@ -59,13 +59,13 @@ int test() {
 	return e;
 }
 
-int testProc() {
-	DPLEntity eParam = DPLData::createEntity(DPLUnitText::TypeTextPlain);
-	DPLData::setString(eParam, DPLUnitText::AttTextString, "Hello world!");
-
+void testProc() {
 	DPLEntity eProc = DPLData::createEntity(DPLUnitTools::ActionDump);
 
-	return DPLMain::process(eProc, DPLUnitNarrative::CmdProcess, eParam);
+	DPLEntity eMsg = DPLData::getRef(eProc, DPLUnitNarrative::CmdProcess);
+	DPLData::setString(eMsg, DPLUnitText::AttTextString, "Hello world!");
+
+	DPLMain::signal(DPL_SIGNAL_OVER);
 }
 
 int main() {

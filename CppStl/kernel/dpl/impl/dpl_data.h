@@ -26,11 +26,14 @@ class DustProdLightValue {
 private:
 	DPLTokenType tokenType;
 
-	int valInt;
-	double valDbl;
+	int valInt = 0;
+	double valDbl = 0.0;
 	string valStr;
 
 public:
+	DustProdLightValue() : tokenType(DPL_ENTITY_INVALID), valInt(0), valDbl(0.0) {}
+	DustProdLightValue(const DustProdLightValue &v) : tokenType(v.tokenType), valInt(v.valInt), valDbl(v.valDbl), valStr(v.valStr) {}
+
 	virtual ~DustProdLightValue();
 
 	void set(DPLTokenType tokenType, const void* pVal);
@@ -42,12 +45,12 @@ public:
 
 class DustProdLightEntity {
 	int localId = -1;
-	DPLTokenType tokenType;
+	DPLTokenType tokenType = DPL_ENTITY_INVALID;
 
-	DPLEntity store;
-	DPLEntity primaryType;
+	DPLEntity store = DPL_ENTITY_INVALID;
+	DPLEntity primaryType = DPL_ENTITY_INVALID;
 	set<DPLEntity> types;
-	bool changed;
+	bool changed = true;
 
 	map<int, DustProdLightValue> values;
 	map<int, DustProdLightRef*> refs;
@@ -57,13 +60,20 @@ class DustProdLightEntity {
 
 	void initMetaEntity(DPLEntity entity, DPLTokenType tokenType, string name, DPLEntity parent);
 
-	friend DustProdLightRef;
-	friend DPLData;
-	friend class DustProdLightImplementation;
+	friend class DustProdLightRef;
+	friend class DPLData;
 	friend class DustProdLightRuntime;
+	friend class DustProdLightBlock;
 
 public:
+	DustProdLightEntity();
+	DustProdLightEntity(const DustProdLightEntity& e);
+
 	~DustProdLightEntity();
+
+	DustProdLightValue *getValue(DPLEntity token);
+	void setValue(DPLEntity token, DPLTokenType tokenType, void* pVal);
+	bool chgRef(DPLChange chg, DustProdLightEntity *pToken, DPLEntity target, int key);
 
 	bool isOfType(DPLEntity type);
 	void getAllTypes(set<DPLEntity>& typeSet);
@@ -76,7 +86,7 @@ public:
 typedef vector<DustProdLightRef*>::iterator RefVectorIterator;
 
 typedef map<int, DustProdLightValue>::iterator EntityValIterator;
-typedef map<int, DustProdLightRef*>::iterator EntityRefIterator;
+typedef map<int, DustProdLightRef*>::const_iterator EntityRefIterator;
 
 class DustProdLightRef {
 	DPLEntity token;
@@ -88,6 +98,8 @@ class DustProdLightRef {
 	DPLEntity mapKey = -1;
 
 	vector<DustProdLightRef*>* collection = 0;
+
+	DustProdLightRef(const DustProdLightRef& r);
 
 	DustProdLightRef(DPLEntity ptoken, DPLTokenType ptokentype, DPLEntity psource, DPLEntity ptarget, int pkey);
 	DustProdLightRef(DustProdLightEntity* ptoken, DPLEntity psource, DPLEntity ptarget, int pkey);
@@ -109,6 +121,7 @@ public:
 	friend DustProdLightEntity;
 	friend DPLData;
 	friend class DustProdLightRuntime;
+	friend class DustProdLightBlock;
 };
 
 #endif /* DPL_IMPL_DATA_H_ */

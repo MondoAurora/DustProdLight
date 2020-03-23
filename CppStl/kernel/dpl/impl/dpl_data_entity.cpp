@@ -9,6 +9,49 @@
 
 #include "dpl_data.h"
 #include "dpl_proc.h"
+#include "../dplutils.h"
+
+DustProdLightEntity::DustProdLightEntity() {
+}
+
+DustProdLightEntity::DustProdLightEntity(const DustProdLightEntity& e) :
+		localId(e.localId), tokenType(e.tokenType), store(e.store), primaryType(e.primaryType), types(e.types), changed(
+				e.changed), values(e.values) {
+	for (EntityRefIterator iter = e.refs.begin(); iter != e.refs.end(); ++iter) {
+		int k = iter->first;
+		DustProdLightRef *pr = iter->second;
+		refs[k] = new DustProdLightRef(*pr);
+	}
+}
+
+DustProdLightEntity::~DustProdLightEntity() {
+}
+
+DustProdLightValue *DustProdLightEntity::getValue(DPLEntity token) {
+	return (values.end() == values.find(token)) ? 0 : &values[token];
+}
+
+void DustProdLightEntity::setValue(DPLEntity token, DPLTokenType tokenType, void* pVal) {
+	values[token].set(tokenType, pVal);
+}
+
+bool DustProdLightEntity::chgRef(DPLChange chg, DustProdLightEntity *pToken, DPLEntity target, int key) {
+	bool ret = false;
+
+	DPLEntity token = pToken->localId;
+	DustProdLightRef *pRef = mapOptGet(refs, token);
+
+	if (pRef) {
+		if (!pRef->getBy(target, key)) {
+			new DustProdLightRef(pRef, target, key);
+		}
+	} else {
+		refs[token] = new DustProdLightRef(pToken, localId, target, key);
+	}
+
+	return ret;
+}
+
 
 void DustProdLightEntity::updated() {
 	changed = true;
@@ -28,9 +71,6 @@ void DustProdLightEntity::optReloadMeta() {
 		}
 		changed = false;
 	}
-}
-
-DustProdLightEntity::~DustProdLightEntity() {
 }
 
 bool DustProdLightEntity::isOfType(DPLEntity type) {
@@ -67,8 +107,7 @@ string DustProdLightEntity::getString(DPLEntity token) {
 	return values[token].valStr;
 }
 
-void DustProdLightEntity::initMetaEntity(DPLEntity entity, DPLTokenType tokenType_, string name,
-		DPLEntity parent) {
+void DustProdLightEntity::initMetaEntity(DPLEntity entity, DPLTokenType tokenType_, string name, DPLEntity parent) {
 	localId = entity;
 	tokenType = tokenType_;
 
@@ -105,6 +144,9 @@ void DustProdLightEntity::initMetaEntity(DPLEntity entity, DPLTokenType tokenTyp
 		break;
 	case DPL_TOKEN_COMMAND:
 		primaryType = DPL_MBI_TYPE_IDEA_COMMAND;
+		break;
+	case DPL_TOKEN_MESSAGE:
+		primaryType = DPL_MBI_TYPE_NARRATIVE_MESSAGE;
 		break;
 	case DPL_TOKEN_ENTITY:
 		primaryType = DPL_ENTITY_INVALID;

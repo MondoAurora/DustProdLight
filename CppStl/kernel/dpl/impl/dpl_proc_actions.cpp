@@ -11,7 +11,7 @@ using namespace DPLUnitDialog;
 
 
 DPLProcessResult DPLUActionStreamReader::dplProcess() {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_DIALOG);
+	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_TRANSACTION);
 	bool ok;
 
 	if ( !inStream.is_open() ) {
@@ -44,11 +44,13 @@ void DPLUActionStreamReader::dplRelease() {
 }
 
 DPLProcessResult DPLUActionDump::dplProcess() {
-	if (DPLData::getBool(DPL_CTX_PARAM, AttStreamOK, false)) {
-		cout << (char) DPLData::getInt(DPL_CTX_PARAM, AttCharacterChar, 0);
+	DPLEntity eParam = DPLData::getEntityByPath(DPL_CTX_PARAM, DPL_ENTITY_INVALID);
+
+	if (DPLData::getBool(eParam, AttStreamOK, false)) {
+		cout << (char) DPLData::getInt(eParam, AttCharacterChar, 0);
 		return DPL_PROCESS_SUCCESS;
 	} else {
-		string str = DPLData::getString(DPL_CTX_PARAM, AttTextString, "");
+		string str = DPLData::getString(eParam, AttTextString, "");
 		if ( str.length() ) {
 			cout << str << endl;
 			return DPL_PROCESS_SUCCESS;
@@ -60,7 +62,7 @@ DPLProcessResult DPLUActionDump::dplProcess() {
 
 
 DPLProcessResult ProcActionSignal::dplProcess() {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_DIALOG);
+	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_TRANSACTION);
 
 	int pos = DPLData::getInt(ctx, AttDialogActiveAgent, 0);
 	int count = DPLData::getRefCount(ctx, RefCollectionMembers);
@@ -71,7 +73,7 @@ DPLProcessResult ProcActionSignal::dplProcess() {
 }
 
 DPLProcessResult requestRelay(DPLEntity relay) {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_AGENT);
+	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_BLOCK);
 	DPLData::setRef(ctx, RefAgentRelay, relay, 0);
 	return DPL_PROCESS_RELAY;
 }

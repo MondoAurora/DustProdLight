@@ -37,11 +37,11 @@ enum DPLTokenType {
 	DPL_ENTITY_INVALID,
 
 	DPL_TOKEN_ENTITY,
+	DPL_TOKEN_ACTION,
+	DPL_TOKEN_MESSAGE,
 
 	DPL_TOKEN_STORE,
 	DPL_TOKEN_UNIT,
-
-	DPL_TOKEN_ACTION,
 
 	DPL_TOKEN_TYPE,
 
@@ -62,7 +62,7 @@ enum DPLTokenType {
 };
 
 enum DPLContext {
-	DPL_CTX_SELF = DPL_TOKEN_, DPL_CTX_COMMAND, DPL_CTX_PARAM, DPL_CTX_AGENT, DPL_CTX_DIALOG, DPL_CTX_
+	DPL_CTX_SELF = DPL_TOKEN_, DPL_CTX_COMMAND, DPL_CTX_PARAM, DPL_CTX_BLOCK, DPL_CTX_TRANSACTION, DPL_CTX_
 };
 
 enum DPLBlock {
@@ -87,7 +87,7 @@ enum DPLFilterResponse {
 
 #define DPL_LAST_CONST DPL_FILTER_
 
-#define REFKEY_ARR_APPEND -1
+#define DPL_REFKEY_ARR_APPEND -1
 
 #define DPL_ERR_UNSPECIFIED -1
 
@@ -180,8 +180,9 @@ public:
 	static void registerLogicProvider(DPLModule *pLogicProvider, ...);
 	static void shutdown();
 
-	static DPLProcessResult process(DPLEntity target, DPLEntity command, DPLEntity param);
-	static void signal(DPLSignal signal = DPL_SIGNAL_OUT);
+	static void signal(DPLSignal signal);
+
+//	static DPLProcessResult process(DPLEntity target, DPLEntity command, DPLEntity param);
 };
 
 class DPLData {
@@ -214,9 +215,9 @@ public:
 // Entity reference access
 	static unsigned int getRefCount(DPLEntity entity, DPLEntity token);
 	static DPLEntity getRefKey(DPLEntity entity, DPLEntity token, int idx);
-	static DPLEntity getRef(DPLEntity entity, DPLEntity token, int key);
+	static DPLEntity getRef(DPLEntity entity, DPLEntity token, int key = DPL_REFKEY_ARR_APPEND);
 
-	static bool setRef(DPLEntity entity, DPLEntity token, DPLEntity target, int key);
+	static bool setRef(DPLEntity entity, DPLEntity token, DPLEntity target, int key = DPL_REFKEY_ARR_APPEND);
 };
 
 

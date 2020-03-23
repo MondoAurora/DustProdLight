@@ -9,9 +9,8 @@
 
 #include "dpl_boot.h"
 #include "dpl_meta.h"
-#include "dpl_proc.h"
-
 #include <iostream>
+#include "dpl_proc.h"
 
 using namespace std;
 
@@ -39,6 +38,9 @@ void DPLMain::createBootEntities() {
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_IDEA_COMMAND, DPL_TOKEN_TYPE, "Command", DPL_MBI_UNIT_IDEA);
 
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_NARRATIVE_ACTION, DPL_TOKEN_TYPE, "Action", DPL_MBI_UNIT_NARRATIVE);
+	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_NARRATIVE_MESSAGE, DPL_TOKEN_TYPE, "Message", DPL_MBI_UNIT_NARRATIVE);
+	DustProdLightRuntime::initMetaEntity(DPL_MBI_REF_MESSAGE_COMMAND, DPL_TOKEN_REF_SINGLE, "Command", DPL_MBI_TYPE_NARRATIVE_MESSAGE);
+	DustProdLightRuntime::initMetaEntity(DPL_MBI_REF_MESSAGE_TARGET, DPL_TOKEN_REF_SINGLE, "Target", DPL_MBI_TYPE_NARRATIVE_MESSAGE);
 
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_TOOLS_CONNECTED, DPL_TOKEN_TYPE, "Connected", DPL_MBI_UNIT_TOOLS);
 
@@ -49,6 +51,12 @@ void DPLMain::createBootEntities() {
 
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_SVC_PROCESSOR, DPL_TOKEN_SERVICE, "Processor", DPL_MBI_UNIT_NARRATIVE);
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_CMD_PROCESS, DPL_TOKEN_COMMAND, "Process", DPL_MBI_SVC_PROCESSOR);
+
+	DustProdLightRuntime::initMetaEntity(DPL_MBI_UNIT_DUST, DPL_TOKEN_UNIT, "Dust");
+	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_DUST_SYSTEM, DPL_TOKEN_TYPE, "System", DPL_MBI_UNIT_DUST);
+	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_DUST_RUNTIME, DPL_TOKEN_TYPE, "Runtime", DPL_MBI_UNIT_DUST);
+	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_DUST_MODULE, DPL_TOKEN_TYPE, "Module", DPL_MBI_UNIT_DUST);
+
 
 	cout << endl << "--createBootEntities-- end" << endl;
 

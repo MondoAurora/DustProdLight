@@ -44,22 +44,20 @@ public:
 	virtual void dplRelease();
 };
 
-
-class ProcActionSignal : public DPLAction {
+class ProcActionSignal: public DPLAction {
 public:
 	virtual ~ProcActionSignal() {
 	}
 	virtual DPLProcessResult dplProcess();
 };
 
-
-class ProcActionControl : public DPLAction {
+class ProcActionControl: public DPLAction {
 public:
 	virtual ~ProcActionControl() {
 	}
 };
 
-class ProcActionSequence : public ProcActionControl {
+class ProcActionSequence: public ProcActionControl {
 	unsigned int pos = 0;
 	bool inSep = false;
 
@@ -70,7 +68,7 @@ public:
 	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
 };
 
-class ProcActionSelect : public ProcActionControl {
+class ProcActionSelect: public ProcActionControl {
 	unsigned int pos = 0;
 
 public:
@@ -80,7 +78,7 @@ public:
 	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
 };
 
-class ProcActionRepeat : public ProcActionControl {
+class ProcActionRepeat: public ProcActionControl {
 	unsigned int count = 0;
 	bool inSep = false;
 	unsigned int min = 0;
@@ -99,10 +97,17 @@ typedef map<int, DustProdLightEntity>::iterator EntityIterator;
 class DustProdLightProcess {
 	DustProdLightProcess *pParent;
 	map<int, DustProdLightEntity> emapHeap;
+//	int nextTempId = -1;
 
 public:
-	DustProdLightProcess(DustProdLightProcess *pParent_) : pParent(pParent_){}
-	~DustProdLightProcess(){}
+	DustProdLightProcess() :
+			DustProdLightProcess(NULL) {
+	}
+	DustProdLightProcess(DustProdLightProcess *pParent_) :
+			pParent(pParent_) {
+	}
+	~DustProdLightProcess() {
+	}
 
 	friend class DPLData;
 	friend class DPLMain;
@@ -117,8 +122,12 @@ class DustProdLightThread {
 	DPLProcessResult result = DPL_PROCESS_ACCEPT;
 
 public:
-	DustProdLightThread(DustProdLightProcess *pProcess_) : pProcess(pProcess_) {}
-	~DustProdLightThread(){};
+	DustProdLightThread(DustProdLightProcess *pProcess_) :
+			pProcess(pProcess_) {
+	}
+	~DustProdLightThread() {
+	}
+	;
 
 	friend class DPLData;
 	friend class DPLMain;
@@ -127,39 +136,32 @@ public:
 
 class DustProdLightBlock {
 private:
+	DustProdLightProcess *pProcess;
+
 	DPLBlock blockType;
 	map<int, DustProdLightEntity*> emapRef;
 	map<int, DustProdLightEntity> emapLocal;
 
+	map<int, DustProdLightEntity> emapMsg;
+
 	DPLAction* pAction;
 
 public:
-	void release() {
-		emapLocal.clear();
-		emapRef.clear();
-	}
+	void release();
 
-	DustProdLightEntity* getEntity(DPLEntity e) {
-		EntityIterator i = emapLocal.find(e);
-		DustProdLightEntity* ret;
+	DPLEntity getMsgEntity(DPLEntity cmd, DPLEntity target);
+	DustProdLightEntity* getEntity(DPLEntity e) ;
 
-		if ( i == emapLocal.end() ) {
-			EntityPtrIterator pi = emapRef.find(e);
-			ret = ( pi == emapRef.end()) ? NULL : pi->second;
-		} else {
-			ret = &i->second;
-		}
-
-		return ret;
-	}
+	void exec(DustProdLightEntity *pmsg);
 
 	friend class DPLData;
 	friend class DPLMain;
 	friend class DustProdLightRuntime;
+	friend class DustProdLightAgent;
 
 };
 
-class DustProdLightAgent : public DPLAction {
+class DustProdLightAgent: public DPLAction {
 	map<int, DustProdLightEntity> *pHeap = NULL;
 
 	map<int, DustProdLightBlock> stack;
@@ -182,8 +184,7 @@ public:
 	virtual DPLProcessResult dplProcess();
 };
 
-
-class DustProdLightDialogTokenRing : public DPLAction {
+class DustProdLightDialogTokenRing: public DPLAction {
 	vector<DustProdLightAgent*> agents;
 	int currAgent;
 
@@ -197,13 +198,17 @@ public:
 	friend class DPLProc;
 };
 
-
 class DustProdLightRuntime {
 	static DustProdLightRuntime *pRuntime;
+	static DustProdLightEntity *pRefMsgCmd;
+	static DustProdLightEntity *pRefMsgTarget;
 
 	map<DPLEntity, DPLModule*> logicFactory;
 
-	DustProdLightProcess *pProcessMain;
+	DustProdLightProcess processMain;
+	DustProdLightThread threadSingle;
+	DustProdLightAgent agentMain;
+
 	DustProdLightThread *pThreadActive;
 
 	int nextEntityId;
@@ -216,10 +221,12 @@ public:
 	static void init();
 	static void release();
 
+	DPLEntity resolveCtxEntity(DPLContext ctx);
 	DustProdLightEntity *resolveEntity(DPLEntity e);
 
 	static string getMetaEntityId(DPLTokenType tokenType, string name, DPLEntity parent);
-	static void initMetaEntity(DPLEntity entity, DPLTokenType tokenType, string name, DPLEntity parent = DPL_ENTITY_INVALID);
+	static void initMetaEntity(DPLEntity entity, DPLTokenType tokenType, string name, DPLEntity parent =
+			DPL_ENTITY_INVALID);
 
 	void validateToken(DPLEntity token, DPLTokenType tokenType);
 	DustProdLightValue* getValue(DPLEntity entity, DPLTokenType tokenType, DPLEntity token);
@@ -233,8 +240,7 @@ public:
 	friend class DPLMain;
 	friend class DustProdLightEntity;
 	friend class DustProdLightRef;
+	friend class DustProdLightBlock;
 };
-
-
 
 #endif /* DPL_IMPL_PROC_H_ */

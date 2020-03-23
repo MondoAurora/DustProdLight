@@ -15,6 +15,67 @@
 
 using namespace std;
 
+/*******************************
+ *
+ * DustProdLightBlock
+ *
+ *******************************/
+
+void DustProdLightBlock::release() {
+	emapLocal.clear();
+	emapRef.clear();
+}
+
+DPLEntity DustProdLightBlock::getMsgEntity(DPLEntity cmd, DPLEntity target) {
+	DPLEntity eMsg = -(emapMsg.size() + 1);
+
+	DustProdLightEntity* pMsg = &emapMsg[eMsg];
+
+	pMsg->localId = eMsg;
+
+	pMsg->chgRef(DPL_CHG_REF_SET, DustProdLightRuntime::pRefMsgCmd, cmd, 0);
+	pMsg->chgRef(DPL_CHG_REF_SET, DustProdLightRuntime::pRefMsgTarget, target, 0);
+
+	return eMsg;
+}
+
+DustProdLightEntity* DustProdLightBlock::getEntity(DPLEntity e) {
+	if ( e < 0 ) {
+		return &emapMsg[e];
+	}
+
+	EntityIterator i = emapLocal.find(e);
+	DustProdLightEntity* ret;
+
+	if (i == emapLocal.end()) {
+		EntityPtrIterator pi = emapRef.find(e);
+		ret = (pi == emapRef.end()) ? NULL : pi->second;
+	} else {
+		ret = &i->second;
+	}
+
+	return ret;
+}
+
+void DustProdLightBlock::exec(DustProdLightEntity *pmsg) {
+
+	int t = pmsg->refs[DPL_MBI_REF_MESSAGE_TARGET]->target;
+
+	DPLEntity ePT = DPLData::getPrimaryType(t);
+
+	DPLModule *pMod = DustProdLightRuntime::pRuntime->logicFactory[ePT];
+	pAction = pMod->createLogic(ePT);
+
+//	context[0] = t;
+//	context[1] = pmsg->refs[DPL_MBI_REF_MESSAGE_COMMAND]->target;
+	emapRef[DPL_CTX_PARAM] = pmsg;
+
+	pAction->dplProcess();
+
+	pMod->releaseLogic(ePT, pAction);
+
+}
+
 /****************************
  *
  * DustProdLightAgent
@@ -26,6 +87,19 @@ DustProdLightAgent::~DustProdLightAgent() {
 }
 
 DPLProcessResult DustProdLightAgent::dplProcess() {
+	DustProdLightBlock* b = getCurrBlock();
+
+	int end = - (b->emapMsg.size() + 1);
+
+	DustProdLightBlock *action = &stack[++stackPos];
+
+	for ( int mi = -1; mi > end; --mi ) {
+		DustProdLightEntity *pmsg = &b->emapMsg[mi];
+		action->exec(pmsg);
+	}
+
+	--stackPos;
+
 	return DPL_PROCESS_ACCEPT;
 }
 
@@ -66,25 +140,28 @@ DPLProcessResult DustProdLightDialogTokenRing::dplProcess() {
  *
  ****************************/
 DustProdLightRuntime *DustProdLightRuntime::pRuntime = NULL;
+DustProdLightEntity *DustProdLightRuntime::pRefMsgCmd = NULL;
+DustProdLightEntity *DustProdLightRuntime::pRefMsgTarget = NULL;
 
-DustProdLightRuntime::DustProdLightRuntime() {
+DustProdLightRuntime::DustProdLightRuntime() :
+		threadSingle(&processMain) {
 	nextEntityId = DPL_MBI_;
 
-	pProcessMain = new DustProdLightProcess(NULL);
-	pThreadActive = new DustProdLightThread(pProcessMain);
+	threadSingle.pAgent = &agentMain;
+	pThreadActive = &threadSingle;
 
 }
 
 DustProdLightRuntime::~DustProdLightRuntime() {
-	delete pProcessMain;
-	delete pThreadActive;
 }
-
 
 void DustProdLightRuntime::init() {
 	if (!pRuntime) {
 		pRuntime = new DustProdLightRuntime();
 		DPLMain::createBootEntities();
+
+		pRefMsgCmd = &pRuntime->processMain.emapHeap[DPL_MBI_REF_MESSAGE_COMMAND];
+		pRefMsgTarget = &pRuntime->processMain.emapHeap[DPL_MBI_REF_MESSAGE_TARGET];
 	}
 }
 
@@ -96,12 +173,17 @@ void DustProdLightRuntime::release() {
 }
 
 DustProdLightEntity* DustProdLightRuntime::resolveEntity(DPLEntity entity) {
-	DustProdLightEntity *pE = pThreadActive->pAgent ? pThreadActive->pAgent->getCurrBlock()->getEntity(entity) : NULL;
-	return pE ? pE : &pProcessMain->emapHeap[entity];
+	DustProdLightEntity *pE = NULL;
+
+	if ( pThreadActive->pAgent ) {
+		pE = pThreadActive->pAgent->getCurrBlock()->getEntity(entity);
+	}
+
+	return pE ? pE : &processMain.emapHeap[entity];
 }
 
 void DustProdLightRuntime::validateToken(DPLEntity token, DPLTokenType tokenType) {
-	DustProdLightEntity *pToken = &pProcessMain->emapHeap[token];
+	DustProdLightEntity *pToken = &processMain.emapHeap[token];
 	if (pToken->tokenType != tokenType) {
 		throw DPLError(DPL_ERR_UNSPECIFIED);
 	}
@@ -119,7 +201,6 @@ void DustProdLightRuntime::setValue(DPLEntity entity, DPLEntity token, DPLTokenT
 	pEntity->values[token].set(tokenType, pVal);
 }
 
-
 bool DustProdLightRuntime::chgRef(DPLChange chg, DPLEntity entity, DPLEntity token, DPLEntity target, int key) {
 	bool ret = false;
 
@@ -131,7 +212,7 @@ bool DustProdLightRuntime::chgRef(DPLChange chg, DPLEntity entity, DPLEntity tok
 			new DustProdLightRef(pRef, target, key);
 		}
 	} else {
-		DustProdLightEntity *pToken = &pProcessMain->emapHeap[token];
+		DustProdLightEntity *pToken = &processMain.emapHeap[token];
 		pEntity->refs[token] = new DustProdLightRef(pToken, entity, target, key);
 	}
 
@@ -147,7 +228,7 @@ DustProdLightRef* DustProdLightRuntime::getRef(DPLEntity entity, DPLEntity token
 
 DustProdLightEntity *DustProdLightRuntime::createEntity(DPLEntity primaryType) {
 	DPLEntity ret = nextEntityId;
-	DustProdLightEntity *pEntity = &pProcessMain->emapHeap[nextEntityId++];
+	DustProdLightEntity *pEntity = &processMain.emapHeap[nextEntityId++];
 
 	pEntity->localId = ret;
 	pEntity->primaryType = primaryType;
@@ -155,11 +236,6 @@ DustProdLightEntity *DustProdLightRuntime::createEntity(DPLEntity primaryType) {
 
 	return pEntity;
 }
-/*******************************
- *
- * DustProdLightImplementation
- *
- *******************************/
 
 string DustProdLightRuntime::getMetaEntityId(DPLTokenType tokenType, string name, DPLEntity parent) {
 	switch (tokenType) {
@@ -170,13 +246,13 @@ string DustProdLightRuntime::getMetaEntityId(DPLTokenType tokenType, string name
 		return str + DPL_SEP_STORE;
 	}
 	case DPL_TOKEN_UNIT:
-		return DustProdLightRuntime::pRuntime->pProcessMain->emapHeap[DPL_MBI_STORE_SOURCE].getString(DPL_MBI_ATT_ENTITY_GLOBALID)
-				+ DPL_SEP_STORE + name;
+		return DustProdLightRuntime::pRuntime->processMain.emapHeap[DPL_MBI_STORE_SOURCE].getString(
+				DPL_MBI_ATT_ENTITY_GLOBALID) + DPL_SEP_STORE + name;
 	default:
 		return
 				parent ?
-						DustProdLightRuntime::pRuntime->pProcessMain->emapHeap[parent].getString(DPL_MBI_ATT_ENTITY_GLOBALID) + DPL_SEP_ID
-								+ name :
+						DustProdLightRuntime::pRuntime->processMain.emapHeap[parent].getString(DPL_MBI_ATT_ENTITY_GLOBALID)
+								+ DPL_SEP_ID + name :
 						name;
 	}
 
@@ -184,7 +260,7 @@ string DustProdLightRuntime::getMetaEntityId(DPLTokenType tokenType, string name
 }
 
 void DustProdLightRuntime::initMetaEntity(DPLEntity entity, DPLTokenType tokenType, string name, DPLEntity parent) {
-	DustProdLightEntity* pE = &DustProdLightRuntime::pRuntime->pProcessMain->emapHeap[entity];
+	DustProdLightEntity* pE = &DustProdLightRuntime::pRuntime->processMain.emapHeap[entity];
 	pE->initMetaEntity(entity, tokenType, name, parent);
 }
 /****************************
@@ -192,7 +268,6 @@ void DustProdLightRuntime::initMetaEntity(DPLEntity entity, DPLTokenType tokenTy
  * DPL API
  *
  ****************************/
-
 
 void DPLData::setBool(DPLEntity entity, DPLEntity token, bool b) {
 	DustProdLightRuntime::pRuntime->setValue(entity, token, DPL_TOKEN_VAL_BOOL, &b);
@@ -241,7 +316,17 @@ unsigned int DPLData::getRefCount(DPLEntity entity, DPLEntity token) {
 
 DPLEntity DPLData::getRef(DPLEntity entity, DPLEntity token, int key) {
 	DustProdLightRef *pR = DustProdLightRuntime::pRuntime->getRef(entity, token);
-	return pR ? pR->getRef(key) : 0;
+
+	if (pR) {
+		return pR->getRef(key);
+	}
+
+	DustProdLightEntity *pToken = DustProdLightRuntime::pRuntime->resolveEntity(token);
+	if (DPL_TOKEN_COMMAND == pToken->tokenType) {
+		return DustProdLightRuntime::pRuntime->pThreadActive->pAgent->getCurrBlock()->getMsgEntity(token, entity);
+	}
+
+	return DPL_ENTITY_INVALID;
 }
 
 DPLEntity DPLData::getRefKey(DPLEntity entity, DPLEntity token, int idx) {
@@ -337,7 +422,7 @@ DPLEntity DPLData::getMetaEntity(DPLTokenType tokenType, string name, DPLEntity 
 		entity = ++DustProdLightRuntime::pRuntime->nextEntityId;
 
 		DustProdLightRuntime::pRuntime->dataGlobal[id] = entity;
-		DustProdLightEntity *pe = &DustProdLightRuntime::pRuntime->pProcessMain->emapHeap[entity];
+		DustProdLightEntity *pe = &DustProdLightRuntime::pRuntime->processMain.emapHeap[entity];
 
 		pe->initMetaEntity(entity, tokenType, name, parent);
 	}
@@ -345,31 +430,35 @@ DPLEntity DPLData::getMetaEntity(DPLTokenType tokenType, string name, DPLEntity 
 	return entity;
 }
 
-DPLProcessResult DPLMain::process(DPLEntity target, DPLEntity command, DPLEntity param) {
-	DustProdLightAgent agent;
-
-	DustProdLightRuntime::pRuntime->pThreadActive->pAgent = &agent;
-	map<int, DustProdLightEntity> *pHeap = &DustProdLightRuntime::pRuntime->pProcessMain->emapHeap;
-
-	DustProdLightBlock* b = agent.init(target, pHeap);
-
-	DPLEntity ePT = DPLData::getPrimaryType(target);
-	DPLModule *pMod = DustProdLightRuntime::pRuntime->logicFactory[ePT];
-	DPLAction *pA = pMod->createLogic(ePT);
-
-	b->pAction = pA;
-
-	b->emapRef[DPL_CTX_SELF] = &((*pHeap)[target]);
-	b->emapRef[DPL_CTX_COMMAND] = &((*pHeap)[command]);
-	b->emapRef[DPL_CTX_PARAM] = &((*pHeap)[param]);
-
-	DPLProcessResult ret = b->pAction->dplProcess();
-
-	pMod->releaseLogic(ePT, pA);
-	DustProdLightRuntime::pRuntime->pThreadActive->pAgent = NULL;
-
-	return ret;
+void DPLMain::signal(DPLSignal signal) {
+	DustProdLightRuntime::pRuntime->pThreadActive->pAgent->dplProcess();
 }
+
+//DPLProcessResult DPLMain::process(DPLEntity target, DPLEntity command, DPLEntity param) {
+//	DustProdLightAgent agent;
+//
+//	DustProdLightRuntime::pRuntime->pThreadActive->pAgent = &agent;
+//	map<int, DustProdLightEntity> *pHeap = &DustProdLightRuntime::pRuntime->processMain.emapHeap;
+//
+//	DustProdLightBlock* b = agent.init(target, pHeap);
+//
+//	DPLEntity ePT = DPLData::getPrimaryType(target);
+//	DPLModule *pMod = DustProdLightRuntime::pRuntime->logicFactory[ePT];
+//	DPLAction *pA = pMod->createLogic(ePT);
+//
+//	b->pAction = pA;
+//
+//	b->emapRef[DPL_CTX_SELF] = &((*pHeap)[target]);
+//	b->emapRef[DPL_CTX_COMMAND] = &((*pHeap)[command]);
+//	b->emapRef[DPL_CTX_PARAM] = &((*pHeap)[param]);
+//
+//	DPLProcessResult ret = b->pAction->dplProcess();
+//
+//	pMod->releaseLogic(ePT, pA);
+//	DustProdLightRuntime::pRuntime->pThreadActive->pAgent = NULL;
+//
+//	return ret;
+//}
 
 void DPLMain::registerLogicProvider(DPLModule *pLogicFactory, ...) {
 

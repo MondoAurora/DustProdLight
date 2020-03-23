@@ -18,14 +18,20 @@ const DPLEntity DPLUnitModel::TypeUnit = DPLData::getMetaEntity(DPL_TOKEN_TYPE, 
 
 const DPLEntity DPLUnitModel::TypeEntity = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Entity", DPLUnitModel::UnitModel);
 const DPLEntity DPLUnitModel::AttEntityGlobalId = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "GlobalId", DPLUnitModel::TypeEntity);
+const DPLEntity DPLUnitModel::RefEntityActions = DPLData::getMetaEntity(DPL_TOKEN_REF_SET, "Actions", DPLUnitModel::TypeEntity);
 
 
 const DPLEntity DPLUnitIdea::UnitIdea = DPL_MBI_UNIT_IDEA;
 const DPLEntity DPLUnitIdea::TypeType = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Type", DPLUnitIdea::UnitIdea);
 const DPLEntity DPLUnitIdea::TypeAttribute = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Attribute", DPLUnitIdea::UnitIdea);
 const DPLEntity DPLUnitIdea::TypeReference = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Reference", DPLUnitIdea::UnitIdea);
+const DPLEntity DPLUnitIdea::TypeTag = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Tag", DPLUnitIdea::UnitIdea);
 
 const DPLEntity DPLUnitNarrative::UnitNarrative = DPL_MBI_UNIT_NARRATIVE;
+
+const DPLEntity DPLUnitNarrative::TypeMessage = DPL_MBI_TYPE_NARRATIVE_MESSAGE;
+const DPLEntity DPLUnitNarrative::RefMessageCommand = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Command", DPLUnitNarrative::TypeMessage);
+const DPLEntity DPLUnitNarrative::RefMessageTarget = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Target", DPLUnitNarrative::TypeMessage);
 
 const DPLEntity DPLUnitNarrative::ActionSequence = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Sequence", DPLUnitNarrative::UnitNarrative);
 const DPLEntity DPLUnitNarrative::ActionSelect = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Select", DPLUnitNarrative::UnitNarrative);
@@ -45,6 +51,11 @@ const DPLEntity DPLUnitDialog::AttDialogActiveAgent = DPLData::getMetaEntity(DPL
 
 const DPLEntity DPLUnitDialog::TypeAgent = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Agent", DPLUnitDialog::UnitDialog);
 const DPLEntity DPLUnitDialog::RefAgentRelay = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Relay", DPLUnitDialog::TypeAgent);
+
+const DPLEntity DPLUnitDust::UnitDust = DPL_MBI_UNIT_DUST;
+const DPLEntity DPLUnitDust::TypeSystem = DPL_MBI_TYPE_DUST_SYSTEM;
+const DPLEntity DPLUnitDust::TypeRuntime = DPL_MBI_TYPE_DUST_RUNTIME;
+const DPLEntity DPLUnitDust::TypeModule = DPL_MBI_TYPE_DUST_MODULE;
 
 const DPLEntity DPLUnitTools::UnitTools = DPL_MBI_UNIT_TOOLS;
 

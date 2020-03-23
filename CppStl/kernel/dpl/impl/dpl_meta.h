@@ -20,7 +20,9 @@ extern const DPLEntity UnitModel;
 extern const DPLEntity TypeStore;
 extern const DPLEntity TypeUnit;
 extern const DPLEntity TypeEntity;
+
 extern const DPLEntity AttEntityGlobalId;
+extern const DPLEntity RefEntityActions;
 }
 
 namespace DPLUnitIdea {
@@ -29,11 +31,16 @@ extern const DPLEntity UnitIdea;
 extern const DPLEntity TypeType;
 extern const DPLEntity TypeAttribute;
 extern const DPLEntity TypeReference;
+extern const DPLEntity TypeTag;
 }
 
 namespace DPLUnitNarrative {
 
 extern const DPLEntity UnitNarrative;
+
+extern const DPLEntity TypeMessage;
+extern const DPLEntity RefMessageCommand;
+extern const DPLEntity RefMessageTarget;
 
 extern const DPLEntity ActionSequence;
 extern const DPLEntity ActionSelect;
@@ -56,6 +63,13 @@ extern const DPLEntity RefAgentRelay;
 extern const DPLEntity ActionDialogTokenRing;
 extern const DPLEntity ActionAgent;
 extern const DPLEntity ActionSignal;
+}
+
+namespace DPLUnitDust {
+extern const DPLEntity UnitDust;
+extern const DPLEntity TypeSystem;
+extern const DPLEntity TypeRuntime;
+extern const DPLEntity TypeModule;
 }
 
 namespace DPLUnitTools {

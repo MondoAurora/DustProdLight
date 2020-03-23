@@ -10,6 +10,21 @@
 #include "dpl_data.h"
 #include "dpl_proc.h"
 
+DustProdLightRef::DustProdLightRef(const DustProdLightRef& r) :
+		DustProdLightRef(r.token, r.tokenType, r.source, r.target, r.mapKey) {
+	if (r.collection) {
+		int s = r.collection->size();
+		if (s > 1) {
+			collection = new vector<DustProdLightRef*>();
+			for (int i = 0; i < s; ++i) {
+				DustProdLightRef *p = (*r.collection)[i];
+				collection->push_back( (p == &r) ? this:
+						new DustProdLightRef(token, tokenType, source, p->target, i));
+			}
+		}
+	}
+}
+
 DustProdLightRef::DustProdLightRef(DPLEntity ptoken, DPLTokenType ptokentype, DPLEntity psource, DPLEntity ptarget,
 		int pkey) :
 		token(ptoken), tokenType(ptokentype), source(psource), target(ptarget) {
@@ -78,7 +93,7 @@ DustProdLightRef* DustProdLightRef::getBy(DPLEntity ptarget, int key) {
 			}
 			break;
 		case DPL_TOKEN_REF_ARR:
-			if ( REFKEY_ARR_APPEND != key) {
+			if ( DPL_REFKEY_ARR_APPEND != key) {
 				pL = collection->at(key);
 				if (pL->target == ptarget) {
 					return pL;
@@ -173,7 +188,7 @@ DPLEntity DustProdLightRef::getTokenByIndex(int idx) {
 }
 
 void DustProdLightRef::doVisit(DPLVisitor *pVisitor, int key, void *pHint, DPLFilterResponse fr) {
-	switch ( fr ) {
+	switch (fr) {
 	case DPL_FILTER_PROCESS:
 		pVisitor->processBeginEntity(target, key, pHint);
 		pVisitor->processEndEntity(target, key, pHint);
@@ -194,7 +209,7 @@ void DustProdLightRef::optVisit(DPLVisitor *pVisitor, void *pHint) {
 	if (DPL_FILTER_SKIP != fr) {
 		pVisitor->processRefBegin(source, token, tokenType, pHint);
 
-		if ( collection ) {
+		if (collection) {
 			int key = 0;
 			for (RefVectorIterator it = collection->begin(); it != collection->end(); ++it) {
 				DustProdLightRef *pRef = *it;
