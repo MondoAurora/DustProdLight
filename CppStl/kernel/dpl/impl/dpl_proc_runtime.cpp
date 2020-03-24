@@ -11,7 +11,7 @@
 #include <set>
 
 #include <iostream>
-#include "dpl_proc.h"
+#include "dpl_proc_runtime.h"
 #include "../dplutils.h"
 
 using namespace std;
@@ -131,23 +131,6 @@ void DustProdLightAgent::step() {
 void DustProdLightAgent::stepUp() {
 }
 void DustProdLightAgent::finish(bool error) {
-}
-
-/****************************
- *
- * DustProdLightDialog
- *
- ****************************/
-
-DustProdLightDialogTokenRing::DustProdLightDialogTokenRing() {
-}
-
-DustProdLightDialogTokenRing::~DustProdLightDialogTokenRing() {
-
-}
-
-DPLProcessResult DustProdLightDialogTokenRing::dplProcess() {
-	return DPL_PROCESS_ACCEPT;
 }
 
 /****************************

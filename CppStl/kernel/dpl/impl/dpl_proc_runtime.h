@@ -23,91 +23,8 @@
 
 using namespace std;
 
-class DustProdLightDialogTokenRing;
-class DustProdLightAgent;
-
-class DPLUActionDump: public DPLAction {
-public:
-	virtual ~DPLUActionDump() {
-	}
-	virtual DPLProcessResult dplProcess();
-};
-
-class DPLUActionStreamReader: public DPLAction {
-	ifstream inStream;
-	int pos;
-
-public:
-	virtual ~DPLUActionStreamReader() {
-	}
-	virtual DPLProcessResult dplProcess();
-	virtual void dplRelease();
-};
-
-class ProcActionSignal: public DPLAction {
-public:
-	virtual ~ProcActionSignal() {
-	}
-	virtual DPLProcessResult dplProcess();
-};
-
-class ProcActionControl: public DPLAction {
-public:
-	virtual ~ProcActionControl() {
-	}
-};
-
-class ProcActionSequence: public ProcActionControl {
-	unsigned int pos = 0;
-	bool inSep = false;
-
-public:
-	virtual ~ProcActionSequence() {
-	}
-	virtual DPLProcessResult dplProcess();
-	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
-};
-
-class ProcActionSelect: public ProcActionControl {
-	unsigned int pos = 0;
-
-public:
-	virtual ~ProcActionSelect() {
-	}
-	virtual DPLProcessResult dplProcess();
-	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
-};
-
-class ProcActionRepeat: public ProcActionControl {
-	unsigned int count = 0;
-	bool inSep = false;
-	unsigned int min = 0;
-	unsigned int max = INT_MAX;
-
-public:
-	virtual ~ProcActionRepeat() {
-	}
-	virtual DPLProcessResult dplProcess();
-	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
-};
-
 typedef map<int, DustProdLightEntity*>::iterator EntityPtrIterator;
 typedef map<int, DustProdLightEntity>::iterator EntityIterator;
-
-class DustProdLightThread {
-	DustProdLightAgent* pAgent = NULL;
-	volatile bool requestSuspend = false;
-	DPLProcessResult result = DPL_PROCESS_ACCEPT;
-
-public:
-	~DustProdLightThread() {
-	}
-	;
-
-	friend class DPLData;
-	friend class DPLMain;
-	friend class DustProdLightRuntime;
-};
 
 class DustProdLightBlock {
 private:
@@ -160,18 +77,19 @@ public:
 	friend class DustProdLightRuntime;
 };
 
-class DustProdLightDialogTokenRing: public DPLAction {
-	vector<DustProdLightAgent*> agents;
-	int currAgent;
+class DustProdLightThread {
+	DustProdLightAgent* pAgent = NULL;
+	volatile bool requestSuspend = false;
+	DPLProcessResult result = DPL_PROCESS_ACCEPT;
 
 public:
-	DustProdLightDialogTokenRing();
-	virtual ~DustProdLightDialogTokenRing();
+	~DustProdLightThread() {
+	}
+	;
 
-	virtual DPLProcessResult dplProcess();
-
+	friend class DPLData;
 	friend class DPLMain;
-	friend class DPLProc;
+	friend class DustProdLightRuntime;
 };
 
 class DustProdLightRuntime {

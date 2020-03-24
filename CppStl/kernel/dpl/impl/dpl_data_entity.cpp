@@ -8,7 +8,7 @@
  */
 
 #include "dpl_data.h"
-#include "dpl_proc.h"
+#include "dpl_proc_runtime.h"
 #include "../dplutils.h"
 
 DustProdLightEntity::DustProdLightEntity() {

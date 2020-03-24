@@ -10,7 +10,7 @@
 #include "dpl_boot.h"
 #include "dpl_meta.h"
 #include <iostream>
-#include "dpl_proc.h"
+#include "dpl_proc_runtime.h"
 
 using namespace std;
 

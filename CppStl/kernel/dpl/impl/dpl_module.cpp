@@ -1,5 +1,5 @@
 #include "dpl_module.h"
-#include "dpl_proc.h"
+#include "dpl_proc_actions.h"
 
 using namespace DPLUnitNarrative;
 using namespace DPLUnitDialog;

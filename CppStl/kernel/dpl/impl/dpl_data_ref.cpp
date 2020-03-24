@@ -8,7 +8,7 @@
  */
 
 #include "dpl_data.h"
-#include "dpl_proc.h"
+#include "dpl_proc_runtime.h"
 
 DustProdLightRef::DustProdLightRef(const DustProdLightRef& r) :
 		DustProdLightRef(r.token, r.tokenType, r.source, r.target, r.mapKey) {

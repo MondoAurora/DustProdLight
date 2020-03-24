@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "dpl_meta.h"
-#include "dpl_proc.h"
+#include "dpl_proc_actions.h"
 
 using namespace std;
 using namespace DPLUnitText;
@@ -145,3 +145,20 @@ DPLProcessResult ProcActionRepeat::dplChildReturned(DPLProcessResult childResult
 	return DPL_PROCESS_REJECT;
 }
 
+
+/****************************
+ *
+ * DustProdLightDialogTokenRing
+ *
+ ****************************/
+
+DustProdLightDialogTokenRing::DustProdLightDialogTokenRing() {
+}
+
+DustProdLightDialogTokenRing::~DustProdLightDialogTokenRing() {
+
+}
+
+DPLProcessResult DustProdLightDialogTokenRing::dplProcess() {
+	return DPL_PROCESS_ACCEPT;
+}

@@ -55,7 +55,7 @@ class DustProdLightEntity {
 	map<int, DustProdLightValue> values;
 	map<int, DustProdLightRef*> refs;
 
-	map<DPLEntity, DPLAction*> *pActionByAction;
+	map<DPLEntity, DPLAction*> *pActionByAction = NULL;
 
 	void updated();
 	void optReloadMeta();
