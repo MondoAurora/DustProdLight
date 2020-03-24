@@ -62,6 +62,9 @@ public:
 	virtual void init() {
 		DustProdLightRuntime::init();
 
+		DPLData::setRef(ActionDump, DPL_MBI_REF_CONNECTED_EXTENDS, DPL_MBI_SVC_PROCESSOR);
+		DPLData::setRef(ActionReadStream, DPL_MBI_REF_CONNECTED_EXTENDS, DPL_MBI_SVC_PROCESSOR);
+
 		DPLMain::registerLogicProvider(this,
 				ActionSequence, ActionSelect, ActionRepeat, ActionSignal,
 				ActionAgent, ActionDialogTokenRing,

@@ -55,6 +55,8 @@ class DustProdLightEntity {
 	map<int, DustProdLightValue> values;
 	map<int, DustProdLightRef*> refs;
 
+	map<DPLEntity, DPLAction*> *pActionByAction;
+
 	void updated();
 	void optReloadMeta();
 
@@ -64,6 +66,7 @@ class DustProdLightEntity {
 	friend class DPLData;
 	friend class DustProdLightRuntime;
 	friend class DustProdLightBlock;
+	friend class DustProdLightAgent;
 
 public:
 	DustProdLightEntity();
@@ -81,12 +84,18 @@ public:
 	void* optVisit(DPLVisitor *pVisitor, int key, void *pHint);
 
 	string getString(DPLEntity token);
+	DPLEntity getRefEntity(DPLEntity token, int key);
+
+	DPLAction *getActionByCommand(DPLEntity cmd);
+	void releaseActions();
 };
 
 typedef vector<DustProdLightRef*>::iterator RefVectorIterator;
 
 typedef map<int, DustProdLightValue>::iterator EntityValIterator;
 typedef map<int, DustProdLightRef*>::const_iterator EntityRefIterator;
+
+typedef map<DPLEntity, DPLAction*>::iterator ActionIterator;
 
 class DustProdLightRef {
 	DPLEntity token;
@@ -122,6 +131,7 @@ public:
 	friend DPLData;
 	friend class DustProdLightRuntime;
 	friend class DustProdLightBlock;
+	friend class DustProdLightAgent;
 };
 
 #endif /* DPL_IMPL_DATA_H_ */

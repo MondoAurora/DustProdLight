@@ -94,37 +94,12 @@ public:
 typedef map<int, DustProdLightEntity*>::iterator EntityPtrIterator;
 typedef map<int, DustProdLightEntity>::iterator EntityIterator;
 
-class DustProdLightProcess {
-	DustProdLightProcess *pParent;
-	map<int, DustProdLightEntity> emapHeap;
-//	int nextTempId = -1;
-
-public:
-	DustProdLightProcess() :
-			DustProdLightProcess(NULL) {
-	}
-	DustProdLightProcess(DustProdLightProcess *pParent_) :
-			pParent(pParent_) {
-	}
-	~DustProdLightProcess() {
-	}
-
-	friend class DPLData;
-	friend class DPLMain;
-	friend class DustProdLightRuntime;
-};
-
 class DustProdLightThread {
-	DustProdLightProcess *pProcess;
-
 	DustProdLightAgent* pAgent = NULL;
 	volatile bool requestSuspend = false;
 	DPLProcessResult result = DPL_PROCESS_ACCEPT;
 
 public:
-	DustProdLightThread(DustProdLightProcess *pProcess_) :
-			pProcess(pProcess_) {
-	}
 	~DustProdLightThread() {
 	}
 	;
@@ -136,23 +111,21 @@ public:
 
 class DustProdLightBlock {
 private:
-	DustProdLightProcess *pProcess;
-
 	DPLBlock blockType;
 	map<int, DustProdLightEntity*> emapRef;
 	map<int, DustProdLightEntity> emapLocal;
 
 	map<int, DustProdLightEntity> emapMsg;
 
-	DPLAction* pAction;
+	map<DPLEntity, DPLAction*> actionByCmd;
 
 public:
-	void release();
-
 	DPLEntity getMsgEntity(DPLEntity cmd, DPLEntity target);
 	DustProdLightEntity* getEntity(DPLEntity e) ;
 
-	void exec(DustProdLightEntity *pmsg);
+	void init(DustProdLightEntity *pmsg);
+	DPLProcessResult exec(DPLEntity cmd);
+	void release();
 
 	friend class DPLData;
 	friend class DPLMain;
@@ -174,6 +147,7 @@ class DustProdLightAgent: public DPLAction {
 	void finish(bool error);
 
 public:
+	DustProdLightAgent();
 	virtual ~DustProdLightAgent();
 
 	DustProdLightBlock* init(DPLEntity eAgentStart, map<int, DustProdLightEntity> *pHeap);
@@ -182,6 +156,8 @@ public:
 	}
 
 	virtual DPLProcessResult dplProcess();
+
+	friend class DustProdLightRuntime;
 };
 
 class DustProdLightDialogTokenRing: public DPLAction {
@@ -205,7 +181,6 @@ class DustProdLightRuntime {
 
 	map<DPLEntity, DPLModule*> logicFactory;
 
-	DustProdLightProcess processMain;
 	DustProdLightThread threadSingle;
 	DustProdLightAgent agentMain;
 
@@ -218,8 +193,13 @@ class DustProdLightRuntime {
 	~DustProdLightRuntime();
 
 public:
+	static DustProdLightEntity *getRootEntity(DPLEntity entity);
+
 	static void init();
 	static void release();
+
+	static DPLAction *createAction(DPLEntity eAction);
+	static void releaseAction(DPLEntity eAction, DPLAction *pAction);
 
 	DPLEntity resolveCtxEntity(DPLContext ctx);
 	DustProdLightEntity *resolveEntity(DPLEntity e);

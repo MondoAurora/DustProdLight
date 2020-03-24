@@ -18,7 +18,7 @@ const DPLEntity DPLUnitModel::TypeUnit = DPLData::getMetaEntity(DPL_TOKEN_TYPE, 
 
 const DPLEntity DPLUnitModel::TypeEntity = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Entity", DPLUnitModel::UnitModel);
 const DPLEntity DPLUnitModel::AttEntityGlobalId = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "GlobalId", DPLUnitModel::TypeEntity);
-const DPLEntity DPLUnitModel::RefEntityActions = DPLData::getMetaEntity(DPL_TOKEN_REF_SET, "Actions", DPLUnitModel::TypeEntity);
+const DPLEntity DPLUnitModel::RefEntityActions = DPLData::getMetaEntity(DPL_TOKEN_REF_MAP, "Actions", DPLUnitModel::TypeEntity);
 
 
 const DPLEntity DPLUnitIdea::UnitIdea = DPL_MBI_UNIT_IDEA;

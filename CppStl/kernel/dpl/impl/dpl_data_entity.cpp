@@ -25,6 +25,10 @@ DustProdLightEntity::DustProdLightEntity(const DustProdLightEntity& e) :
 }
 
 DustProdLightEntity::~DustProdLightEntity() {
+	if (pActionByAction) {
+		releaseActions();
+		delete pActionByAction;
+	}
 }
 
 DustProdLightValue *DustProdLightEntity::getValue(DPLEntity token) {
@@ -35,23 +39,64 @@ void DustProdLightEntity::setValue(DPLEntity token, DPLTokenType tokenType, void
 	values[token].set(tokenType, pVal);
 }
 
+DPLEntity DustProdLightEntity::getRefEntity(DPLEntity token, int key) {
+	DustProdLightRef *pRef = mapOptGet(refs, token);
+
+	return pRef ? pRef->getRef(key) : DPL_ENTITY_INVALID;
+
+}
+
 bool DustProdLightEntity::chgRef(DPLChange chg, DustProdLightEntity *pToken, DPLEntity target, int key) {
-	bool ret = false;
+	DustProdLightRef *pNewRef = NULL;
 
 	DPLEntity token = pToken->localId;
 	DustProdLightRef *pRef = mapOptGet(refs, token);
 
 	if (pRef) {
 		if (!pRef->getBy(target, key)) {
-			new DustProdLightRef(pRef, target, key);
+			pNewRef = new DustProdLightRef(pRef, target, key);
 		}
 	} else {
-		refs[token] = new DustProdLightRef(pToken, localId, target, key);
+		refs[token] = pNewRef = new DustProdLightRef(pToken, localId, target, key);
 	}
 
-	return ret;
+	if ( pNewRef ) {
+		// special handling like Actions
+	}
+
+	return pNewRef;
 }
 
+DPLAction* DustProdLightEntity::getActionByCommand(DPLEntity cmd) {
+	DPLEntity eAction = getRefEntity(DPLUnitModel::RefEntityActions, cmd);
+	DPLAction* pAction = NULL;
+
+	if ( pActionByAction ) {
+		pAction = (*pActionByAction)[eAction];
+	} else {
+		pActionByAction = new map<DPLEntity, DPLAction*>();
+	}
+
+	if ( !pAction ) {
+		pAction = DustProdLightRuntime::createAction(eAction);
+		(*pActionByAction)[eAction] = pAction;
+	}
+
+	return pAction;
+}
+
+void DustProdLightEntity::releaseActions() {
+	if (pActionByAction) {
+		for (ActionIterator ait = pActionByAction->begin(); ait != pActionByAction->end(); ++ait) {
+			DPLEntity eAction = ait->first;
+			DPLAction* pAction = ait->second;
+			DPLModule *pMod = DustProdLightRuntime::pRuntime->logicFactory[eAction];
+			pMod->releaseLogic(eAction, pAction);
+		}
+
+		pActionByAction->clear();
+	}
+}
 
 void DustProdLightEntity::updated() {
 	changed = true;
