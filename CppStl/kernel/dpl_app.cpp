@@ -9,8 +9,6 @@
 
 #include "dpl/impl/dpl_module.h"
 
-using namespace std;
-
 
 void DPLMain::init() {
 	DPLModuleDPLMain->init();

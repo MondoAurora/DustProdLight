@@ -61,7 +61,8 @@ int test() {
 
 void testProc() {
 	DPLEntity eProc = DPLData::createEntity(MapMeta::Test);
-	DPLData::setRef(eProc, DPLUnitModel::RefEntityActions, DPLUnitTools::ActionDump, DPLUnitNarrative::CmdProcess);
+	DPLData::setRef(eProc, DPLUnitModel::RefEntityActions,
+			DPLUnitTools::ActionDump, DPLUnitNarrative::CmdProcess);
 
 	DPLEntity eMsg = DPLData::getRef(eProc, DPLUnitNarrative::CmdProcess);
 	DPLData::setString(eMsg, DPLUnitText::AttTextString, "Hello world!");
