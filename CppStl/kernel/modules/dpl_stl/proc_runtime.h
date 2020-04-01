@@ -17,9 +17,7 @@
 #include <array>
 #include <fstream>
 
-#include "dpl_boot.h"
-#include "dpl_meta.h"
-#include "dpl_data.h"
+#include "data.h"
 
 using namespace std;
 

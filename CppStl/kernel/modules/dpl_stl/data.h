@@ -15,12 +15,13 @@
 #include <map>
 #include <set>
 
-#include "../dpl.h"
+#include <dpl.h>
 
 
 class DustProdLightRef;
 class DustProdLightEntity;
 class DustProdLightRef;
+class DustProdLightStore;
 
 class DustProdLightValue {
 private:
@@ -132,6 +133,11 @@ public:
 	friend class DustProdLightRuntime;
 	friend class DustProdLightBlock;
 	friend class DustProdLightAgent;
+};
+
+class DustProdLightStore {
+	int nextEntityId;
+	map<int, DustProdLightEntity> emapLocal;
 };
 
 #endif /* DPL_IMPL_DATA_H_ */

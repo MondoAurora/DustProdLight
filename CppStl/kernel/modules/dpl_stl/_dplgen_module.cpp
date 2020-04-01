@@ -1,5 +1,5 @@
-#include "dpl_module.h"
-#include "dpl_proc_actions.h"
+#include <_dplgen_module_dpl_stl.h>
+#include "dpl_stl.h"
 
 using namespace DPLUnitNarrative;
 using namespace DPLUnitDialog;
@@ -21,7 +21,7 @@ public:
 				ActionSequence, ActionSelect, ActionRepeat, ActionSignal,
 				ActionAgent, ActionDialogTokenRing,
 				ActionReadStream, ActionDump,
-				(DPLAction*) DPL_ENTITY_INVALID);
+				DPL_ENTITY_INVALID);
 	}
 
 	virtual DPLAction* createLogic(int logicId) const {
@@ -77,5 +77,5 @@ public:
 	}
 };
 
-DPLModule* DPLModuleDPLMain = new DustProdLightProcModule();
+DPLModule* DPLModuleDplStl::Module = new DustProdLightProcModule();
 

@@ -60,7 +60,7 @@ enum DPLTokenType {
 };
 
 enum DPLContext {
-	DPL_CTX_SELF = DPL_TOKEN_, DPL_CTX_COMMAND, DPL_CTX_PARAM, DPL_CTX_BLOCK, DPL_CTX_TRANSACTION, DPL_CTX_
+	DPL_CTX_SELF = DPL_TOKEN_, DPL_CTX_COMMAND, DPL_CTX_PARAM, DPL_CTX_BLOCK, DPL_CTX_TRANSACTION, DPL_CTX_RUNTIME, DPL_CTX_
 };
 
 enum DPLBlock {
@@ -173,14 +173,14 @@ public:
 
 class DPLMain {
 public:
-	static void init();
+	static DPLEntity init();
 	static void createBootEntities();
 	static void registerLogicProvider(DPLModule *pLogicProvider, ...);
+
+	static DPLProcessResult tempRun(DPLEntity eProc);
+	static DPLProcessResult signal(DPLSignal signal);
+
 	static void shutdown();
-
-	static void signal(DPLSignal signal);
-
-//	static DPLProcessResult process(DPLEntity target, DPLEntity command, DPLEntity param);
 };
 
 class DPLData {

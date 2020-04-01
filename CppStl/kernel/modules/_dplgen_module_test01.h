@@ -1,9 +1,12 @@
-#ifndef MAPTEST_H_
-#define MAPTEST_H_
+#ifndef DPLGEN_MODULE_TEST01_H_
+#define DPLGEN_MODULE_TEST01_H_
 
-#include "dpl/dpl.h"
+#include <dpl.h>
 
-namespace MapMeta {
+#include <_dplgen_module_dpl_stl.h>
+
+
+namespace DPLUnitTest01 {
 extern const DPLEntity TestUnit;
 extern const DPLEntity Test;
 
@@ -31,6 +34,12 @@ extern const DPLEntity Moving;
 
 extern const DPLEntity MovingVelocity;
 extern const DPLEntity MovingAcceleration;
+
+extern const DPLEntity ActionHelloWorldSimple;
 }
 
-#endif /*MAPTEST_H_*/
+namespace DPLModuleTest01 {
+extern DPLModule* Module;
+}
+
+#endif /*DPLGEN_MODULE_TEST01_H_*/

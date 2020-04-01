@@ -17,7 +17,7 @@
 #include <array>
 #include <fstream>
 
-#include "dpl_proc_runtime.h"
+#include "proc_runtime.h"
 
 using namespace std;
 

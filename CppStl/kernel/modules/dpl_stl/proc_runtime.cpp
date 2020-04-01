@@ -7,12 +7,13 @@
  *      Author: Lorand Kedves
  */
 
+#include "dpl_stl.h"
+
 #include <vector>
 #include <set>
 
 #include <iostream>
-#include "dpl_proc_runtime.h"
-#include "../dplutils.h"
+#include <dplutils.h>
 
 using namespace std;
 
@@ -421,7 +422,7 @@ DPLEntity DPLData::getEntityById(string globalId) {
 }
 
 DPLEntity DPLData::getMetaEntity(DPLTokenType tokenType, string name, DPLEntity parent) {
-	DustProdLightRuntime::pRuntime->init();
+	DustProdLightRuntime::init();
 
 	string id = DustProdLightRuntime::getMetaEntityId(tokenType, name, parent);
 	int entity = DustProdLightRuntime::pRuntime->dataGlobal[id];
@@ -438,8 +439,8 @@ DPLEntity DPLData::getMetaEntity(DPLTokenType tokenType, string name, DPLEntity 
 	return entity;
 }
 
-void DPLMain::signal(DPLSignal signal) {
-	DustProdLightRuntime::pRuntime->pThreadActive->pAgent->dplProcess();
+DPLProcessResult DPLMain::signal(DPLSignal signal) {
+	return DustProdLightRuntime::pRuntime->pThreadActive->pAgent->dplProcess();
 }
 
 void DPLMain::registerLogicProvider(DPLModule *pLogicFactory, ...) {

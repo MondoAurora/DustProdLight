@@ -1,8 +1,10 @@
+#include "proc_actions.h"
+
 #include <vector>
 
 #include <iostream>
-#include "dpl_meta.h"
-#include "dpl_proc_actions.h"
+
+#include <_dplgen_module_dpl_stl.h>
 
 using namespace std;
 using namespace DPLUnitText;
@@ -51,6 +53,12 @@ DPLProcessResult DPLUActionDump::dplProcess() {
 		return DPL_PROCESS_SUCCESS;
 	} else {
 		string str = DPLData::getString(eParam, AttTextString, "");
+
+		if ( !str.length() ) {
+			DPLEntity eSelf = DPLData::getEntityByPath(DPL_CTX_SELF, DPL_ENTITY_INVALID);
+			str = DPLData::getString(eSelf, AttTextString, "");
+		}
+
 		if ( str.length() ) {
 			cout << str << endl;
 			return DPL_PROCESS_SUCCESS;

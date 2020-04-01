@@ -7,8 +7,9 @@
  *      Author: Lorand Kedves
  */
 
-#include "dpl_meta.h"
-#include "dpl_boot.h"
+#include <_dplgen_module_dpl_stl.h>
+
+#include "_dplgen_boot.h"
 
 using namespace std;
 
@@ -54,8 +55,9 @@ const DPLEntity DPLUnitDialog::RefAgentRelay = DPLData::getMetaEntity(DPL_TOKEN_
 
 const DPLEntity DPLUnitDust::UnitDust = DPL_MBI_UNIT_DUST;
 const DPLEntity DPLUnitDust::TypeSystem = DPL_MBI_TYPE_DUST_SYSTEM;
-const DPLEntity DPLUnitDust::TypeRuntime = DPL_MBI_TYPE_DUST_RUNTIME;
 const DPLEntity DPLUnitDust::TypeModule = DPL_MBI_TYPE_DUST_MODULE;
+const DPLEntity DPLUnitDust::TypeRuntime = DPL_MBI_TYPE_DUST_RUNTIME;
+const DPLEntity DPLUnitDust::TypeBlock = DPL_MBI_TYPE_DUST_BLOCK;
 
 const DPLEntity DPLUnitTools::UnitTools = DPL_MBI_UNIT_TOOLS;
 

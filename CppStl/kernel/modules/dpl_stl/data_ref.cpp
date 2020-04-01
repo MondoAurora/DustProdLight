@@ -7,8 +7,8 @@
  *      Author: Lorand Kedves
  */
 
-#include "dpl_data.h"
-#include "dpl_proc_runtime.h"
+#include "data.h"
+#include "proc_runtime.h"
 
 DustProdLightRef::DustProdLightRef(const DustProdLightRef& r) :
 		DustProdLightRef(r.token, r.tokenType, r.source, r.target, r.mapKey) {

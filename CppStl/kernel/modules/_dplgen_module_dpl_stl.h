@@ -12,7 +12,7 @@
 #ifndef DPL_IMPL_META_H_
 #define DPL_IMPL_META_H_
 
-#include "../dpl.h"
+#include <dpl.h>
 
 namespace DPLUnitModel {
 extern const DPLEntity UnitModel;
@@ -68,8 +68,9 @@ extern const DPLEntity ActionSignal;
 namespace DPLUnitDust {
 extern const DPLEntity UnitDust;
 extern const DPLEntity TypeSystem;
-extern const DPLEntity TypeRuntime;
 extern const DPLEntity TypeModule;
+extern const DPLEntity TypeRuntime;
+extern const DPLEntity TypeBlock;
 }
 
 namespace DPLUnitTools {
@@ -104,6 +105,10 @@ extern const DPLEntity AttCharacterChar;
 
 extern const DPLEntity TypeTextPlain;
 extern const DPLEntity AttTextString;
+}
+
+namespace DPLModuleDplStl {
+extern DPLModule* Module;
 }
 
 #endif /* DPL_IMPL_META_H_ */

@@ -7,16 +7,16 @@
  *      Author: Lorand Kedves
  */
 
-#include "dpl_boot.h"
-#include "dpl_meta.h"
+#include "_dplgen_boot.h"
+#include "dpl_stl.h"
+
 #include <iostream>
-#include "dpl_proc_runtime.h"
+
+#include <_dplgen_module_dpl_stl.h>
 
 using namespace std;
 
 void DPLMain::createBootEntities() {
-	cout << endl << "--createBootEntities-- start" << endl;
-
 	DustProdLightRuntime::initMetaEntity(DPL_ENTITY_INVALID, DPL_ENTITY_INVALID, "!!INVALID!!");
 
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_STORE_SOURCE, DPL_TOKEN_STORE, "Source");
@@ -54,10 +54,7 @@ void DPLMain::createBootEntities() {
 
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_UNIT_DUST, DPL_TOKEN_UNIT, "Dust");
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_DUST_SYSTEM, DPL_TOKEN_TYPE, "System", DPL_MBI_UNIT_DUST);
-	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_DUST_RUNTIME, DPL_TOKEN_TYPE, "Runtime", DPL_MBI_UNIT_DUST);
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_DUST_MODULE, DPL_TOKEN_TYPE, "Module", DPL_MBI_UNIT_DUST);
-
-
-	cout << endl << "--createBootEntities-- end" << endl;
-
+	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_DUST_RUNTIME, DPL_TOKEN_TYPE, "Runtime", DPL_MBI_UNIT_DUST);
+	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_DUST_BLOCK, DPL_TOKEN_TYPE, "Block", DPL_MBI_UNIT_DUST);
 }

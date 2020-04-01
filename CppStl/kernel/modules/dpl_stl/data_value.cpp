@@ -7,7 +7,7 @@
  *      Author: Lorand Kedves
  */
 
-#include "dpl_data.h"
+#include "data.h"
 
 DustProdLightValue::~DustProdLightValue() {
 }

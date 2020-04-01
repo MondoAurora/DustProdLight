@@ -7,9 +7,12 @@
  *      Author: Lorand Kedves
  */
 
-#include "dpl_data.h"
-#include "dpl_proc_runtime.h"
-#include "../dplutils.h"
+#include "data.h"
+#include "proc_runtime.h"
+#include "_dplgen_boot.h"
+#include <_dplgen_module_dpl_stl.h>
+
+#include <dplutils.h>
 
 DustProdLightEntity::DustProdLightEntity() {
 }

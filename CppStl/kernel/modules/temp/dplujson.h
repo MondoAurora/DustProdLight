@@ -13,7 +13,7 @@
 #include <string>
 #include <cstdarg>
 
-#include "../../dplutils.h"
+#include <dplutils.h>
 
 using namespace std;
 
