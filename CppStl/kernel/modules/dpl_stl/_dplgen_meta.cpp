@@ -30,10 +30,6 @@ const DPLEntity DPLUnitIdea::TypeTag = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "T
 
 const DPLEntity DPLUnitNarrative::UnitNarrative = DPL_MBI_UNIT_NARRATIVE;
 
-const DPLEntity DPLUnitNarrative::TypeMessage = DPL_MBI_TYPE_NARRATIVE_MESSAGE;
-const DPLEntity DPLUnitNarrative::RefMessageCommand = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Command", DPLUnitNarrative::TypeMessage);
-const DPLEntity DPLUnitNarrative::RefMessageTarget = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Target", DPLUnitNarrative::TypeMessage);
-
 const DPLEntity DPLUnitNarrative::ActionSequence = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Sequence", DPLUnitNarrative::UnitNarrative);
 const DPLEntity DPLUnitNarrative::ActionSelect = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Select", DPLUnitNarrative::UnitNarrative);
 const DPLEntity DPLUnitNarrative::ActionRepeat = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Repeat", DPLUnitNarrative::UnitNarrative);
@@ -42,6 +38,10 @@ const DPLEntity DPLUnitNarrative::SvcProcessor = DPL_MBI_SVC_PROCESSOR;
 const DPLEntity DPLUnitNarrative::CmdProcess = DPL_MBI_CMD_PROCESS;
 
 const DPLEntity DPLUnitDialog::UnitDialog = DPL_MBI_UNIT_DIALOG;
+
+const DPLEntity DPLUnitDialog::TypeTask= DPL_MBI_TYPE_DIALOG_TASK;
+const DPLEntity DPLUnitDialog::RefTaskCommand = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Command", DPLUnitDialog::TypeTask);
+const DPLEntity DPLUnitDialog::RefTaskTarget = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Target", DPLUnitDialog::TypeTask);
 
 const DPLEntity DPLUnitDialog::ActionDialogTokenRing = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "DialogTokenRing", DPLUnitDialog::UnitDialog);
 const DPLEntity DPLUnitDialog::ActionAgent = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Agent", DPLUnitDialog::UnitDialog);
@@ -58,6 +58,8 @@ const DPLEntity DPLUnitDust::TypeSystem = DPL_MBI_TYPE_DUST_SYSTEM;
 const DPLEntity DPLUnitDust::TypeModule = DPL_MBI_TYPE_DUST_MODULE;
 const DPLEntity DPLUnitDust::TypeRuntime = DPL_MBI_TYPE_DUST_RUNTIME;
 const DPLEntity DPLUnitDust::TypeBlock = DPL_MBI_TYPE_DUST_BLOCK;
+
+const DPLEntity DPLUnitDust::RefRuntimeMain = DPL_MBI_REF_RUNTIME_MAIN;
 
 const DPLEntity DPLUnitTools::UnitTools = DPL_MBI_UNIT_TOOLS;
 

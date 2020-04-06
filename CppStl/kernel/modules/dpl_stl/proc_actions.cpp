@@ -80,16 +80,17 @@ DPLProcessResult ProcActionSignal::dplProcess() {
 	return DPL_PROCESS_SUCCESS;
 }
 
-DPLProcessResult requestRelay(DPLEntity relay) {
+void requestRelay(DPLEntity relay) {
 	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_BLOCK);
 	DPLData::setRef(ctx, RefAgentRelay, relay, 0);
-	return DPL_PROCESS_RELAY;
+//	return DPL_PROCESS_RELAY;
 }
 
 
 DPLProcessResult ProcActionSequence::dplProcess() {
 	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF);
-	return requestRelay(inSep ? DPLData::getRef(ctx, RefCollectionSeparator, 0) : DPLData::getRef(ctx, RefCollectionMembers, pos));
+	requestRelay(inSep ? DPLData::getRef(ctx, RefCollectionSeparator, 0) : DPLData::getRef(ctx, RefCollectionMembers, pos));
+	return DPL_PROCESS_ACCEPT;
 }
 
 DPLProcessResult ProcActionSequence::dplChildReturned(DPLProcessResult childResult) {
@@ -112,7 +113,8 @@ DPLProcessResult ProcActionSequence::dplChildReturned(DPLProcessResult childResu
 
 DPLProcessResult ProcActionSelect::dplProcess() {
 	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF);
-	return requestRelay(DPLData::getRef(ctx, RefCollectionMembers, pos));
+	requestRelay(DPLData::getRef(ctx, RefCollectionMembers, pos));
+	return DPL_PROCESS_ACCEPT;
 }
 
 DPLProcessResult ProcActionSelect::dplChildReturned(DPLProcessResult childResult) {
@@ -130,7 +132,8 @@ DPLProcessResult ProcActionSelect::dplChildReturned(DPLProcessResult childResult
 
 DPLProcessResult ProcActionRepeat::dplProcess() {
 	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF);
-	return requestRelay(inSep ? DPLData::getRef(ctx, RefCollectionSeparator, 0) : DPLData::getRef(ctx, RefLinkTarget, 0));
+	requestRelay(inSep ? DPLData::getRef(ctx, RefCollectionSeparator, 0) : DPLData::getRef(ctx, RefLinkTarget, 0));
+	return DPL_PROCESS_ACCEPT;
 }
 
 DPLProcessResult ProcActionRepeat::dplChildReturned(DPLProcessResult childResult) {

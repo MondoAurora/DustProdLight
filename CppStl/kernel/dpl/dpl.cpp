@@ -9,17 +9,14 @@
 
 #include "dpl.h"
 
-
-
 int main() {
 	cout << endl << "-- DPL init --" << endl;
 
-	DPLEntity eProc = DPLMain::init();
+	DPLMain::init();
 
-	if ( eProc ) {
-		cout << endl << "-- DPL run --" << endl;
-		DPLMain::tempRun(eProc);
-	}
+	cout << endl << "-- DPL run --" << endl;
+
+	DPLMain::run();
 
 	cout << endl << "-- DPL shutdown --" << endl;
 

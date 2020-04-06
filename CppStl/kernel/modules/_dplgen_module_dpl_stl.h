@@ -38,10 +38,6 @@ namespace DPLUnitNarrative {
 
 extern const DPLEntity UnitNarrative;
 
-extern const DPLEntity TypeMessage;
-extern const DPLEntity RefMessageCommand;
-extern const DPLEntity RefMessageTarget;
-
 extern const DPLEntity ActionSequence;
 extern const DPLEntity ActionSelect;
 extern const DPLEntity ActionRepeat;
@@ -53,6 +49,10 @@ extern const DPLEntity CmdProcess;
 namespace DPLUnitDialog {
 
 extern const DPLEntity UnitDialog;
+
+extern const DPLEntity TypeTask;
+extern const DPLEntity RefTaskCommand;
+extern const DPLEntity RefTaskTarget;
 
 extern const DPLEntity TypeDialog;
 extern const DPLEntity AttDialogActiveAgent;
@@ -71,6 +71,8 @@ extern const DPLEntity TypeSystem;
 extern const DPLEntity TypeModule;
 extern const DPLEntity TypeRuntime;
 extern const DPLEntity TypeBlock;
+
+extern const DPLEntity RefRuntimeMain;
 }
 
 namespace DPLUnitTools {

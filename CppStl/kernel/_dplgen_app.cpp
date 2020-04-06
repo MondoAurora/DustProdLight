@@ -11,23 +11,18 @@
 #include <_dplgen_module_test01.h>
 
 
-DPLEntity DPLMain::init() {
+void DPLMain::init() {
 	DPLModuleDplStl::Module->init();
 	DPLModuleTest01::Module->init();
 
 	DPLEntity eProc = DPLData::createEntity(DPLUnitTest01::Test);
 	DPLData::setRef(eProc, DPLUnitModel::RefEntityActions, DPLUnitTest01::ActionHelloWorldSimple, DPLUnitNarrative::CmdProcess);
 
-	return eProc;
-}
+	DPLEntity eTask = DPLData::createEntity(DPLUnitDialog::TypeTask);
+	DPLData::setRef(eTask, DPLUnitDialog::RefTaskTarget, eProc);
+	DPLData::setRef(eTask, DPLUnitDialog::RefTaskCommand, DPLUnitNarrative::CmdProcess);
 
-DPLProcessResult DPLMain::tempRun(DPLEntity eProc) {
-	DPLEntity eMsg;
-
-	eMsg = DPLData::getRef(eProc, DPLUnitNarrative::CmdProcess);
-	DPLData::setString(eMsg, DPLUnitText::AttTextString, "Hello world!");
-
-	return DPLMain::signal(DPL_SIGNAL_OVER);
+	DPLData::setRef(DPL_CTX_RUNTIME, DPLUnitDust::RefRuntimeMain, eTask);
 }
 
 void DPLMain::shutdown() {

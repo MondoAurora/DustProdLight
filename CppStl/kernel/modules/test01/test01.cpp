@@ -14,12 +14,6 @@
 using namespace std;
 
 
-DPLProcessResult HelloWorldSimple::dplProcess() {
-	cout << "Hello, world! from test01";
-
-	return DPL_PROCESS_SUCCESS;
-}
-
 void addPoint(DPLEntity shape, double x, double y) {
 	DPLEntity p;
 
@@ -32,7 +26,6 @@ void addPoint(DPLEntity shape, double x, double y) {
 
 	bool odd = DPLData::getRefCount(shape, DPLUnitTest01::ShapePath) % 2;
 	DPLData::setBool(p, DPLUnitTest01::TestOdd, odd);
-
 }
 
 int test() {
@@ -64,6 +57,13 @@ int test() {
 	return e;
 }
 
+void dump(DPLEntity e) {
+	cout << endl << "-- dump --" << endl;
+
+	DPLUEntityToJSON dumper(cout, true);
+	DPLData::visit(e, &dumper, NULL);
+}
+
 void testProc() {
 	cout << endl << "-- testProc --" << endl;
 
@@ -78,8 +78,6 @@ void testProc() {
 
 	eMsg = DPLData::getRef(eProc, DPLUnitNarrative::CmdProcess);
 	DPLData::setString(eMsg, DPLUnitText::AttTextString, "Hello world! (2)");
-
-	DPLMain::signal(DPL_SIGNAL_OVER);
 }
 
 void testSequence() {
@@ -95,8 +93,6 @@ void testSequence() {
 	DPLData::setRef(eSequence, DPLUnitTools::RefCollectionMembers, eDump);
 
 	DPLData::getRef(eSequence, DPLUnitNarrative::CmdProcess);
-
-	DPLMain::signal(DPL_SIGNAL_OVER);
 }
 
 void testReadFile() {
@@ -119,7 +115,14 @@ void testReadFile() {
 	DPLData::setRef(eRepeat, DPLUnitTools::RefLinkTarget, eSequence);
 
 	DPLData::getRef(eRepeat, DPLUnitNarrative::CmdProcess);
-
-	DPLMain::signal(DPL_SIGNAL_OVER);
 }
 
+DPLProcessResult HelloWorldSimple::dplProcess() {
+	cout << "Hello, world! from test01" << endl;
+
+	DPLEntity e = test();
+
+	dump(e);
+
+	return DPL_PROCESS_SUCCESS;
+}

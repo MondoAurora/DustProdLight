@@ -24,86 +24,94 @@ using namespace std;
 typedef map<int, DustProdLightEntity*>::iterator EntityPtrIterator;
 typedef map<int, DustProdLightEntity>::iterator EntityIterator;
 
-class DustProdLightBlock {
+class DustProdLightBlock: public DPLAction {
 private:
 	DPLBlock blockType;
 	map<int, DustProdLightEntity*> emapRef;
-	map<int, DustProdLightEntity> emapLocal;
+	DustProdLightStore *pStore;
 
-	map<int, DustProdLightEntity> emapMsg;
-
-	map<DPLEntity, DPLAction*> actionByCmd;
+	DPLAction* pAction;
 
 public:
-	DPLEntity getMsgEntity(DPLEntity cmd, DPLEntity target);
 	DustProdLightEntity* getEntity(DPLEntity e) ;
 
-	void init(DustProdLightEntity *pmsg);
-	DPLProcessResult exec(DPLEntity cmd);
+	void init(DustProdLightEntity *pTask, DustProdLightBlock *pParent);
+	virtual DPLProcessResult dplProcess();
 	void release();
 
 	friend class DPLData;
 	friend class DPLMain;
 	friend class DustProdLightRuntime;
 	friend class DustProdLightAgent;
-
 };
 
 class DustProdLightAgent: public DPLAction {
-	map<int, DustProdLightEntity> *pHeap = NULL;
-
 	map<int, DustProdLightBlock> stack;
 	int stackPos = 0;
-
-	DPLProcessResult result = DPL_PROCESS_ACCEPT;
-
-	void step();
-	void stepUp();
-	void finish(bool error);
 
 public:
 	DustProdLightAgent();
 	virtual ~DustProdLightAgent();
-
-	DustProdLightBlock* init(DPLEntity eAgentStart, map<int, DustProdLightEntity> *pHeap);
-	DustProdLightBlock* getCurrBlock() {
-		return &stack[stackPos];
-	}
 
 	virtual DPLProcessResult dplProcess();
 
 	friend class DustProdLightRuntime;
 };
 
-class DustProdLightThread {
-	DustProdLightAgent* pAgent = NULL;
-	volatile bool requestSuspend = false;
-	DPLProcessResult result = DPL_PROCESS_ACCEPT;
-
+class DustProdLightDialog : public DPLAction {
 public:
-	~DustProdLightThread() {
+	~DustProdLightDialog() {
 	}
-	;
+
+	virtual DPLProcessResult dplProcess();
 
 	friend class DPLData;
 	friend class DPLMain;
 	friend class DustProdLightRuntime;
 };
 
+class DustProdLightSheduler : public DPLAction {
+};
+
+class DustProdLightCore : public DPLAction {
+	DustProdLightDialog *pDialog = NULL;
+	DustProdLightAgent *pAgent = NULL;
+	DustProdLightBlock *pBlock = NULL;
+
+	DPLProcessResult lastResult;
+
+public:
+	static DustProdLightCore* getCurrentCore();
+
+	virtual DPLProcessResult dplProcess();
+
+	DPLProcessResult getLastResult () {
+		return lastResult;
+	}
+
+	friend class DPLData;
+	friend class DPLMain;
+	friend class DustProdLightAgent;
+	friend class DustProdLightRuntime;
+};
+
+class DustProdLightCoreSingle :public DustProdLightCore {
+	static DustProdLightCoreSingle singleCore;
+
+	friend class DustProdLightCore;
+};
+
 class DustProdLightRuntime {
 	static DustProdLightRuntime *pRuntime;
-	static DustProdLightEntity *pRefMsgCmd;
-	static DustProdLightEntity *pRefMsgTarget;
+//	static DustProdLightEntity *pRefMsgCmd;
+//	static DustProdLightEntity *pRefMsgTarget;
+
+	DustProdLightSheduler *pScheduler = NULL;
 
 	map<DPLEntity, DPLModule*> logicFactory;
 
-	DustProdLightThread threadSingle;
-	DustProdLightAgent agentMain;
-
-	DustProdLightThread *pThreadActive;
-
-	int nextEntityId;
 	map<string, int> dataGlobal;
+	DustProdLightStore store;
 
 	DustProdLightRuntime();
 	~DustProdLightRuntime();
@@ -137,6 +145,8 @@ public:
 	friend class DustProdLightEntity;
 	friend class DustProdLightRef;
 	friend class DustProdLightBlock;
+	friend class DustProdLightAgent;
+	friend class DustProdLightCore;
 };
 
 #endif /* DPL_IMPL_PROC_H_ */

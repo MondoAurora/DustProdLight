@@ -36,7 +36,7 @@ enum DPLTokenType {
 
 	DPL_TOKEN_ENTITY,
 	DPL_TOKEN_ACTION,
-	DPL_TOKEN_MESSAGE,
+	DPL_TOKEN_TASK,
 
 	DPL_TOKEN_STORE,
 	DPL_TOKEN_UNIT,
@@ -76,7 +76,7 @@ enum DPLSignal {
 };
 
 enum DPLProcessResult {
-	DPL_PROCESS_REJECT = DPL_SIGNAL_, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT, DPL_PROCESS_RELAY, DPL_PROCESS_
+	DPL_PROCESS_REJECT = DPL_SIGNAL_, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT, /*DPL_PROCESS_RELAY,*/ DPL_PROCESS_
 };
 
 enum DPLFilterResponse {
@@ -102,6 +102,15 @@ public:
 
 class DPLAction {
 public:
+	inline static bool optProcess(DPLAction* action, DPLProcessResult &result) {
+		if ( action ) {
+			result = action->dplProcess();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	virtual ~DPLAction() {
 	}
 
@@ -115,9 +124,9 @@ public:
 
 	virtual DPLProcessResult dplProcess() = 0;
 
-	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse) {
-		return DPL_PROCESS_REJECT;
-	}
+//	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse) {
+//		return DPL_PROCESS_REJECT;
+//	}
 };
 
 class DPLModule {
@@ -173,12 +182,11 @@ public:
 
 class DPLMain {
 public:
-	static DPLEntity init();
+	static void init();
 	static void createBootEntities();
 	static void registerLogicProvider(DPLModule *pLogicProvider, ...);
 
-	static DPLProcessResult tempRun(DPLEntity eProc);
-	static DPLProcessResult signal(DPLSignal signal);
+	static DPLProcessResult run();
 
 	static void shutdown();
 };

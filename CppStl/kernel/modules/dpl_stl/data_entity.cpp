@@ -193,8 +193,8 @@ void DustProdLightEntity::initMetaEntity(DPLEntity entity, DPLTokenType tokenTyp
 	case DPL_TOKEN_COMMAND:
 		primaryType = DPL_MBI_TYPE_IDEA_COMMAND;
 		break;
-	case DPL_TOKEN_MESSAGE:
-		primaryType = DPL_MBI_TYPE_NARRATIVE_MESSAGE;
+	case DPL_TOKEN_TASK:
+		primaryType = DPL_MBI_TYPE_DIALOG_TASK;
 		break;
 	case DPL_TOKEN_ENTITY:
 		primaryType = DPL_ENTITY_INVALID;

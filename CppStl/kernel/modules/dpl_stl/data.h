@@ -138,6 +138,12 @@ public:
 class DustProdLightStore {
 	int nextEntityId;
 	map<int, DustProdLightEntity> emapLocal;
+
+	friend DustProdLightEntity;
+	friend DPLData;
+	friend class DustProdLightRuntime;
+	friend class DustProdLightBlock;
+	friend class DustProdLightAgent;
 };
 
 #endif /* DPL_IMPL_DATA_H_ */
