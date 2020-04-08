@@ -19,6 +19,8 @@
 
 using namespace std;
 
+using namespace DPLUnitNarrative;
+
 DustProdLightRuntime *DustProdLightRuntime::pRuntime = NULL;
 
 DustProdLightEntity *pRefMsgCmd = NULL;
@@ -47,8 +49,8 @@ DustProdLightEntity* DustProdLightBlock::getEntity(DPLEntity e) {
 
 void DustProdLightBlock::init(DustProdLightEntity *pTask, DustProdLightBlock *pParent) {
 	pStore = pParent ? pParent->pStore : &DustProdLightRuntime::pRuntime->store;
-	emapRef[DPL_CTX_COMMAND] = DustProdLightRuntime::pRuntime->resolveEntity(pTask->refs[DPL_MBI_REF_TASK_COMMAND]->target);
-	emapRef[DPL_CTX_SELF] = DustProdLightRuntime::pRuntime->resolveEntity(pTask->refs[DPL_MBI_REF_TASK_TARGET]->target);
+	emapRef[DPL_CTX_COMMAND] = DustProdLightRuntime::pRuntime->resolveEntity(pTask->refs[RefExecAtomCommand]->target);
+	emapRef[DPL_CTX_SELF] = DustProdLightRuntime::pRuntime->resolveEntity(pTask->refs[RefExecAtomTarget]->target);
 	emapRef[DPL_CTX_PARAM] = pTask;
 	pAction = NULL;
 }
@@ -56,7 +58,7 @@ void DustProdLightBlock::init(DustProdLightEntity *pTask, DustProdLightBlock *pP
 DPLProcessResult DustProdLightBlock::dplProcess() {
 	if (!pAction) {
 		DustProdLightEntity *pCmd = emapRef[DPL_CTX_COMMAND];
-		DPLEntity cmd = pCmd ? pCmd->localId : DPL_MBI_CMD_PROCESS;
+		DPLEntity cmd = pCmd ? pCmd->localId : DPLUnitNarrative::CmdActionExecute;
 		DustProdLightEntity *pSelf = emapRef[DPL_CTX_SELF];
 		pAction = pSelf->getActionByCommand(cmd);
 	}
@@ -91,7 +93,7 @@ DPLProcessResult DustProdLightAgent::dplProcess() {
 
 	if ( DPL_PROCESS_ACCEPT != pC->lastResult ) {
 		if ( 0 < stackPos ) {
-			pC->pBlock = &stack[--stackPos];
+			pC->pBlock = stack[--stackPos];
 			return DPL_PROCESS_ACCEPT;
 		}
 	}
@@ -143,8 +145,8 @@ void DustProdLightRuntime::init() {
 		pRuntime = new DustProdLightRuntime();
 		DPLMain::createBootEntities();
 
-		pRefMsgCmd = getRootEntity(DPL_MBI_REF_TASK_COMMAND);
-		pRefMsgTarget = getRootEntity(DPL_MBI_REF_TASK_TARGET);
+		pRefMsgCmd = getRootEntity(RefExecAtomCommand);
+		pRefMsgTarget = getRootEntity(RefExecAtomTarget);
 	}
 }
 

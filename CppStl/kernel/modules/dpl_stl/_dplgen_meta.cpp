@@ -14,52 +14,62 @@
 using namespace std;
 
 const DPLEntity DPLUnitModel::UnitModel = DPL_MBI_UNIT_MODEL;
-const DPLEntity DPLUnitModel::TypeStore = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Store", DPLUnitModel::UnitModel);
-const DPLEntity DPLUnitModel::TypeUnit = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Unit", DPLUnitModel::UnitModel);
+const DPLEntity DPLUnitModel::TypeStore = DPL_MBI_TYPE_MODEL_STORE;
+const DPLEntity DPLUnitModel::TypeUnit = DPL_MBI_TYPE_MODEL_UNIT;
 
-const DPLEntity DPLUnitModel::TypeEntity = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Entity", DPLUnitModel::UnitModel);
-const DPLEntity DPLUnitModel::AttEntityGlobalId = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "GlobalId", DPLUnitModel::TypeEntity);
+const DPLEntity DPLUnitModel::TypeEntity = DPL_MBI_TYPE_MODEL_ENTITY;
+const DPLEntity DPLUnitModel::AttEntityGlobalId = DPL_MBI_ATT_ENTITY_GLOBALID;
 const DPLEntity DPLUnitModel::RefEntityActions = DPLData::getMetaEntity(DPL_TOKEN_REF_MAP, "Actions", DPLUnitModel::TypeEntity);
 
 
 const DPLEntity DPLUnitIdea::UnitIdea = DPL_MBI_UNIT_IDEA;
-const DPLEntity DPLUnitIdea::TypeType = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Type", DPLUnitIdea::UnitIdea);
-const DPLEntity DPLUnitIdea::TypeAttribute = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Attribute", DPLUnitIdea::UnitIdea);
-const DPLEntity DPLUnitIdea::TypeReference = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Reference", DPLUnitIdea::UnitIdea);
-const DPLEntity DPLUnitIdea::TypeTag = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Tag", DPLUnitIdea::UnitIdea);
+const DPLEntity DPLUnitIdea::TypeType = DPL_MBI_TYPE_IDEA_TYPE;
+const DPLEntity DPLUnitIdea::RefTypeDefaultActions = DPLData::getMetaEntity(DPL_TOKEN_REF_SET, "DefaultActions", DPLUnitIdea::TypeType);
+const DPLEntity DPLUnitIdea::TypeAttribute = DPL_MBI_TYPE_IDEA_ATTRIBUTE;
+const DPLEntity DPLUnitIdea::TypeReference = DPL_MBI_TYPE_IDEA_REFERENCE;
+const DPLEntity DPLUnitIdea::TypeTag = DPL_MBI_TYPE_IDEA_TAG;
 
 const DPLEntity DPLUnitNarrative::UnitNarrative = DPL_MBI_UNIT_NARRATIVE;
 
-const DPLEntity DPLUnitNarrative::ActionSequence = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Sequence", DPLUnitNarrative::UnitNarrative);
-const DPLEntity DPLUnitNarrative::ActionSelect = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Select", DPLUnitNarrative::UnitNarrative);
-const DPLEntity DPLUnitNarrative::ActionRepeat = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Repeat", DPLUnitNarrative::UnitNarrative);
+const DPLEntity DPLUnitNarrative::TypeAction = DPL_MBI_TYPE_NARRATIVE_ACTION;
 
-const DPLEntity DPLUnitNarrative::SvcProcessor = DPL_MBI_SVC_PROCESSOR;
-const DPLEntity DPLUnitNarrative::CmdProcess = DPL_MBI_CMD_PROCESS;
+const DPLEntity DPLUnitNarrative::TypeCtrlSequence = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Sequence", DPLUnitNarrative::UnitNarrative);
+const DPLEntity DPLUnitNarrative::TypeCtrlSelect = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Select", DPLUnitNarrative::UnitNarrative);
+const DPLEntity DPLUnitNarrative::TypeCtrlRepeat = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Repeat", DPLUnitNarrative::UnitNarrative);
+
+const DPLEntity DPLUnitNarrative::TypeExecAtom = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Atom", DPLUnitNarrative::UnitNarrative);
+const DPLEntity DPLUnitNarrative::RefExecAtomCommand = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Command", DPLUnitNarrative::TypeExecAtom);
+const DPLEntity DPLUnitNarrative::RefExecAtomTarget = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Target", DPLUnitNarrative::TypeExecAtom);
+
+const DPLEntity DPLUnitNarrative::TypeExecAgent = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Agent", DPLUnitNarrative::UnitNarrative);
+const DPLEntity DPLUnitNarrative::TypeExecDialog = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Dialog", DPLUnitNarrative::UnitNarrative);
+
+
+const DPLEntity DPLUnitNarrative::SvcAction = DPLData::getMetaEntity(DPL_TOKEN_SERVICE, "Action", DPLUnitNarrative::UnitNarrative);
+const DPLEntity DPLUnitNarrative::CmdActionExecute = DPLData::getMetaEntity(DPL_TOKEN_COMMAND, "Execute", DPLUnitNarrative::SvcAction);
+
+const DPLEntity DPLUnitNarrative::SvcResource = DPLData::getMetaEntity(DPL_TOKEN_SERVICE, "Resource", DPLUnitNarrative::UnitNarrative);
+const DPLEntity DPLUnitNarrative::CmdResourceInit = DPLData::getMetaEntity(DPL_TOKEN_COMMAND, "Init", DPLUnitNarrative::SvcResource);
+const DPLEntity DPLUnitNarrative::CmdResourceRelease = DPLData::getMetaEntity(DPL_TOKEN_COMMAND, "Release", DPLUnitNarrative::SvcResource);
 
 const DPLEntity DPLUnitDialog::UnitDialog = DPL_MBI_UNIT_DIALOG;
 
-const DPLEntity DPLUnitDialog::TypeTask= DPL_MBI_TYPE_DIALOG_TASK;
-const DPLEntity DPLUnitDialog::RefTaskCommand = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Command", DPLUnitDialog::TypeTask);
-const DPLEntity DPLUnitDialog::RefTaskTarget = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Target", DPLUnitDialog::TypeTask);
-
-const DPLEntity DPLUnitDialog::ActionDialogTokenRing = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "DialogTokenRing", DPLUnitDialog::UnitDialog);
-const DPLEntity DPLUnitDialog::ActionAgent = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Agent", DPLUnitDialog::UnitDialog);
-const DPLEntity DPLUnitDialog::ActionSignal = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Signal", DPLUnitDialog::UnitDialog);
-
-const DPLEntity DPLUnitDialog::TypeDialog = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Dialog", DPLUnitDialog::UnitDialog);
-const DPLEntity DPLUnitDialog::AttDialogActiveAgent = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "ActiveAgentPos", DPLUnitDialog::TypeDialog);
-
-const DPLEntity DPLUnitDialog::TypeAgent = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Agent", DPLUnitDialog::UnitDialog);
-const DPLEntity DPLUnitDialog::RefAgentRelay = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Relay", DPLUnitDialog::TypeAgent);
-
 const DPLEntity DPLUnitDust::UnitDust = DPL_MBI_UNIT_DUST;
-const DPLEntity DPLUnitDust::TypeSystem = DPL_MBI_TYPE_DUST_SYSTEM;
-const DPLEntity DPLUnitDust::TypeModule = DPL_MBI_TYPE_DUST_MODULE;
-const DPLEntity DPLUnitDust::TypeRuntime = DPL_MBI_TYPE_DUST_RUNTIME;
-const DPLEntity DPLUnitDust::TypeBlock = DPL_MBI_TYPE_DUST_BLOCK;
 
-const DPLEntity DPLUnitDust::RefRuntimeMain = DPL_MBI_REF_RUNTIME_MAIN;
+const DPLEntity DPLUnitDust::TypeSystem = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "System", DPL_MBI_UNIT_DUST);
+const DPLEntity DPLUnitDust::TypeModule = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Module", DPL_MBI_UNIT_DUST);
+const DPLEntity DPLUnitDust::TypeRuntime = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Runtime", DPL_MBI_UNIT_DUST);
+const DPLEntity DPLUnitDust::TypeBlock = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Block", DPL_MBI_UNIT_DUST);
+
+const DPLEntity DPLUnitDust::RefRuntimeMain = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Main", DPLUnitDust::TypeRuntime);
+
+const DPLEntity DPLUnitDust::ActionCtrlSequence = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Sequence", DPLUnitDust::UnitDust);
+const DPLEntity DPLUnitDust::ActionCtrlSelect = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Select", DPLUnitDust::UnitDust);
+const DPLEntity DPLUnitDust::ActionCtrlRepeat = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Repeat", DPLUnitDust::UnitDust);
+
+const DPLEntity DPLUnitDust::ActionExecAtom = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Atom", DPLUnitDust::UnitDust);
+const DPLEntity DPLUnitDust::ActionExecAgent = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Agent", DPLUnitDust::UnitDust);
+const DPLEntity DPLUnitDust::ActionExecDialog = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Dialog", DPLUnitDust::UnitDust);
 
 const DPLEntity DPLUnitTools::UnitTools = DPL_MBI_UNIT_TOOLS;
 
@@ -89,3 +99,8 @@ const DPLEntity DPLUnitTools::AttStreamURL = DPLData::getMetaEntity(DPL_TOKEN_VA
 
 const DPLEntity DPLUnitTools::ActionDump = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "DumpChar", DPLUnitTools::UnitTools);
 const DPLEntity DPLUnitTools::ActionReadStream = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "ReadStream", DPLUnitTools::UnitTools);
+
+const DPLEntity DPLUnitTools::TypeLimits = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Limits", DPLUnitTools::UnitTools);
+const DPLEntity DPLUnitTools::AttLimitsIntMin = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "IntMin", DPLUnitTools::TypeLimits);
+const DPLEntity DPLUnitTools::AttLimitsIntMax = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "IntMax", DPLUnitTools::TypeLimits);
+

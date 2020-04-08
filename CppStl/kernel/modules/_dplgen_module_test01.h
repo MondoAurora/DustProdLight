@@ -9,6 +9,7 @@
 namespace DPLUnitTest01 {
 extern const DPLEntity TestUnit;
 extern const DPLEntity Test;
+extern const DPLEntity TypeHelloWorldSimple;
 
 extern const DPLEntity TestOdd;
 

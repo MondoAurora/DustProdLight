@@ -45,8 +45,10 @@ public:
 	friend class DustProdLightAgent;
 };
 
+typedef map<DPLEntity, DustProdLightBlock*>::const_iterator BlockIterator;
+
 class DustProdLightAgent: public DPLAction {
-	map<int, DustProdLightBlock> stack;
+	map<int, DustProdLightBlock*> stack;
 	int stackPos = 0;
 
 public:
@@ -56,6 +58,7 @@ public:
 	virtual DPLProcessResult dplProcess();
 
 	friend class DustProdLightRuntime;
+	friend class ProcActionControl;
 };
 
 class DustProdLightDialog : public DPLAction {
@@ -93,6 +96,7 @@ public:
 	friend class DPLMain;
 	friend class DustProdLightAgent;
 	friend class DustProdLightRuntime;
+	friend class ProcActionControl;
 };
 
 class DustProdLightCoreSingle :public DustProdLightCore {
@@ -103,8 +107,6 @@ class DustProdLightCoreSingle :public DustProdLightCore {
 
 class DustProdLightRuntime {
 	static DustProdLightRuntime *pRuntime;
-//	static DustProdLightEntity *pRefMsgCmd;
-//	static DustProdLightEntity *pRefMsgTarget;
 
 	DustProdLightSheduler *pScheduler = NULL;
 

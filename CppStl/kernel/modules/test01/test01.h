@@ -7,6 +7,9 @@
 
 
 class HelloWorldSimple: public DPLAction {
+	int count = 0;
+	DPLEntity e = NULL;
+
 public:
 	virtual ~HelloWorldSimple() {
 	}

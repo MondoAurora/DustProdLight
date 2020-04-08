@@ -39,17 +39,33 @@ public:
 	virtual void dplRelease();
 };
 
-class ProcActionSignal: public DPLAction {
-public:
-	virtual ~ProcActionSignal() {
-	}
-	virtual DPLProcessResult dplProcess();
-};
+
+
+
 
 class ProcActionControl: public DPLAction {
+private:
+	map<DPLEntity, DustProdLightBlock*> mapChildBlocks;
+	DustProdLightAgent *pOwnAgent = NULL;
+
+protected:
+	void requestRelay(DPLEntity relay);
+
 public:
-	virtual ~ProcActionControl() {
+	virtual ~ProcActionControl();
+};
+
+class ProcActionRepeat: public ProcActionControl {
+	unsigned int count = 0;
+	bool inSep = false;
+	unsigned int min = 0;
+	unsigned int max = INT_MAX;
+
+public:
+	virtual ~ProcActionRepeat() {
 	}
+	virtual DPLProcessResult dplProcess();
+	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
 };
 
 class ProcActionSequence: public ProcActionControl {
@@ -73,18 +89,9 @@ public:
 	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
 };
 
-class ProcActionRepeat: public ProcActionControl {
-	unsigned int count = 0;
-	bool inSep = false;
-	unsigned int min = 0;
-	unsigned int max = INT_MAX;
 
-public:
-	virtual ~ProcActionRepeat() {
-	}
-	virtual DPLProcessResult dplProcess();
-	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
-};
+
+
 
 
 class DustProdLightDialogTokenRing: public DPLAction {

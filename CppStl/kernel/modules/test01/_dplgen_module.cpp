@@ -10,7 +10,9 @@ public:
 	}
 
 	virtual void init() {
-		DPLData::setRef(ActionHelloWorldSimple, DPLUnitTools::RefConnectedExtends, DPLUnitNarrative::SvcProcessor);
+		DPLData::setRef(ActionHelloWorldSimple, DPLUnitTools::RefConnectedExtends, DPLUnitNarrative::SvcAction);
+
+		DPLData::setRef(TypeHelloWorldSimple, DPLUnitIdea::RefTypeDefaultActions, ActionHelloWorldSimple);
 
 		DPLMain::registerLogicProvider(this,
 				ActionHelloWorldSimple,

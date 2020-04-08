@@ -5,6 +5,7 @@ using namespace DPLUnitTest01;
 
 const DPLEntity DPLUnitTest01::TestUnit = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "Test");
 const DPLEntity DPLUnitTest01::Test = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Test", TestUnit);
+const DPLEntity DPLUnitTest01::TypeHelloWorldSimple = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "HelloWorldSimple", TestUnit);
 
 const DPLEntity DPLUnitTest01::TestOdd = DPLData::getMetaEntity(DPL_TOKEN_VAL_BOOL, "Odd", Test);
 

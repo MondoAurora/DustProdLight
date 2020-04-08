@@ -69,21 +69,38 @@ DPLProcessResult DPLUActionDump::dplProcess() {
 
 
 
-DPLProcessResult ProcActionSignal::dplProcess() {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_TRANSACTION);
+void ProcActionControl::requestRelay(DPLEntity relay) {
+	DustProdLightCore *pC = DustProdLightCore::getCurrentCore();
 
-	int pos = DPLData::getInt(ctx, AttDialogActiveAgent, 0);
-	int count = DPLData::getRefCount(ctx, RefCollectionMembers);
+	DustProdLightBlock *pb = mapChildBlocks[relay];
 
-	DPLData::setInt(ctx, AttDialogActiveAgent, (++pos < count) ? pos : 0);
+	if ( !pb ) {
+		pb = new DustProdLightBlock();
+		DustProdLightEntity *pe = pC->pBlock->getEntity(relay);
+		pb->init(pe, pC->pBlock);
+		mapChildBlocks[relay] = pb;
+	}
 
-	return DPL_PROCESS_SUCCESS;
+	DustProdLightAgent *pa = pC->pAgent;
+
+	if ( !pa ) {
+		pOwnAgent = pa = new DustProdLightAgent();
+		pa->stack[0] = pC->pBlock;
+	}
+
+	pa->stack[++pa->stackPos] = pb;
+	pC->pBlock = pb;
 }
 
-void requestRelay(DPLEntity relay) {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_BLOCK);
-	DPLData::setRef(ctx, RefAgentRelay, relay, 0);
-//	return DPL_PROCESS_RELAY;
+ProcActionControl::~ProcActionControl() {
+	for (BlockIterator iter = mapChildBlocks.begin(); iter != mapChildBlocks.end(); ++iter) {
+		DustProdLightBlock *pb = iter->second;
+		delete pb;
+	}
+
+	if ( pOwnAgent ) {
+		delete pOwnAgent;
+	}
 }
 
 

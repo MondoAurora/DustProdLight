@@ -13,7 +13,6 @@
 
 using namespace std;
 
-
 void addPoint(DPLEntity shape, double x, double y) {
 	DPLEntity p;
 
@@ -29,6 +28,8 @@ void addPoint(DPLEntity shape, double x, double y) {
 }
 
 int test() {
+	cout << endl << "-- creating main entity --" << endl;
+
 	DPLEntity e = DPLData::createEntity(DPLUnitTest01::ShapePath);
 
 	DPLData::setString(e, DPLUnitTest01::IdName, "Room 01 töűk");
@@ -41,17 +42,15 @@ int test() {
 	addPoint(e, 188, 133);
 	addPoint(e, 88, 133);
 
-	cout << DPLData::getString(e, DPLUnitTest01::IdName, "??") << ": "
-			<< DPLData::getInt(e, DPLUnitTest01::IdNum, -100) << " ("
-			<< DPLData::getDouble(e, DPLUnitTest01::VectorX, -1) << ", "
+	cout << DPLData::getString(e, DPLUnitTest01::IdName, "??") << ": " << DPLData::getInt(e, DPLUnitTest01::IdNum, -100)
+			<< " (" << DPLData::getDouble(e, DPLUnitTest01::VectorX, -1) << ", "
 			<< DPLData::getDouble(e, DPLUnitTest01::VectorY, -1) << ")" << endl;
 
 	int pc = DPLData::getRefCount(e, DPLUnitTest01::ShapePath);
 	for (int i = 0; i < pc; ++i) {
 		DPLEntity pt = DPLData::getRef(e, DPLUnitTest01::ShapePath, i);
 		cout << "   (" << DPLData::getDouble(pt, DPLUnitTest01::VectorX, -1) << ", "
-				<< DPLData::getDouble(pt, DPLUnitTest01::VectorY, -1)
-				<< ")" << endl;
+				<< DPLData::getDouble(pt, DPLUnitTest01::VectorY, -1) << ")" << endl;
 	}
 
 	return e;
@@ -64,12 +63,24 @@ void dump(DPLEntity e) {
 	DPLData::visit(e, &dumper, NULL);
 }
 
+DPLProcessResult HelloWorldSimple::dplProcess() {
+	cout << "Hello, world! from test01 " << count << endl;
+
+	if (!e) {
+		e = test();
+	}
+
+	dump(e);
+
+	return (++count < 5) ? DPL_PROCESS_ACCEPT : DPL_PROCESS_SUCCESS;
+}
+
+/*
 void testProc() {
 	cout << endl << "-- testProc --" << endl;
 
 	DPLEntity eProc = DPLData::createEntity(DPLUnitTest01::Test);
-	DPLData::setRef(eProc, DPLUnitModel::RefEntityActions,
-			DPLUnitTools::ActionDump, DPLUnitNarrative::CmdProcess);
+	DPLData::setRef(eProc, DPLUnitModel::RefEntityActions, DPLUnitTools::ActionDump, DPLUnitNarrative::CmdProcess);
 
 	DPLEntity eMsg;
 
@@ -88,7 +99,8 @@ void testSequence() {
 	DPLData::setString(eDump, DPLUnitText::AttTextString, "Hello world!");
 
 	DPLEntity eSequence = DPLData::createEntity(DPLUnitDust::TypeBlock);
-	DPLData::setRef(eSequence, DPLUnitModel::RefEntityActions, DPLUnitNarrative::ActionSequence, DPLUnitNarrative::CmdProcess);
+	DPLData::setRef(eSequence, DPLUnitModel::RefEntityActions, DPLUnitNarrative::ActionSequence,
+			DPLUnitNarrative::CmdProcess);
 	DPLData::setRef(eSequence, DPLUnitTools::RefCollectionMembers, eDump);
 	DPLData::setRef(eSequence, DPLUnitTools::RefCollectionMembers, eDump);
 
@@ -100,29 +112,23 @@ void testReadFile() {
 
 	DPLEntity eStream = DPLData::createEntity(DPLUnitTools::TypeStream);
 	DPLData::setString(eStream, DPLUnitTools::AttStreamURL, "test1.json");
-	DPLData::setRef(eStream, DPLUnitModel::RefEntityActions, DPLUnitTools::ActionReadStream, DPLUnitNarrative::CmdProcess);
+	DPLData::setRef(eStream, DPLUnitModel::RefEntityActions, DPLUnitTools::ActionReadStream,
+			DPLUnitNarrative::CmdProcess);
 
 	DPLEntity eDump = DPLData::createEntity(DPLUnitTools::TypeStream);
 	DPLData::setRef(eDump, DPLUnitModel::RefEntityActions, DPLUnitTools::ActionDump, DPLUnitNarrative::CmdProcess);
 
 	DPLEntity eSequence = DPLData::createEntity(DPLUnitDust::TypeBlock);
-	DPLData::setRef(eSequence, DPLUnitModel::RefEntityActions, DPLUnitNarrative::ActionSequence, DPLUnitNarrative::CmdProcess);
+	DPLData::setRef(eSequence, DPLUnitModel::RefEntityActions, DPLUnitNarrative::ActionSequence,
+			DPLUnitNarrative::CmdProcess);
 	DPLData::setRef(eSequence, DPLUnitTools::RefCollectionMembers, eStream);
 	DPLData::setRef(eSequence, DPLUnitTools::RefCollectionMembers, eDump);
 
 	DPLEntity eRepeat = DPLData::createEntity(DPLUnitDust::TypeBlock);
-	DPLData::setRef(eRepeat, DPLUnitModel::RefEntityActions, DPLUnitNarrative::ActionRepeat, DPLUnitNarrative::CmdProcess);
+	DPLData::setRef(eRepeat, DPLUnitModel::RefEntityActions, DPLUnitNarrative::ActionRepeat,
+			DPLUnitNarrative::CmdProcess);
 	DPLData::setRef(eRepeat, DPLUnitTools::RefLinkTarget, eSequence);
 
 	DPLData::getRef(eRepeat, DPLUnitNarrative::CmdProcess);
 }
-
-DPLProcessResult HelloWorldSimple::dplProcess() {
-	cout << "Hello, world! from test01" << endl;
-
-	DPLEntity e = test();
-
-	dump(e);
-
-	return DPL_PROCESS_SUCCESS;
-}
+*/

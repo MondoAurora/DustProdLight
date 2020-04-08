@@ -4,6 +4,7 @@
 using namespace DPLUnitNarrative;
 using namespace DPLUnitDialog;
 using namespace DPLUnitTools;
+using namespace DPLUnitDust;
 
 class DustProdLightProcModule: public DPLModule {
 public:
@@ -14,30 +15,27 @@ public:
 	virtual void init() {
 		DustProdLightRuntime::init();
 
-		DPLData::setRef(ActionDump, DPL_MBI_REF_CONNECTED_EXTENDS, DPL_MBI_SVC_PROCESSOR);
-		DPLData::setRef(ActionReadStream, DPL_MBI_REF_CONNECTED_EXTENDS, DPL_MBI_SVC_PROCESSOR);
+		DPLData::setRef(ActionDump, DPL_MBI_REF_CONNECTED_EXTENDS, SvcAction);
+		DPLData::setRef(ActionReadStream, DPL_MBI_REF_CONNECTED_EXTENDS, SvcAction);
 
 		DPLMain::registerLogicProvider(this,
-				ActionSequence, ActionSelect, ActionRepeat, ActionSignal,
-				ActionAgent, ActionDialogTokenRing,
+				ActionCtrlSequence, ActionCtrlSelect, ActionCtrlRepeat,
+				ActionExecAtom, ActionExecAgent, ActionExecDialog,
 				ActionReadStream, ActionDump,
 				DPL_ENTITY_INVALID);
 	}
 
 	virtual DPLAction* createLogic(int logicId) const {
-			if (ActionSequence == logicId) {
+			if (ActionCtrlSequence == logicId) {
 				return new ProcActionSequence();
-			} else if ( ActionSelect == logicId) {
+			} else if ( ActionCtrlSelect == logicId) {
 				return new ProcActionSelect();
-			}	else if ( ActionRepeat == logicId ) {
+			}	else if ( ActionCtrlRepeat == logicId ) {
 				return new ProcActionRepeat();
 
-			}	else if ( ActionSignal == logicId ) {
-				return new ProcActionSignal();
-
-			}	else if ( ActionAgent == logicId ) {
+			}	else if ( ActionExecAgent == logicId ) {
 				return new DustProdLightAgent();
-			}	else if ( ActionDialogTokenRing == logicId ) {
+			}	else if ( ActionExecDialog == logicId ) {
 				return new DustProdLightDialogTokenRing();
 
 			}	else if ( ActionReadStream == logicId ) {
@@ -50,19 +48,16 @@ public:
 	}
 
 	virtual void releaseLogic(int logicId, DPLAction* pLogic) const {
-			if (ActionSequence == logicId) {
+			if (ActionCtrlSequence == logicId) {
 				delete (ProcActionSequence*) pLogic;
-			} else if ( ActionSelect == logicId) {
+			} else if ( ActionCtrlSelect == logicId) {
 				delete (ProcActionSelect*) pLogic;
-			} else if ( ActionRepeat == logicId) {
+			} else if ( ActionCtrlRepeat == logicId) {
 				delete (ProcActionRepeat*) pLogic;
 
-			} else if ( ActionSignal == logicId) {
-				delete (ProcActionSignal*) pLogic;
-
-			} else if ( ActionAgent == logicId) {
+			} else if ( ActionExecAgent == logicId) {
 				delete (DustProdLightAgent*) pLogic;
-			} else if ( ActionDialogTokenRing == logicId) {
+			} else if ( ActionExecDialog == logicId) {
 				delete (DustProdLightDialogTokenRing*) pLogic;
 
 			} else if ( ActionReadStream == logicId) {

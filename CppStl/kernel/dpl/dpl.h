@@ -36,7 +36,6 @@ enum DPLTokenType {
 
 	DPL_TOKEN_ENTITY,
 	DPL_TOKEN_ACTION,
-	DPL_TOKEN_TASK,
 
 	DPL_TOKEN_STORE,
 	DPL_TOKEN_UNIT,
@@ -76,7 +75,7 @@ enum DPLSignal {
 };
 
 enum DPLProcessResult {
-	DPL_PROCESS_REJECT = DPL_SIGNAL_, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT, /*DPL_PROCESS_RELAY,*/ DPL_PROCESS_
+	DPL_PROCESS_REJECT = DPL_SIGNAL_, DPL_PROCESS_SUCCESS, DPL_PROCESS_ACCEPT, DPL_PROCESS_NOTIMPLEMENTED, /*DPL_PROCESS_RELAY,*/ DPL_PROCESS_
 };
 
 enum DPLFilterResponse {
@@ -92,7 +91,6 @@ enum DPLFilterResponse {
 #define DPL_SEP_ID "."
 #define DPL_SEP_STORE ":"
 
-
 class DPLError {
 public:
 	const DPLEntity eEvent;
@@ -100,7 +98,36 @@ public:
 	DPLError(DPLEntity eEvent_) : eEvent(eEvent_) {};
 };
 
-class DPLAction {
+
+class DPLNarrativeResource {
+public:
+	virtual ~DPLNarrativeResource() {
+	}
+
+	// Flags are tags on the Meta entity, not handled in code!
+//	virtual bool dplIsReusable() {
+//		return true;
+//	}
+
+	virtual DPLProcessResult dplResourceInit() {
+		return DPL_PROCESS_SUCCESS;
+	}
+	virtual DPLProcessResult dplResourceRelease() {
+		return DPL_PROCESS_SUCCESS;
+	}
+};
+
+class DPLNarrativeAction {
+public:
+	virtual ~DPLNarrativeAction() {
+	}
+	virtual DPLProcessResult dplActionExecute() {
+		return DPL_PROCESS_NOTIMPLEMENTED;
+	}
+};
+
+
+class DPLAction : public DPLNarrativeResource, DPLNarrativeAction {
 public:
 	inline static bool optProcess(DPLAction* action, DPLProcessResult &result) {
 		if ( action ) {
@@ -114,12 +141,8 @@ public:
 	virtual ~DPLAction() {
 	}
 
-	virtual bool dplIsReusable() {
-		return true;
-	}
-	virtual void dplInit() {
-	}
-	virtual void dplRelease() {
+	virtual DPLProcessResult dplActionExecute() {
+		return dplProcess();
 	}
 
 	virtual DPLProcessResult dplProcess() = 0;
@@ -139,6 +162,9 @@ public:
 
 	virtual DPLAction* createLogic(int logicId) const {
 		return NULL;
+	}
+	virtual DPLProcessResult dispatchCommand(int logicId, DPLAction* pLogic, DPLEntity cmd, DPLEntity param = DPL_ENTITY_INVALID) const {
+		return DPL_PROCESS_NOTIMPLEMENTED;
 	}
 	virtual void releaseLogic(int logicId, DPLAction* pLogic) const {
 	}

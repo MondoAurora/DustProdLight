@@ -29,50 +29,66 @@ namespace DPLUnitIdea {
 extern const DPLEntity UnitIdea;
 
 extern const DPLEntity TypeType;
+extern const DPLEntity RefTypeDefaultActions;
+
 extern const DPLEntity TypeAttribute;
 extern const DPLEntity TypeReference;
 extern const DPLEntity TypeTag;
+
+extern const DPLEntity TypeService;
+extern const DPLEntity TypeCommand;
 }
 
 namespace DPLUnitNarrative {
-
 extern const DPLEntity UnitNarrative;
 
-extern const DPLEntity ActionSequence;
-extern const DPLEntity ActionSelect;
-extern const DPLEntity ActionRepeat;
+extern const DPLEntity TypeAction;
 
-extern const DPLEntity SvcProcessor;
-extern const DPLEntity CmdProcess;
+extern const DPLEntity TypeCtrlSequence;
+extern const DPLEntity TypeCtrlSelect;
+extern const DPLEntity TypeCtrlRepeat;
+
+extern const DPLEntity TypeExecAtom;
+extern const DPLEntity RefExecAtomCommand;
+extern const DPLEntity RefExecAtomTarget;
+
+extern const DPLEntity TypeExecAgent;
+
+extern const DPLEntity TypeExecDialog;
+
+extern const DPLEntity TypeExecScheduleTokenRing;
+
+extern const DPLEntity SvcAction;
+extern const DPLEntity CmdActionExecute;
+
+extern const DPLEntity SvcResource;
+extern const DPLEntity CmdResourceInit;
+extern const DPLEntity CmdResourceRelease;
 }
 
 namespace DPLUnitDialog {
-
 extern const DPLEntity UnitDialog;
-
-extern const DPLEntity TypeTask;
-extern const DPLEntity RefTaskCommand;
-extern const DPLEntity RefTaskTarget;
-
-extern const DPLEntity TypeDialog;
-extern const DPLEntity AttDialogActiveAgent;
-
-extern const DPLEntity TypeAgent;
-extern const DPLEntity RefAgentRelay;
-
-extern const DPLEntity ActionDialogTokenRing;
-extern const DPLEntity ActionAgent;
-extern const DPLEntity ActionSignal;
 }
 
 namespace DPLUnitDust {
 extern const DPLEntity UnitDust;
+
 extern const DPLEntity TypeSystem;
 extern const DPLEntity TypeModule;
 extern const DPLEntity TypeRuntime;
 extern const DPLEntity TypeBlock;
 
 extern const DPLEntity RefRuntimeMain;
+
+extern const DPLEntity ActionCtrlSequence;
+extern const DPLEntity ActionCtrlSelect;
+extern const DPLEntity ActionCtrlRepeat;
+
+extern const DPLEntity ActionExecAtom;
+extern const DPLEntity ActionExecAgent;
+extern const DPLEntity ActionExecDialog;
+
+
 }
 
 namespace DPLUnitTools {
@@ -97,6 +113,11 @@ extern const DPLEntity AttStreamOK;
 
 extern const DPLEntity ActionReadStream;
 extern const DPLEntity ActionDump;
+
+extern const DPLEntity TypeLimits;
+extern const DPLEntity AttLimitsIntMin;
+extern const DPLEntity AttLimitsIntMax;
+
 }
 
 namespace DPLUnitText {
