@@ -40,6 +40,7 @@ const DPLEntity DPLUnitNarrative::TypeCtrlRepeat = DPLData::getMetaEntity(DPL_TO
 const DPLEntity DPLUnitNarrative::TypeExecAtom = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Atom", DPLUnitNarrative::UnitNarrative);
 const DPLEntity DPLUnitNarrative::RefExecAtomCommand = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Command", DPLUnitNarrative::TypeExecAtom);
 const DPLEntity DPLUnitNarrative::RefExecAtomTarget = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Target", DPLUnitNarrative::TypeExecAtom);
+const DPLEntity DPLUnitNarrative::RefExecAtomParam = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Param", DPLUnitNarrative::TypeExecAtom);
 
 const DPLEntity DPLUnitNarrative::TypeExecAgent = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Agent", DPLUnitNarrative::UnitNarrative);
 const DPLEntity DPLUnitNarrative::TypeExecDialog = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Dialog", DPLUnitNarrative::UnitNarrative);
@@ -67,9 +68,9 @@ const DPLEntity DPLUnitDust::ActionCtrlSequence = DPLData::getMetaEntity(DPL_TOK
 const DPLEntity DPLUnitDust::ActionCtrlSelect = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Select", DPLUnitDust::UnitDust);
 const DPLEntity DPLUnitDust::ActionCtrlRepeat = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Repeat", DPLUnitDust::UnitDust);
 
-const DPLEntity DPLUnitDust::ActionExecAtom = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Atom", DPLUnitDust::UnitDust);
-const DPLEntity DPLUnitDust::ActionExecAgent = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Agent", DPLUnitDust::UnitDust);
-const DPLEntity DPLUnitDust::ActionExecDialog = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Dialog", DPLUnitDust::UnitDust);
+//const DPLEntity DPLUnitDust::ActionExecAtom = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Atom", DPLUnitDust::UnitDust);
+//const DPLEntity DPLUnitDust::ActionExecAgent = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Agent", DPLUnitDust::UnitDust);
+//const DPLEntity DPLUnitDust::ActionExecDialog = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Dialog", DPLUnitDust::UnitDust);
 
 const DPLEntity DPLUnitTools::UnitTools = DPL_MBI_UNIT_TOOLS;
 

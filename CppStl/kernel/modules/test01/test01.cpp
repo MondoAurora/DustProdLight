@@ -64,7 +64,7 @@ void dump(DPLEntity e) {
 }
 
 DPLProcessResult HelloWorldSimple::dplProcess() {
-	cout << "Hello, world! from test01 " << count << endl;
+	cout << "Hello, world! from test01 " << count++ << endl;
 
 	if (!e) {
 		e = test();
@@ -72,7 +72,8 @@ DPLProcessResult HelloWorldSimple::dplProcess() {
 
 	dump(e);
 
-	return (++count < 5) ? DPL_PROCESS_ACCEPT : DPL_PROCESS_SUCCESS;
+	return DPL_PROCESS_SUCCESS;
+//	return (++count < 5) ? DPL_PROCESS_ACCEPT : DPL_PROCESS_SUCCESS;
 }
 
 /*

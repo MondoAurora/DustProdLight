@@ -68,6 +68,7 @@ class DustProdLightEntity {
 	friend class DustProdLightRuntime;
 	friend class DustProdLightBlock;
 	friend class DustProdLightAgent;
+	friend class DustProdLightStore;
 
 public:
 	DustProdLightEntity();
@@ -136,8 +137,13 @@ public:
 };
 
 class DustProdLightStore {
-	int nextEntityId;
+	int lastEntityId;
 	map<int, DustProdLightEntity> emapLocal;
+
+public:
+	DustProdLightStore();
+
+	DustProdLightEntity *resolve(DPLEntity e);
 
 	friend DustProdLightEntity;
 	friend DPLData;

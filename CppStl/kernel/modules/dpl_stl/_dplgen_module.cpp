@@ -20,7 +20,7 @@ public:
 
 		DPLMain::registerLogicProvider(this,
 				ActionCtrlSequence, ActionCtrlSelect, ActionCtrlRepeat,
-				ActionExecAtom, ActionExecAgent, ActionExecDialog,
+//				ActionExecAtom, ActionExecAgent, ActionExecDialog,
 				ActionReadStream, ActionDump,
 				DPL_ENTITY_INVALID);
 	}
@@ -33,10 +33,10 @@ public:
 			}	else if ( ActionCtrlRepeat == logicId ) {
 				return new ProcActionRepeat();
 
-			}	else if ( ActionExecAgent == logicId ) {
-				return new DustProdLightAgent();
-			}	else if ( ActionExecDialog == logicId ) {
-				return new DustProdLightDialogTokenRing();
+//			}	else if ( ActionExecAgent == logicId ) {
+//				return new DustProdLightAgent();
+//			}	else if ( ActionExecDialog == logicId ) {
+//				return new DustProdLightDialogTokenRing();
 
 			}	else if ( ActionReadStream == logicId ) {
 				return new DPLUActionStreamReader();
@@ -55,10 +55,10 @@ public:
 			} else if ( ActionCtrlRepeat == logicId) {
 				delete (ProcActionRepeat*) pLogic;
 
-			} else if ( ActionExecAgent == logicId) {
-				delete (DustProdLightAgent*) pLogic;
-			} else if ( ActionExecDialog == logicId) {
-				delete (DustProdLightDialogTokenRing*) pLogic;
+//			} else if ( ActionExecAgent == logicId) {
+//				delete (DustProdLightAgent*) pLogic;
+//			} else if ( ActionExecDialog == logicId) {
+//				delete (DustProdLightDialogTokenRing*) pLogic;
 
 			} else if ( ActionReadStream == logicId) {
 				delete (DPLUActionStreamReader*) pLogic;

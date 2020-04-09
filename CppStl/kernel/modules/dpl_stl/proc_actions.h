@@ -46,7 +46,6 @@ public:
 class ProcActionControl: public DPLAction {
 private:
 	map<DPLEntity, DustProdLightBlock*> mapChildBlocks;
-	DustProdLightAgent *pOwnAgent = NULL;
 
 protected:
 	void requestRelay(DPLEntity relay);

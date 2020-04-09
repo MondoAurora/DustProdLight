@@ -85,6 +85,7 @@ enum DPLFilterResponse {
 #define DPL_LAST_CONST DPL_FILTER_
 
 #define DPL_REFKEY_ARR_APPEND -1
+#define DPL_ENTITY_APPEND -1
 
 #define DPL_ERR_UNSPECIFIED -1
 

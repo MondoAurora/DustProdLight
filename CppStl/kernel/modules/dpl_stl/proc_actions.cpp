@@ -11,12 +11,11 @@ using namespace DPLUnitText;
 using namespace DPLUnitTools;
 using namespace DPLUnitDialog;
 
-
 DPLProcessResult DPLUActionStreamReader::dplProcess() {
 	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_TRANSACTION);
 	bool ok;
 
-	if ( !inStream.is_open() ) {
+	if (!inStream.is_open()) {
 		pos = 0;
 		string sName = DPLData::getString(ctx, AttStreamURL, "");
 		inStream.open(sName);
@@ -40,7 +39,7 @@ DPLProcessResult DPLUActionStreamReader::dplProcess() {
 }
 
 void DPLUActionStreamReader::dplRelease() {
-	if ( inStream.is_open() ) {
+	if (inStream.is_open()) {
 		inStream.close();
 	}
 }
@@ -54,12 +53,12 @@ DPLProcessResult DPLUActionDump::dplProcess() {
 	} else {
 		string str = DPLData::getString(eParam, AttTextString, "");
 
-		if ( !str.length() ) {
+		if (!str.length()) {
 			DPLEntity eSelf = DPLData::getEntityByPath(DPL_CTX_SELF, DPL_ENTITY_INVALID);
 			str = DPLData::getString(eSelf, AttTextString, "");
 		}
 
-		if ( str.length() ) {
+		if (str.length()) {
 			cout << str << endl;
 			return DPL_PROCESS_SUCCESS;
 		}
@@ -67,14 +66,12 @@ DPLProcessResult DPLUActionDump::dplProcess() {
 	}
 }
 
-
-
 void ProcActionControl::requestRelay(DPLEntity relay) {
 	DustProdLightCore *pC = DustProdLightCore::getCurrentCore();
 
 	DustProdLightBlock *pb = mapChildBlocks[relay];
 
-	if ( !pb ) {
+	if (!pb) {
 		pb = new DustProdLightBlock();
 		DustProdLightEntity *pe = pC->pBlock->getEntity(relay);
 		pb->init(pe, pC->pBlock);
@@ -83,8 +80,8 @@ void ProcActionControl::requestRelay(DPLEntity relay) {
 
 	DustProdLightAgent *pa = pC->pAgent;
 
-	if ( !pa ) {
-		pOwnAgent = pa = new DustProdLightAgent();
+	if (!pa) {
+		pC->pAgent = pC->pBlock->pOwnAgent = pa = new DustProdLightAgent();
 		pa->stack[0] = pC->pBlock;
 	}
 
@@ -97,16 +94,12 @@ ProcActionControl::~ProcActionControl() {
 		DustProdLightBlock *pb = iter->second;
 		delete pb;
 	}
-
-	if ( pOwnAgent ) {
-		delete pOwnAgent;
-	}
 }
-
 
 DPLProcessResult ProcActionSequence::dplProcess() {
 	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF);
-	requestRelay(inSep ? DPLData::getRef(ctx, RefCollectionSeparator, 0) : DPLData::getRef(ctx, RefCollectionMembers, pos));
+	requestRelay(
+			inSep ? DPLData::getRef(ctx, RefCollectionSeparator, 0) : DPLData::getRef(ctx, RefCollectionMembers, pos));
 	return DPL_PROCESS_ACCEPT;
 }
 
@@ -148,9 +141,16 @@ DPLProcessResult ProcActionSelect::dplChildReturned(DPLProcessResult childResult
 }
 
 DPLProcessResult ProcActionRepeat::dplProcess() {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF);
-	requestRelay(inSep ? DPLData::getRef(ctx, RefCollectionSeparator, 0) : DPLData::getRef(ctx, RefLinkTarget, 0));
-	return DPL_PROCESS_ACCEPT;
+	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF, DPL_ENTITY_INVALID);
+	int max = DPLData::getInt(ctx, DPLUnitTools::AttLimitsIntMax, -1);
+
+	if (count++ < max) {
+		DPLEntity r = inSep ? DPLData::getRef(ctx, RefCollectionSeparator, 0) : DPLData::getRef(ctx, RefLinkTarget, 0);
+		requestRelay(r);
+		return DPL_PROCESS_ACCEPT;
+	} else {
+		return DPL_PROCESS_SUCCESS;
+	}
 }
 
 DPLProcessResult ProcActionRepeat::dplChildReturned(DPLProcessResult childResult) {
@@ -172,7 +172,6 @@ DPLProcessResult ProcActionRepeat::dplChildReturned(DPLProcessResult childResult
 
 	return DPL_PROCESS_REJECT;
 }
-
 
 /****************************
  *

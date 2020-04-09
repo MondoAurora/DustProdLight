@@ -51,6 +51,7 @@ extern const DPLEntity TypeCtrlRepeat;
 extern const DPLEntity TypeExecAtom;
 extern const DPLEntity RefExecAtomCommand;
 extern const DPLEntity RefExecAtomTarget;
+extern const DPLEntity RefExecAtomParam;
 
 extern const DPLEntity TypeExecAgent;
 
@@ -84,9 +85,9 @@ extern const DPLEntity ActionCtrlSequence;
 extern const DPLEntity ActionCtrlSelect;
 extern const DPLEntity ActionCtrlRepeat;
 
-extern const DPLEntity ActionExecAtom;
-extern const DPLEntity ActionExecAgent;
-extern const DPLEntity ActionExecDialog;
+//extern const DPLEntity ActionExecAtom;
+//extern const DPLEntity ActionExecAgent;
+//extern const DPLEntity ActionExecDialog;
 
 
 }

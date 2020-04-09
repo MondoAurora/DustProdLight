@@ -24,18 +24,27 @@ using namespace std;
 typedef map<int, DustProdLightEntity*>::iterator EntityPtrIterator;
 typedef map<int, DustProdLightEntity>::iterator EntityIterator;
 
+class DustProdLightAgent;
+
 class DustProdLightBlock: public DPLAction {
 private:
 	DPLBlock blockType;
+	DPLEntity cmd;
+
 	map<int, DustProdLightEntity*> emapRef;
 	DustProdLightStore *pStore;
 
 	DPLAction* pAction;
+	DustProdLightAgent *pOwnAgent = NULL;
 
 public:
+	DustProdLightBlock();
+	~DustProdLightBlock();
+
 	DustProdLightEntity* getEntity(DPLEntity e) ;
 
-	void init(DustProdLightEntity *pTask, DustProdLightBlock *pParent);
+	DPLProcessResult init(DustProdLightEntity *pSelf, DustProdLightBlock *pParent);
+
 	virtual DPLProcessResult dplProcess();
 	void release();
 
@@ -43,6 +52,7 @@ public:
 	friend class DPLMain;
 	friend class DustProdLightRuntime;
 	friend class DustProdLightAgent;
+	friend class ProcActionControl;
 };
 
 typedef map<DPLEntity, DustProdLightBlock*>::const_iterator BlockIterator;
@@ -94,6 +104,7 @@ public:
 
 	friend class DPLData;
 	friend class DPLMain;
+	friend class DustProdLightBlock;
 	friend class DustProdLightAgent;
 	friend class DustProdLightRuntime;
 	friend class ProcActionControl;
