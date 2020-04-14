@@ -105,11 +105,6 @@ public:
 	virtual ~DPLNarrativeResource() {
 	}
 
-	// Flags are tags on the Meta entity, not handled in code!
-//	virtual bool dplIsReusable() {
-//		return true;
-//	}
-
 	virtual DPLProcessResult dplResourceInit() {
 		return DPL_PROCESS_SUCCESS;
 	}
@@ -128,29 +123,10 @@ public:
 };
 
 
-class DPLAction : public DPLNarrativeResource, DPLNarrativeAction {
+class DPLNarrativeLogic : public DPLNarrativeResource, public DPLNarrativeAction {
 public:
-	inline static bool optProcess(DPLAction* action, DPLProcessResult &result) {
-		if ( action ) {
-			result = action->dplProcess();
-			return true;
-		} else {
-			return false;
-		}
+	virtual ~DPLNarrativeLogic() {
 	}
-
-	virtual ~DPLAction() {
-	}
-
-	virtual DPLProcessResult dplActionExecute() {
-		return dplProcess();
-	}
-
-	virtual DPLProcessResult dplProcess() = 0;
-
-//	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse) {
-//		return DPL_PROCESS_REJECT;
-//	}
 };
 
 class DPLModule {
@@ -161,13 +137,13 @@ public:
 	virtual void init() {}
 	virtual void release() {}
 
-	virtual DPLAction* createLogic(int logicId) const {
+	virtual DPLNarrativeLogic* createLogic(int logicId) const {
 		return NULL;
 	}
-	virtual DPLProcessResult dispatchCommand(int logicId, DPLAction* pLogic, DPLEntity cmd, DPLEntity param = DPL_ENTITY_INVALID) const {
+	virtual DPLProcessResult dispatchCommand(int logicId, DPLNarrativeLogic* pLogic, DPLEntity cmd, DPLEntity param = DPL_ENTITY_INVALID) const {
 		return DPL_PROCESS_NOTIMPLEMENTED;
 	}
-	virtual void releaseLogic(int logicId, DPLAction* pLogic) const {
+	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
 	}
 };
 

@@ -14,6 +14,7 @@ using namespace DPLUnitNarrative;
 using namespace DPLUnitModel;
 using namespace DPLUnitTest01;
 using namespace DPLUnitDust;
+using namespace DPLUnitTools;
 
 void DPLMain::init() {
 	DPLModuleDplStl::Module->init();
@@ -32,6 +33,10 @@ void DPLMain::init() {
 	DPLEntity eProc = DPLData::createEntity(TypeHelloWorldSimple);
 	DPLData::setRef(eProc, RefEntityActions, ActionHelloWorldSimple, CmdActionExecute);
 
+	DPLEntity eSep = DPLData::createEntity(Test);
+	DPLData::setRef(eSep, RefEntityActions, ActionDump, CmdActionExecute);
+	DPLData::setString(eSep, DPLUnitText::AttTextString, "\n=======================\n");
+
 //	DPLEntity eTask = DPLData::createEntity(DPLUnitNarrative::TypeExecAtom);
 //	DPLData::setRef(eTask, DPLUnitNarrative::RefExecAtomTarget, eProc);
 
@@ -39,6 +44,7 @@ void DPLMain::init() {
 	DPLData::setRef(eMain, RefEntityActions, ActionCtrlRepeat, CmdActionExecute);
 	DPLData::setInt(eMain, DPLUnitTools::AttLimitsIntMax, 5);
 	DPLData::setRef(eMain, DPLUnitTools::RefLinkTarget, eProc);
+	DPLData::setRef(eMain, DPLUnitTools::RefCollectionSeparator, eSep);
 //	DPLData::setRef(eMain, DPLUnitTools::RefCollectionMembers, eTask);
 
 	DPLData::setRef(DPL_CTX_RUNTIME, RefRuntimeMain, eMain);

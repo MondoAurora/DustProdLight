@@ -25,7 +25,7 @@ public:
 				DPL_ENTITY_INVALID);
 	}
 
-	virtual DPLAction* createLogic(int logicId) const {
+	virtual DPLNarrativeLogic* createLogic(int logicId) const {
 			if (ActionCtrlSequence == logicId) {
 				return new ProcActionSequence();
 			} else if ( ActionCtrlSelect == logicId) {
@@ -47,7 +47,7 @@ public:
 		return NULL;
 	}
 
-	virtual void releaseLogic(int logicId, DPLAction* pLogic) const {
+	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
 			if (ActionCtrlSequence == logicId) {
 				delete (ProcActionSequence*) pLogic;
 			} else if ( ActionCtrlSelect == logicId) {

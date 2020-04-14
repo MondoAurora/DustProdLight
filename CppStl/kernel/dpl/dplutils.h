@@ -29,6 +29,17 @@ enum DPLUtilsIndent {
 class DPLUtils {
 public:
 	static string getGlobalId(DPLEntity entity);
+	static DPLNarrativeLogic *getNullLogic();
+
+	inline static bool optProcess(DPLNarrativeLogic* logic, DPLProcessResult &result) {
+		if ( logic ) {
+			result = logic->dplActionExecute();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 };
 
 class DPLUStringContainer {

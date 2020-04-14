@@ -240,3 +240,16 @@ void DPLUStream::process(const char* fName, DPLUCodepointTarget *target) {
 		target->addCodePoint(ds.getNextCodePoint());
 	}
 }
+
+class DPLActionNull : public DPLNarrativeLogic {
+public:
+	virtual DPLProcessResult dplActionExecute() {
+		return DPL_PROCESS_SUCCESS;
+	}
+};
+
+DPLActionNull NULL_ACTION;
+
+DPLNarrativeLogic *DPLUtils::getNullLogic() {
+	return &NULL_ACTION;
+}

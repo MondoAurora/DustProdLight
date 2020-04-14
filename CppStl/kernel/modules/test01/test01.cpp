@@ -63,7 +63,7 @@ void dump(DPLEntity e) {
 	DPLData::visit(e, &dumper, NULL);
 }
 
-DPLProcessResult HelloWorldSimple::dplProcess() {
+DPLProcessResult HelloWorldSimple::dplActionExecute() {
 	cout << "Hello, world! from test01 " << count++ << endl;
 
 	if (!e) {

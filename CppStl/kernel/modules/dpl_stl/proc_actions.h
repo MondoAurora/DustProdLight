@@ -21,21 +21,21 @@
 
 using namespace std;
 
-class DPLUActionDump: public DPLAction {
+class DPLUActionDump: public DPLNarrativeLogic {
 public:
 	virtual ~DPLUActionDump() {
 	}
-	virtual DPLProcessResult dplProcess();
+	virtual DPLProcessResult dplActionExecute();
 };
 
-class DPLUActionStreamReader: public DPLAction {
+class DPLUActionStreamReader: public DPLNarrativeLogic {
 	ifstream inStream;
 	int pos;
 
 public:
 	virtual ~DPLUActionStreamReader() {
 	}
-	virtual DPLProcessResult dplProcess();
+	virtual DPLProcessResult dplActionExecute();
 	virtual void dplRelease();
 };
 
@@ -43,7 +43,7 @@ public:
 
 
 
-class ProcActionControl: public DPLAction {
+class ProcActionControl: public DPLNarrativeLogic {
 private:
 	map<DPLEntity, DustProdLightBlock*> mapChildBlocks;
 
@@ -63,8 +63,7 @@ class ProcActionRepeat: public ProcActionControl {
 public:
 	virtual ~ProcActionRepeat() {
 	}
-	virtual DPLProcessResult dplProcess();
-	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
+	virtual DPLProcessResult dplActionExecute();
 };
 
 class ProcActionSequence: public ProcActionControl {
@@ -74,8 +73,7 @@ class ProcActionSequence: public ProcActionControl {
 public:
 	virtual ~ProcActionSequence() {
 	}
-	virtual DPLProcessResult dplProcess();
-	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
+	virtual DPLProcessResult dplActionExecute();
 };
 
 class ProcActionSelect: public ProcActionControl {
@@ -84,27 +82,8 @@ class ProcActionSelect: public ProcActionControl {
 public:
 	virtual ~ProcActionSelect() {
 	}
-	virtual DPLProcessResult dplProcess();
-	virtual DPLProcessResult dplChildReturned(DPLProcessResult childResponse);
+	virtual DPLProcessResult dplActionExecute();
 };
 
-
-
-
-
-
-class DustProdLightDialogTokenRing: public DPLAction {
-	vector<DustProdLightAgent*> agents;
-	int currAgent = 0;
-
-public:
-	DustProdLightDialogTokenRing();
-	virtual ~DustProdLightDialogTokenRing();
-
-	virtual DPLProcessResult dplProcess();
-
-	friend class DPLMain;
-	friend class DPLProc;
-};
 
 #endif /* DPL_IMPL_PROC_ACTIONS_H_ */

@@ -19,7 +19,7 @@ public:
 				DPL_ENTITY_INVALID);
 	}
 
-	virtual DPLAction* createLogic(int logicId) const {
+	virtual DPLNarrativeLogic* createLogic(int logicId) const {
 			if (ActionHelloWorldSimple == logicId) {
 				return new HelloWorldSimple();
 			}
@@ -27,7 +27,7 @@ public:
 		return NULL;
 	}
 
-	virtual void releaseLogic(int logicId, DPLAction* pLogic) const {
+	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
 			if (ActionHelloWorldSimple == logicId) {
 				delete (HelloWorldSimple*) pLogic;
 			}

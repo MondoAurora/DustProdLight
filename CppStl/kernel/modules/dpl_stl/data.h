@@ -56,7 +56,7 @@ class DustProdLightEntity {
 	map<int, DustProdLightValue> values;
 	map<int, DustProdLightRef*> refs;
 
-	map<DPLEntity, DPLAction*> *pActionByAction = NULL;
+	map<DPLEntity, DPLNarrativeLogic*> *pActionByAction = NULL;
 
 	void updated();
 	void optReloadMeta();
@@ -88,7 +88,7 @@ public:
 	string getString(DPLEntity token);
 	DPLEntity getRefEntity(DPLEntity token, int key);
 
-	DPLAction *getActionByCommand(DPLEntity cmd);
+	DPLNarrativeLogic *getLogicByCommand(DPLEntity cmd);
 	void releaseActions();
 };
 
@@ -97,7 +97,7 @@ typedef vector<DustProdLightRef*>::iterator RefVectorIterator;
 typedef map<int, DustProdLightValue>::iterator EntityValIterator;
 typedef map<int, DustProdLightRef*>::const_iterator EntityRefIterator;
 
-typedef map<DPLEntity, DPLAction*>::iterator ActionIterator;
+typedef map<DPLEntity, DPLNarrativeLogic*>::iterator ActionIterator;
 
 class DustProdLightRef {
 	DPLEntity token;

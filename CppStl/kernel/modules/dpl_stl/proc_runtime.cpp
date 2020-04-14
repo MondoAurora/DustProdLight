@@ -28,22 +28,15 @@ DustProdLightEntity *pRefMsgTarget = NULL;
 
 /*******************************
  *
- * DustProdLightBlock
+ * Block
  *
  *******************************/
 
 DustProdLightBlock::DustProdLightBlock() :
-		blockType(DPL_BLOCK_EXTERNAL), cmd(DPLUnitNarrative::CmdActionExecute), pStore(NULL), pAction(NULL) {
+		blockType(DPL_BLOCK_EXTERNAL), cmd(DPLUnitNarrative::CmdActionExecute), pStore(NULL), pLogic(NULL) {
 }
 
 DustProdLightBlock::~DustProdLightBlock() {
-	if (pOwnAgent) {
-		DustProdLightCore *pC = DustProdLightCore::getCurrentCore();
-		if (pOwnAgent == pC->pAgent) {
-			pC->pAgent = NULL;
-		}
-		delete pOwnAgent;
-	}
 }
 
 DustProdLightEntity* DustProdLightBlock::getEntity(DPLEntity e) {
@@ -83,26 +76,27 @@ DPLProcessResult DustProdLightBlock::init(DustProdLightEntity *pTask, DustProdLi
 	emapRef[DPL_CTX_COMMAND] = DustProdLightRuntime::pRuntime->resolveEntity(cmd);
 	emapRef[DPL_CTX_SELF] = pSelf;
 
-	pAction = pSelf->getActionByCommand(cmd);
+	pLogic = pSelf->getLogicByCommand(cmd);
 
 	return DPL_PROCESS_SUCCESS;
 }
 
-DPLProcessResult DustProdLightBlock::dplProcess() {
-	return pAction->dplProcess();
+DPLProcessResult DustProdLightBlock::dplActionExecute() {
+	return pLogic->dplActionExecute();
 }
 
-void DustProdLightBlock::release() {
+DPLProcessResult DustProdLightBlock::dplResourceRelease() {
 	DustProdLightEntity *pSelf = emapRef[DPL_CTX_SELF];
 
 	pSelf->releaseActions();
 
 	emapRef.clear();
+	return DPL_PROCESS_SUCCESS;
 }
 
 /****************************
  *
- * DustProdLightAgent
+ * Agent
  *
  ****************************/
 
@@ -111,21 +105,80 @@ DustProdLightAgent::DustProdLightAgent() {
 }
 
 DustProdLightAgent::~DustProdLightAgent() {
-
+	dplResourceRelease();
 }
 
-DPLProcessResult DustProdLightAgent::dplProcess() {
-	DustProdLightCore *pC = DustProdLightCore::getCurrentCore();
+DPLProcessResult DustProdLightAgent::dplActionExecute() {
+	DPLProcessResult ret = stack[stackPos]->dplActionExecute();
 
-	if (DPL_PROCESS_ACCEPT != pC->lastResult) {
+	if (DPL_PROCESS_ACCEPT != ret) {
 		if (0 < stackPos) {
-			pC->pBlock = stack[--stackPos];
-			return DPL_PROCESS_ACCEPT;
+			--stackPos;
+			ret = DPL_PROCESS_ACCEPT;
 		}
 	}
 
-	return pC->lastResult;
+	return ret;
 }
+
+DPLProcessResult DustProdLightAgent::dplResourceRelease() {
+	stack.clear();
+	stackPos = -1;
+	return DPL_PROCESS_SUCCESS;
+}
+
+void DustProdLightAgent::relayEntry(DustProdLightBlock *pBlockRelay) {
+	stack[++stackPos] = pBlockRelay;
+}
+
+void DustProdLightAgent::relayExit() {
+	stack[stackPos--] = NULL;
+}
+
+/****************************
+ *
+ * Dialog
+ *
+ ****************************/
+
+DustProdLightDialog::DustProdLightDialog() {
+	agents.resize(1);
+}
+
+DustProdLightDialog::~DustProdLightDialog() {
+	dplResourceRelease();
+}
+
+DPLProcessResult DustProdLightDialog::dplActionExecute() {
+	DPLProcessResult ret = agents[currAgent].dplActionExecute();
+
+	switch ( ret ) {
+	case DPL_PROCESS_REJECT:
+		if ( currAgent ) {
+			currAgent = 0;
+			ret = DPL_PROCESS_ACCEPT;
+		}
+		break;
+	case DPL_PROCESS_SUCCESS:
+		if ( currAgent + 1 < agents.size() ) {
+			++currAgent;
+			ret = DPL_PROCESS_ACCEPT;
+		}
+		break;
+	default:
+		// do nothing
+		break;
+	}
+
+	return ret;
+}
+
+DPLProcessResult DustProdLightDialog::dplResourceRelease() {
+	agents.clear();
+	currAgent = 0;
+	return DPL_PROCESS_SUCCESS;
+}
+
 
 /****************************
  *
@@ -133,36 +186,49 @@ DPLProcessResult DustProdLightAgent::dplProcess() {
  *
  ****************************/
 
-DustProdLightCoreSingle DustProdLightCoreSingle::singleCore;
-
-DustProdLightCore* DustProdLightCore::getCurrentCore() {
-	return &DustProdLightCoreSingle::singleCore;
-}
-
-DPLProcessResult DustProdLightCore::dplProcess() {
-	while (pBlock) {
-		lastResult = pBlock->dplProcess();
+DPLProcessResult DustProdLightCore::dplActionExecute() {
+	while (pDialog) {
+		lastResult = pDialog->dplActionExecute();
 		if (DPL_PROCESS_ACCEPT != lastResult) {
-			pBlock = NULL;
+			pDialog = NULL;
 		}
 
-		DPLAction::optProcess(pAgent, lastResult);
-		DPLAction::optProcess(pDialog, lastResult);
-		DPLAction::optProcess(DustProdLightRuntime::pRuntime->pScheduler, lastResult);
+		DustProdLightRuntime::pRuntime->pScheduler->dplActionExecute();
 	}
 
 	return lastResult;
 }
+
+DustProdLightEntity* DustProdLightCore::resolveEntity(DPLEntity entity) {
+	return pDialog ? pDialog->getAgent()->resolveEntity(entity) : NULL;
+}
+
+DPLProcessResult DustProdLightCore::run(int dlgIdx, DustProdLightBlock *pBlock) {
+	pDialog =  &DustProdLightRuntime::pRuntime->dialogs[dlgIdx];
+	pDialog->getAgent()->relayEntry(pBlock);
+
+	return dplActionExecute();
+}
+
+
 /****************************
  *
  * Runtime
  *
  ****************************/
 
-DustProdLightRuntime::DustProdLightRuntime() {
+DustProdLightRuntime::DustProdLightRuntime()
+:pScheduler(DPLUtils::getNullLogic()) {
+
+	cores.resize(1);
+	dialogs.resize(1);
 }
 
 DustProdLightRuntime::~DustProdLightRuntime() {
+}
+
+DustProdLightCore* DustProdLightRuntime::getCurrentCore() {
+	return &pRuntime->cores[0];
 }
 
 void DustProdLightRuntime::init() {
@@ -186,23 +252,18 @@ DustProdLightEntity *DustProdLightRuntime::getRootEntity(DPLEntity entity) {
 	return pRuntime->store.resolve(entity);
 }
 
-DPLAction *DustProdLightRuntime::createAction(DPLEntity eAction) {
+DPLNarrativeLogic *DustProdLightRuntime::createAction(DPLEntity eAction) {
 	DPLModule *pMod = pRuntime->logicFactory[eAction];
 	return pMod ? pMod->createLogic(eAction) : NULL;
 }
 
-void DustProdLightRuntime::releaseAction(DPLEntity eAction, DPLAction *pAction) {
+void DustProdLightRuntime::releaseAction(DPLEntity eAction, DPLNarrativeLogic *pAction) {
 	DPLModule *pMod = pRuntime->logicFactory[eAction];
 	pMod->releaseLogic(eAction, pAction);
 }
 
 DustProdLightEntity* DustProdLightRuntime::resolveEntity(DPLEntity entity) {
-	DustProdLightEntity *pE = NULL;
-	DustProdLightBlock *pB = DustProdLightCore::getCurrentCore()->pBlock;
-
-	if (pB) {
-		pE = pB->getEntity(entity);
-	}
+	DustProdLightEntity *pE = getCurrentCore()->resolveEntity(entity);
 
 	return pE ? pE : getRootEntity(entity);
 }
@@ -339,11 +400,6 @@ DPLEntity DPLData::getRef(DPLEntity entity, DPLEntity token, int key) {
 		return pR->getRef(key);
 	}
 
-//	DustProdLightEntity *pToken = DustProdLightRuntime::pRuntime->resolveEntity(token);
-//	if (DPL_TOKEN_COMMAND == pToken->tokenType) {
-//		return DustProdLightRuntime::pRuntime->pThreadActive->pAgent->getCurrBlock()->getMsgEntity(token, entity);
-//	}
-
 	return DPL_ENTITY_INVALID;
 }
 
@@ -354,7 +410,6 @@ DPLEntity DPLData::getRefKey(DPLEntity entity, DPLEntity token, int idx) {
 
 DPLEntity DPLData::getEntityByPath(DPLContext ctx, ...) {
 	DPLEntity e = ctx;
-//	DPLEntity e = DustProdLightImplementation::optResolveContext(ctx);
 
 	DustProdLightRef *pR = NULL;
 
@@ -469,13 +524,7 @@ DPLProcessResult DPLMain::run() {
 		DustProdLightBlock mainBlock;
 		mainBlock.init(pTask, NULL);
 
-		DustProdLightCore *pC = DustProdLightCore::getCurrentCore();
-		pC->pBlock = &mainBlock;
-
-		pC->dplProcess();
-
-		return pC->lastResult;
-
+		return DustProdLightRuntime::getCurrentCore()->run(0, &mainBlock);
 	} else {
 		return DPL_PROCESS_SUCCESS;
 	}

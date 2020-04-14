@@ -26,7 +26,7 @@ typedef map<int, DustProdLightEntity>::iterator EntityIterator;
 
 class DustProdLightAgent;
 
-class DustProdLightBlock: public DPLAction {
+class DustProdLightBlock: public DPLNarrativeLogic {
 private:
 	DPLBlock blockType;
 	DPLEntity cmd;
@@ -34,8 +34,7 @@ private:
 	map<int, DustProdLightEntity*> emapRef;
 	DustProdLightStore *pStore;
 
-	DPLAction* pAction;
-	DustProdLightAgent *pOwnAgent = NULL;
+	DPLNarrativeLogic* pLogic;
 
 public:
 	DustProdLightBlock();
@@ -45,8 +44,8 @@ public:
 
 	DPLProcessResult init(DustProdLightEntity *pSelf, DustProdLightBlock *pParent);
 
-	virtual DPLProcessResult dplProcess();
-	void release();
+	virtual DPLProcessResult dplActionExecute();
+	virtual DPLProcessResult dplResourceRelease();
 
 	friend class DPLData;
 	friend class DPLMain;
@@ -57,50 +56,71 @@ public:
 
 typedef map<DPLEntity, DustProdLightBlock*>::const_iterator BlockIterator;
 
-class DustProdLightAgent: public DPLAction {
+class DustProdLightAgent: public DPLNarrativeLogic {
 	map<int, DustProdLightBlock*> stack;
-	int stackPos = 0;
+	int stackPos = -1;
 
 public:
 	DustProdLightAgent();
 	virtual ~DustProdLightAgent();
 
-	virtual DPLProcessResult dplProcess();
+	virtual DPLProcessResult dplActionExecute();
+	virtual DPLProcessResult dplResourceRelease();
+
+	DustProdLightBlock* getBlock() {
+		return stack[stackPos];
+	}
+
+	void relayEntry(DustProdLightBlock *pBlockRelay);
+	void relayExit();
+
+	DustProdLightEntity* resolveEntity(DPLEntity entity) {
+		DustProdLightBlock* pB = stack[stackPos];
+		return pB ? pB->getEntity(entity) : NULL;
+	}
 
 	friend class DustProdLightRuntime;
 	friend class ProcActionControl;
+	friend class DustProdLightDialog;
 };
 
-class DustProdLightDialog : public DPLAction {
+class DustProdLightDialog : public DPLNarrativeLogic {
+	vector<DustProdLightAgent> agents;
+	unsigned int currAgent = 0;
+
 public:
-	~DustProdLightDialog() {
+	DustProdLightDialog();
+	~DustProdLightDialog();
+
+	DustProdLightAgent* getAgent() {
+		return &agents[currAgent];
 	}
 
-	virtual DPLProcessResult dplProcess();
+	virtual DPLProcessResult dplActionExecute();
+	virtual DPLProcessResult dplResourceRelease();
 
 	friend class DPLData;
 	friend class DPLMain;
 	friend class DustProdLightRuntime;
 };
 
-class DustProdLightSheduler : public DPLAction {
-};
-
-class DustProdLightCore : public DPLAction {
+class DustProdLightCore : public DPLNarrativeLogic {
 	DustProdLightDialog *pDialog = NULL;
-	DustProdLightAgent *pAgent = NULL;
-	DustProdLightBlock *pBlock = NULL;
-
 	DPLProcessResult lastResult;
 
 public:
-	static DustProdLightCore* getCurrentCore();
-
-	virtual DPLProcessResult dplProcess();
-
 	DPLProcessResult getLastResult () {
 		return lastResult;
 	}
+	DustProdLightDialog* getDialog() {
+		return pDialog;
+	}
+
+	DustProdLightEntity* resolveEntity(DPLEntity entity);
+
+	virtual DPLProcessResult dplActionExecute();
+
+	DPLProcessResult run(int dlgIdx, DustProdLightBlock *pBlock);
 
 	friend class DPLData;
 	friend class DPLMain;
@@ -110,33 +130,31 @@ public:
 	friend class ProcActionControl;
 };
 
-class DustProdLightCoreSingle :public DustProdLightCore {
-	static DustProdLightCoreSingle singleCore;
-
-	friend class DustProdLightCore;
-};
-
 class DustProdLightRuntime {
 	static DustProdLightRuntime *pRuntime;
 
-	DustProdLightSheduler *pScheduler = NULL;
-
 	map<DPLEntity, DPLModule*> logicFactory;
 
-	map<string, int> dataGlobal;
+	DPLNarrativeLogic *pScheduler;
+	vector<DustProdLightCore> cores;
+	vector<DustProdLightDialog> dialogs;
+
 	DustProdLightStore store;
+	map<string, int> dataGlobal;
 
 	DustProdLightRuntime();
 	~DustProdLightRuntime();
 
 public:
+	static DustProdLightCore* getCurrentCore();
+
 	static DustProdLightEntity *getRootEntity(DPLEntity entity);
 
 	static void init();
 	static void release();
 
-	static DPLAction *createAction(DPLEntity eAction);
-	static void releaseAction(DPLEntity eAction, DPLAction *pAction);
+	static DPLNarrativeLogic *createAction(DPLEntity eAction);
+	static void releaseAction(DPLEntity eAction, DPLNarrativeLogic *pAction);
 
 	DPLEntity resolveCtxEntity(DPLContext ctx);
 	DustProdLightEntity *resolveEntity(DPLEntity e);
