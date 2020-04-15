@@ -12,15 +12,16 @@ using namespace DPLUnitTools;
 using namespace DPLUnitDialog;
 
 DPLProcessResult DPLUActionStreamReader::dplActionExecute() {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_TRANSACTION);
+	DPLEntity eDlg = DPLData::getEntityByPath(DPL_CTX_DIALOG, DPL_ENTITY_INVALID);
 	bool ok;
 
 	if (!inStream.is_open()) {
+		DPLEntity eSelf = DPLData::getEntityByPath(DPL_CTX_SELF, DPL_ENTITY_INVALID);
 		pos = 0;
-		string sName = DPLData::getString(ctx, AttStreamURL, "");
+		string sName = DPLData::getString(eSelf, AttStreamURL, "");
 		inStream.open(sName);
 	} else {
-		ok = DPLData::getBool(ctx, AttStreamOK, true);
+		ok = DPLData::getBool(eDlg, AttStreamOK, true);
 		if (!ok) {
 			inStream.close();
 			return (1 < pos) ? DPL_PROCESS_SUCCESS : DPL_PROCESS_REJECT;
@@ -31,9 +32,9 @@ DPLProcessResult DPLUActionStreamReader::dplActionExecute() {
 	inStream.get(chr);
 	ok = inStream.good();
 
-	DPLData::setBool(ctx, AttStreamOK, ok);
-	DPLData::setInt(ctx, AttStreamPos, ++pos);
-	DPLData::setInt(ctx, AttCharacterChar, chr);
+	DPLData::setBool(eDlg, AttStreamOK, ok);
+	DPLData::setInt(eDlg, AttStreamPos, ++pos);
+	DPLData::setInt(eDlg, AttCharacterChar, chr);
 
 	return DPL_PROCESS_SUCCESS;
 }
@@ -45,13 +46,14 @@ void DPLUActionStreamReader::dplRelease() {
 }
 
 DPLProcessResult DPLUActionDump::dplActionExecute() {
-	DPLEntity eParam = DPLData::getEntityByPath(DPL_CTX_PARAM, DPL_ENTITY_INVALID);
+	DPLEntity eDialog = DPLData::getEntityByPath(DPL_CTX_DIALOG, DPL_ENTITY_INVALID);
 
-	if (DPLData::getBool(eParam, AttStreamOK, false)) {
-		cout << (char) DPLData::getInt(eParam, AttCharacterChar, 0);
-		return DPL_PROCESS_SUCCESS;
+	if (DPLData::getBool(eDialog, AttStreamOK, false)) {
+		char c = (char) DPLData::getInt(eDialog, AttCharacterChar, 0);
+		cout << c;
+		return DPL_PROCESS_REJECT;
 	} else {
-		string str = DPLData::getString(eParam, AttTextString, "");
+		string str = DPLData::getString(eDialog, AttTextString, "");
 
 		if (!str.length()) {
 			DPLEntity eSelf = DPLData::getEntityByPath(DPL_CTX_SELF, DPL_ENTITY_INVALID);
@@ -62,9 +64,13 @@ DPLProcessResult DPLUActionDump::dplActionExecute() {
 			cout << str << endl;
 			return DPL_PROCESS_SUCCESS;
 		}
-		return DPL_PROCESS_REJECT;
+
+		return DPL_PROCESS_SUCCESS;
 	}
 }
+
+
+
 
 void ProcActionControl::requestRelay(DPLEntity relay) {
 	DustProdLightAgent *pAgent = DustProdLightRuntime::getCurrentCore()->getDialog()->getAgent();
@@ -79,14 +85,15 @@ void ProcActionControl::requestRelay(DPLEntity relay) {
 	}
 
 	pAgent->relayEntry(pBlockRelay);
+}
 
-//	if (!pa) {
-//		pC->pAgent = pC->pBlock->pOwnAgent = pa = new DustProdLightAgent();
-//		pa->stack[0] = pC->pBlock;
-//	}
-//
-//	pa->stack[++pa->stackPos] = pb;
-//	pC->pBlock = pb;
+DPLProcessResult ProcActionControl::optGetChildResult(DPLProcessResult defRet ) {
+	if (firstCall) {
+		firstCall = false;
+		return defRet;
+	} else {
+		return DustProdLightRuntime::getCurrentCore()->lastResult;
+	}
 }
 
 ProcActionControl::~ProcActionControl() {
@@ -97,92 +104,85 @@ ProcActionControl::~ProcActionControl() {
 }
 
 DPLProcessResult ProcActionSequence::dplActionExecute() {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF);
-	requestRelay(
-			inSep ? DPLData::getRef(ctx, RefCollectionSeparator, 0) : DPLData::getRef(ctx, RefCollectionMembers, pos));
-	return DPL_PROCESS_ACCEPT;
-}
+	DPLProcessResult ret = optGetChildResult();
 
-//DPLProcessResult ProcActionSequence::dplChildReturned(DPLProcessResult childResult) {
-//	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF);
-//	bool hasSep = DPL_ENTITY_INVALID != DPLData::getRef(ctx, RefCollectionSeparator, 0);
-//
-//	if (DPL_PROCESS_SUCCESS == childResult) {
-//		if (!inSep) {
-//			++pos;
-//			if (DPLData::getRefCount(ctx, RefCollectionMembers) == pos) {
-//				return DPL_PROCESS_SUCCESS;
-//			}
-//			inSep = hasSep;
-//		}
-//		return DPL_PROCESS_ACCEPT;
-//	}
-//
-//	return DPL_PROCESS_REJECT;
-//}
+	if (DPL_PROCESS_SUCCESS == ret) {
+		DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF, DPL_ENTITY_INVALID);
+
+		unsigned int count = DPLData::getRefCount(ctx, RefCollectionMembers);
+
+		if (pos < count) {
+			DPLEntity eSep = DPLData::getRef(ctx, RefCollectionSeparator, 0);
+			DPLEntity r = DPLData::getRef(ctx, RefLinkTarget, pos);
+
+			if (eSep) {
+				if (inSep) {
+					inSep = false;
+					r = eSep;
+				} else {
+					inSep = true;
+					++pos;
+				}
+			} else {
+				++pos;
+			}
+
+			requestRelay(r);
+			ret = DPL_PROCESS_ACCEPT;
+		} else {
+			ret = DPL_PROCESS_SUCCESS;
+		}
+	}
+
+	return ret;
+}
 
 DPLProcessResult ProcActionSelect::dplActionExecute() {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF);
-	requestRelay(DPLData::getRef(ctx, RefCollectionMembers, pos));
-	return DPL_PROCESS_ACCEPT;
-}
+	DPLProcessResult ret = optGetChildResult(DPL_PROCESS_REJECT);
 
-//DPLProcessResult ProcActionSelect::dplChildReturned(DPLProcessResult childResult) {
-//	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF);
-//
-//	if (DPL_PROCESS_SUCCESS == childResult) {
-//		return DPL_PROCESS_SUCCESS;
-//	} else if (DPL_PROCESS_REJECT == childResult) {
-//		++pos;
-//		return (DPLData::getRefCount(ctx, RefCollectionMembers) == pos) ? DPL_PROCESS_REJECT : DPL_PROCESS_ACCEPT;
-//	}
-//
-//	return DPL_PROCESS_REJECT;
-//}
+	if (DPL_PROCESS_REJECT == ret) {
+		DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF, DPL_ENTITY_INVALID);
+		unsigned int count = DPLData::getRefCount(ctx, RefCollectionMembers);
+
+		if (pos < count) {
+			DPLEntity r = DPLData::getRef(ctx, RefLinkTarget, pos++);
+			requestRelay(r);
+			ret = DPL_PROCESS_ACCEPT;
+		}
+	}
+
+	return ret;
+}
 
 DPLProcessResult ProcActionRepeat::dplActionExecute() {
-	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF, DPL_ENTITY_INVALID);
-	int max = DPLData::getInt(ctx, DPLUnitTools::AttLimitsIntMax, INT16_MAX);
-	DPLEntity eSep = DPLData::getRef(ctx, RefCollectionSeparator, 0);
+	DPLProcessResult ret = optGetChildResult();
 
-	if (count < (unsigned) max) {
-		DPLEntity r = DPLData::getRef(ctx, RefLinkTarget, 0);
+	if (DPL_PROCESS_SUCCESS == ret) {
+		DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF, DPL_ENTITY_INVALID);
+		int max = DPLData::getInt(ctx, DPLUnitTools::AttLimitsIntMax, INT16_MAX);
+		DPLEntity eSep = DPLData::getRef(ctx, RefCollectionSeparator, 0);
 
-		if ( eSep ) {
-			if ( inSep ) {
-				inSep = false;
-				r = eSep;
+		if (count < (unsigned) max) {
+			DPLEntity r = DPLData::getRef(ctx, RefLinkTarget, 0);
+
+			if (eSep) {
+				if (inSep) {
+					inSep = false;
+					r = eSep;
+				} else {
+					inSep = true;
+					++count;
+				}
 			} else {
-				inSep = true;
 				++count;
 			}
+
+			requestRelay(r);
+			ret = DPL_PROCESS_ACCEPT;
 		} else {
-			++count;
+			ret = DPL_PROCESS_SUCCESS;
 		}
-
-		requestRelay(r);
-		return DPL_PROCESS_ACCEPT;
-	} else {
-		return DPL_PROCESS_SUCCESS;
 	}
-}
 
-//DPLProcessResult ProcActionRepeat::dplChildReturned(DPLProcessResult childResult) {
-//	DPLEntity ctx = DPLData::getEntityByPath(DPL_CTX_SELF);
-//	bool hasSep = DPL_ENTITY_INVALID != DPLData::getRef(ctx, RefCollectionSeparator, 0);
-//
-//	if (DPL_PROCESS_REJECT == childResult) {
-//		return ((min < count) || (!inSep && count && hasSep)) ? DPL_PROCESS_REJECT : DPL_PROCESS_SUCCESS;
-//	} else if (DPL_PROCESS_SUCCESS == childResult) {
-//		if (!inSep) {
-//			++count;
-//			if ((INT_MAX != max) && (max <= count)) {
-//				return DPL_PROCESS_REJECT;
-//			}
-//			inSep = hasSep;
-//		}
-//		return DPL_PROCESS_ACCEPT;
-//	}
-//
-//	return DPL_PROCESS_REJECT;
-//}
+	return ret;
+}

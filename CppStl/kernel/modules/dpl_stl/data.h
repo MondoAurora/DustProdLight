@@ -65,6 +65,7 @@ class DustProdLightEntity {
 
 	friend class DustProdLightRef;
 	friend class DPLData;
+	friend class DPLMain;
 	friend class DustProdLightRuntime;
 	friend class DustProdLightBlock;
 	friend class DustProdLightAgent;

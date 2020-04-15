@@ -69,6 +69,8 @@ extern const DPLEntity CmdResourceRelease;
 
 namespace DPLUnitDialog {
 extern const DPLEntity UnitDialog;
+
+extern const DPLEntity TypeDialog;
 }
 
 namespace DPLUnitDust {
@@ -77,6 +79,9 @@ extern const DPLEntity UnitDust;
 extern const DPLEntity TypeSystem;
 extern const DPLEntity TypeModule;
 extern const DPLEntity TypeRuntime;
+
+extern const DPLEntity TypeCore;
+extern const DPLEntity TypeAgent;
 extern const DPLEntity TypeBlock;
 
 extern const DPLEntity RefRuntimeMain;

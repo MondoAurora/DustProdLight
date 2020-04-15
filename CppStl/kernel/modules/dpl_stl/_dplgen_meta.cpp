@@ -55,11 +55,17 @@ const DPLEntity DPLUnitNarrative::CmdResourceRelease = DPLData::getMetaEntity(DP
 
 const DPLEntity DPLUnitDialog::UnitDialog = DPL_MBI_UNIT_DIALOG;
 
+const DPLEntity DPLUnitDialog::TypeDialog = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Dialog", DPL_MBI_UNIT_DIALOG);
+
+
 const DPLEntity DPLUnitDust::UnitDust = DPL_MBI_UNIT_DUST;
 
 const DPLEntity DPLUnitDust::TypeSystem = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "System", DPL_MBI_UNIT_DUST);
 const DPLEntity DPLUnitDust::TypeModule = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Module", DPL_MBI_UNIT_DUST);
 const DPLEntity DPLUnitDust::TypeRuntime = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Runtime", DPL_MBI_UNIT_DUST);
+
+const DPLEntity DPLUnitDust::TypeCore = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Core", DPL_MBI_UNIT_DUST);
+const DPLEntity DPLUnitDust::TypeAgent = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Agent", DPL_MBI_UNIT_DUST);
 const DPLEntity DPLUnitDust::TypeBlock = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Block", DPL_MBI_UNIT_DUST);
 
 const DPLEntity DPLUnitDust::RefRuntimeMain = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Main", DPLUnitDust::TypeRuntime);

@@ -87,6 +87,7 @@ public:
 class DustProdLightDialog : public DPLNarrativeLogic {
 	vector<DustProdLightAgent> agents;
 	unsigned int currAgent = 0;
+	DustProdLightEntity *pData;
 
 public:
 	DustProdLightDialog();
@@ -94,6 +95,22 @@ public:
 
 	DustProdLightAgent* getAgent() {
 		return &agents[currAgent];
+	}
+
+	DustProdLightAgent* getAgent(int idx) {
+		if ( idx >= agents.size() ) {
+			agents.resize(idx+1);
+		}
+
+		return &agents[idx];
+	}
+
+	void getData(DustProdLightEntity* pData_) {
+		pData = pData_;
+	}
+
+	DustProdLightEntity* getData() {
+		return pData;
 	}
 
 	virtual DPLProcessResult dplActionExecute();
@@ -120,7 +137,7 @@ public:
 
 	virtual DPLProcessResult dplActionExecute();
 
-	DPLProcessResult run(int dlgIdx, DustProdLightBlock *pBlock);
+	DPLProcessResult run(int dlgIdx, DustProdLightBlock *pBlock, int agentCount = 1);
 
 	friend class DPLData;
 	friend class DPLMain;

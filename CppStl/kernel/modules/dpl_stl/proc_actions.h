@@ -46,12 +46,19 @@ public:
 class ProcActionControl: public DPLNarrativeLogic {
 private:
 	map<DPLEntity, DustProdLightBlock*> mapChildBlocks;
+	bool firstCall = true;
 
 protected:
 	void requestRelay(DPLEntity relay);
+	DPLProcessResult optGetChildResult(DPLProcessResult defRet = DPL_PROCESS_SUCCESS);
 
 public:
 	virtual ~ProcActionControl();
+
+	virtual DPLProcessResult dplResourceInit() {
+		firstCall = true;
+		return DPLNarrativeLogic::dplResourceInit();
+	}
 };
 
 class ProcActionRepeat: public ProcActionControl {
