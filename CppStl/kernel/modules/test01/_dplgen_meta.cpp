@@ -32,4 +32,4 @@ const DPLEntity DPLUnitTest01::Moving = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "
 const DPLEntity DPLUnitTest01::MovingVelocity = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Velocity", Moving);
 const DPLEntity DPLUnitTest01::MovingAcceleration = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Acceleration", Moving);
 
-const DPLEntity DPLUnitTest01::ActionHelloWorldSimple = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "HelloWorldSimple", TestUnit);
+const DPLEntity DPLUnitTest01::ActionHelloWorldSimple = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "HelloWorldSimple", TestUnit);

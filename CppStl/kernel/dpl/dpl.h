@@ -35,7 +35,7 @@ enum DPLTokenType {
 	DPL_ENTITY_INVALID,
 
 	DPL_TOKEN_ENTITY,
-	DPL_TOKEN_ACTION,
+	DPL_TOKEN_LOGIC,
 
 	DPL_TOKEN_STORE,
 	DPL_TOKEN_UNIT,
@@ -199,6 +199,8 @@ public:
 // meta access
 	static DPLEntity getMetaEntity(DPLTokenType tokenType, string name, DPLEntity parent = DPL_ENTITY_INVALID);
 	static DPLEntity getEntityById(string globalId);
+	static DPLEntity getConst(DPLEntity primaryType, string name, DPLEntity unit);
+
 
 // meta detection on Entity
 	static DPLEntity getPrimaryType(DPLEntity entity);

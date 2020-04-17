@@ -500,6 +500,13 @@ DPLEntity DPLData::getEntityById(string globalId) {
 	return (DustProdLightRuntime::pRuntime->dataGlobal.end() == i) ? 0 : i->second;
 }
 
+DPLEntity DPLData::getConst(DPLEntity primaryType, string name, DPLEntity unit) {
+	DPLEntity e = getMetaEntity(DPL_TOKEN_ENTITY, name, unit);
+	DustProdLightEntity *pe = DustProdLightRuntime::getRootEntity(e);
+	pe->primaryType = primaryType;
+	return pe->localId;
+}
+
 DPLEntity DPLData::getMetaEntity(DPLTokenType tokenType, string name, DPLEntity parent) {
 	DustProdLightRuntime::init();
 

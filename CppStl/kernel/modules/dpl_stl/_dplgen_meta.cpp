@@ -20,10 +20,15 @@ const DPLEntity DPLUnitModel::TypeEntity = DPL_MBI_TYPE_MODEL_ENTITY;
 const DPLEntity DPLUnitModel::AttEntityGlobalId = DPL_MBI_ATT_ENTITY_GLOBALID;
 const DPLEntity DPLUnitModel::RefEntityActions = DPLData::getMetaEntity(DPL_TOKEN_REF_MAP, "Actions", DPLUnitModel::TypeEntity);
 
+const DPLEntity DPLUnitModel::ValEntityNull = DPLData::getConst(DPL_MBI_TYPE_IDEA_CONSTANT, "Null", UnitModel);
+const DPLEntity DPLUnitModel::ValEntityFalse = DPLData::getConst(DPL_MBI_TYPE_IDEA_CONSTANT, "False", UnitModel);
+const DPLEntity DPLUnitModel::ValEntityTrue = DPLData::getConst(DPL_MBI_TYPE_IDEA_CONSTANT, "True", UnitModel);
+
 
 const DPLEntity DPLUnitIdea::UnitIdea = DPL_MBI_UNIT_IDEA;
 const DPLEntity DPLUnitIdea::TypeType = DPL_MBI_TYPE_IDEA_TYPE;
 const DPLEntity DPLUnitIdea::RefTypeDefaultActions = DPLData::getMetaEntity(DPL_TOKEN_REF_SET, "DefaultActions", DPLUnitIdea::TypeType);
+const DPLEntity DPLUnitIdea::TypeConstant = DPL_MBI_TYPE_IDEA_CONSTANT;
 const DPLEntity DPLUnitIdea::TypeAttribute = DPL_MBI_TYPE_IDEA_ATTRIBUTE;
 const DPLEntity DPLUnitIdea::TypeReference = DPL_MBI_TYPE_IDEA_REFERENCE;
 const DPLEntity DPLUnitIdea::TypeTag = DPL_MBI_TYPE_IDEA_TAG;
@@ -71,13 +76,9 @@ const DPLEntity DPLUnitDust::TypeBlock = DPLData::getMetaEntity(DPL_TOKEN_TYPE, 
 
 const DPLEntity DPLUnitDust::RefRuntimeMain = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Main", DPLUnitDust::TypeRuntime);
 
-const DPLEntity DPLUnitDust::ActionCtrlSequence = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Sequence", DPLUnitDust::UnitDust);
-const DPLEntity DPLUnitDust::ActionCtrlSelect = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Select", DPLUnitDust::UnitDust);
-const DPLEntity DPLUnitDust::ActionCtrlRepeat = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Repeat", DPLUnitDust::UnitDust);
-
-//const DPLEntity DPLUnitDust::ActionExecAtom = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Atom", DPLUnitDust::UnitDust);
-//const DPLEntity DPLUnitDust::ActionExecAgent = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Agent", DPLUnitDust::UnitDust);
-//const DPLEntity DPLUnitDust::ActionExecDialog = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "Dialog", DPLUnitDust::UnitDust);
+const DPLEntity DPLUnitDust::ActionCtrlSequence = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "Sequence", DPLUnitDust::UnitDust);
+const DPLEntity DPLUnitDust::ActionCtrlSelect = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "Select", DPLUnitDust::UnitDust);
+const DPLEntity DPLUnitDust::ActionCtrlRepeat = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "Repeat", DPLUnitDust::UnitDust);
 
 const DPLEntity DPLUnitTools::UnitTools = DPL_MBI_UNIT_TOOLS;
 
@@ -98,8 +99,8 @@ const DPLEntity DPLUnitTools::AttStreamPos = DPLData::getMetaEntity(DPL_TOKEN_VA
 const DPLEntity DPLUnitTools::AttStreamOK = DPLData::getMetaEntity(DPL_TOKEN_VAL_BOOL, "StatusOK", DPLUnitTools::TypeStream);
 const DPLEntity DPLUnitTools::AttStreamURL = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "URL", DPLUnitTools::TypeStream);
 
-const DPLEntity DPLUnitTools::ActionDump = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "DumpChar", DPLUnitTools::UnitTools);
-const DPLEntity DPLUnitTools::ActionReadStream = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "ReadStream", DPLUnitTools::UnitTools);
+const DPLEntity DPLUnitTools::ActionDump = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "DumpChar", DPLUnitTools::UnitTools);
+const DPLEntity DPLUnitTools::ActionReadStream = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "ReadStream", DPLUnitTools::UnitTools);
 
 const DPLEntity DPLUnitTools::TypeLimits = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Limits", DPLUnitTools::UnitTools);
 const DPLEntity DPLUnitTools::AttLimitsIntMin = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "IntMin", DPLUnitTools::TypeLimits);

@@ -1,16 +1,5 @@
-/*
- * dpl_impl_meta.h
- *
- * Meta layer for DPL implementation
- * gets boot items out to "normal" constants, add others
- * "pseudo-generated" source
- *
- *  Created on: Mar 06, 2020
- *      Author: Lorand Kedves
- */
-
-#ifndef DPL_IMPL_META_H_
-#define DPL_IMPL_META_H_
+#ifndef DPLGEN_MODULE_DPL_STL_H_
+#define DPLGEN_MODULE_DPL_STL_H_
 
 #include <dpl.h>
 
@@ -23,6 +12,10 @@ extern const DPLEntity TypeEntity;
 
 extern const DPLEntity AttEntityGlobalId;
 extern const DPLEntity RefEntityActions;
+
+extern const DPLEntity ValEntityNull;
+extern const DPLEntity ValEntityTrue;
+extern const DPLEntity ValEntityFalse;
 }
 
 namespace DPLUnitIdea {
@@ -31,6 +24,7 @@ extern const DPLEntity UnitIdea;
 extern const DPLEntity TypeType;
 extern const DPLEntity RefTypeDefaultActions;
 
+extern const DPLEntity TypeConstant;
 extern const DPLEntity TypeAttribute;
 extern const DPLEntity TypeReference;
 extern const DPLEntity TypeTag;
@@ -131,4 +125,4 @@ namespace DPLModuleDplStl {
 extern DPLModule* Module;
 }
 
-#endif /* DPL_IMPL_META_H_ */
+#endif /* DPLGEN_MODULE_DPL_STL_H_ */

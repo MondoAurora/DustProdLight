@@ -32,6 +32,7 @@ void DPLMain::createBootEntities() {
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_MODEL_ENTITY, DPL_TOKEN_TYPE, "Entity", DPL_MBI_UNIT_MODEL);
 
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_IDEA_TYPE, DPL_TOKEN_TYPE, "Type", DPL_MBI_UNIT_IDEA);
+	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_IDEA_CONSTANT, DPL_TOKEN_TYPE, "Constant", DPL_MBI_UNIT_IDEA);
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_IDEA_ATTRIBUTE, DPL_TOKEN_TYPE, "Attribute", DPL_MBI_UNIT_IDEA);
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_IDEA_REFERENCE, DPL_TOKEN_TYPE, "Reference", DPL_MBI_UNIT_IDEA);
 	DustProdLightRuntime::initMetaEntity(DPL_MBI_TYPE_IDEA_SERVICE, DPL_TOKEN_TYPE, "Service", DPL_MBI_UNIT_IDEA);
