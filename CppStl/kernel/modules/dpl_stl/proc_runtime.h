@@ -97,7 +97,7 @@ public:
 		return &agents[currAgent];
 	}
 
-	DustProdLightAgent* getAgent(int idx) {
+	DustProdLightAgent* getAgent(unsigned int idx) {
 		if ( idx >= agents.size() ) {
 			agents.resize(idx+1);
 		}

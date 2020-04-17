@@ -7,9 +7,8 @@
  *      Author: Lorand Kedves
  */
 
-#include <_dplgen_module_dpl_stl.h>
 
-#include "_dplgen_boot.h"
+#include "dpl_stl.h"
 
 using namespace std;
 
@@ -32,6 +31,8 @@ const DPLEntity DPLUnitIdea::TypeTag = DPL_MBI_TYPE_IDEA_TAG;
 const DPLEntity DPLUnitNarrative::UnitNarrative = DPL_MBI_UNIT_NARRATIVE;
 
 const DPLEntity DPLUnitNarrative::TypeAction = DPL_MBI_TYPE_NARRATIVE_ACTION;
+
+const DPLEntity DPLUnitNarrative::TypeAlgorithm = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Algorithm", DPLUnitNarrative::UnitNarrative);
 
 const DPLEntity DPLUnitNarrative::TypeCtrlSequence = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Sequence", DPLUnitNarrative::UnitNarrative);
 const DPLEntity DPLUnitNarrative::TypeCtrlSelect = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Select", DPLUnitNarrative::UnitNarrative);
@@ -91,13 +92,6 @@ const DPLEntity DPLUnitTools::RefCollectionSeparator = DPLData::getMetaEntity(DP
 const DPLEntity DPLUnitTools::TypeLink = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Link", DPLUnitTools::UnitTools);
 const DPLEntity DPLUnitTools::RefLinkSource = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Source", DPLUnitTools::TypeLink);
 const DPLEntity DPLUnitTools::RefLinkTarget = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Target", DPLUnitTools::TypeLink);
-
-
-const DPLEntity DPLUnitText::UnitText = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "Text");
-const DPLEntity DPLUnitText::TypeCharacter = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Character", DPLUnitText::UnitText);
-const DPLEntity DPLUnitText::AttCharacterChar = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "Char", DPLUnitText::TypeCharacter);
-const DPLEntity DPLUnitText::TypeTextPlain = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "TextPlain", DPLUnitText::UnitText);
-const DPLEntity DPLUnitText::AttTextString = DPLData::getMetaEntity(DPL_TOKEN_VAL_STRING, "String", DPLUnitText::TypeTextPlain);
 
 const DPLEntity DPLUnitTools::TypeStream = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Stream", DPLUnitTools::UnitTools);
 const DPLEntity DPLUnitTools::AttStreamPos = DPLData::getMetaEntity(DPL_TOKEN_VAL_INT, "Pos", DPLUnitTools::TypeStream);

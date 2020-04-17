@@ -43,6 +43,7 @@ namespace DPLUnitNarrative {
 extern const DPLEntity UnitNarrative;
 
 extern const DPLEntity TypeAction;
+extern const DPLEntity TypeAlgorithm;
 
 extern const DPLEntity TypeCtrlSequence;
 extern const DPLEntity TypeCtrlSelect;
@@ -124,16 +125,6 @@ extern const DPLEntity TypeLimits;
 extern const DPLEntity AttLimitsIntMin;
 extern const DPLEntity AttLimitsIntMax;
 
-}
-
-namespace DPLUnitText {
-extern const DPLEntity UnitText;
-
-extern const DPLEntity TypeCharacter;
-extern const DPLEntity AttCharacterChar;
-
-extern const DPLEntity TypeTextPlain;
-extern const DPLEntity AttTextString;
 }
 
 namespace DPLModuleDplStl {

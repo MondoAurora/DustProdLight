@@ -143,7 +143,9 @@ void DustProdLightAgent::relayExit() {
  *
  ****************************/
 
-DustProdLightDialog::DustProdLightDialog() {
+DustProdLightDialog::DustProdLightDialog()
+:pData(NULL)
+{
 	agents.resize(1);
 }
 

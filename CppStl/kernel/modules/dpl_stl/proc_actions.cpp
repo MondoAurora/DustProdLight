@@ -1,10 +1,8 @@
-#include "proc_actions.h"
 
 #include <vector>
-
 #include <iostream>
 
-#include <_dplgen_module_dpl_stl.h>
+#include "dpl_stl.h"
 
 using namespace std;
 using namespace DPLUnitText;
