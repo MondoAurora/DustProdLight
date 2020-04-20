@@ -28,10 +28,10 @@ extern const DPLEntity ValCharCtrlCR;
 extern const DPLEntity ValCharCtrlFF;
 extern const DPLEntity ValCharCtrlBS;
 
-extern const DPLEntity LogicCharMatcher;
-extern const DPLEntity LogicTokenMatcher;
-extern const DPLEntity LogicNumberSci;
-extern const DPLEntity LogicNumberRad;
+extern const DPLEntity AgentCharMatcher;
+extern const DPLEntity AgentTokenMatcher;
+extern const DPLEntity AgentNumberSci;
+extern const DPLEntity AgentNumberRad;
 }
 
 namespace DPLModuleText {

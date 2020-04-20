@@ -34,12 +34,11 @@ typedef int DPLEntity;
 enum DPLTokenType {
 	DPL_ENTITY_INVALID,
 
-	DPL_TOKEN_ENTITY,
-	DPL_TOKEN_LOGIC,
-
 	DPL_TOKEN_STORE,
 	DPL_TOKEN_UNIT,
+	DPL_TOKEN_MODULE,
 
+	DPL_TOKEN_ENTITY,
 	DPL_TOKEN_TYPE,
 
 	DPL_TOKEN_VAL_BOOL,
@@ -52,6 +51,7 @@ enum DPLTokenType {
 	DPL_TOKEN_REF_ARR,
 	DPL_TOKEN_REF_MAP,
 
+	DPL_TOKEN_AGENT,
 	DPL_TOKEN_SERVICE,
 	DPL_TOKEN_COMMAND,
 
@@ -130,11 +130,12 @@ public:
 };
 
 class DPLModule {
+
 public:
 	virtual ~DPLModule() {
 	}
 
-	virtual void init() {}
+	virtual void init(DPLEntity eModule) {}
 	virtual void release() {}
 
 	virtual DPLNarrativeLogic* createLogic(int logicId) const {
@@ -187,7 +188,7 @@ class DPLMain {
 public:
 	static void init();
 	static void createBootEntities();
-	static void registerLogicProvider(DPLModule *pLogicProvider, ...);
+	static void registerModule(const char* moduleName, DPLModule *pModule);
 
 	static DPLProcessResult run();
 

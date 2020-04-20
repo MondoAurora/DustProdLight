@@ -1,12 +1,3 @@
-/*
- * dpluproc.cpp
- *
- * Process implementations
- *
- *  Created on: Feb 18, 2020
- *      Author: Lorand Kedves
- */
-
 #include "dpl_stl.h"
 
 #include <vector>
@@ -20,6 +11,7 @@
 using namespace std;
 
 using namespace DPLUnitNarrative;
+using namespace DPLUnitNative;
 
 DustProdLightRuntime *DustProdLightRuntime::pRuntime = NULL;
 
@@ -33,7 +25,7 @@ DustProdLightEntity *pRefMsgTarget = NULL;
  *******************************/
 
 DustProdLightBlock::DustProdLightBlock() :
-		blockType(DPL_BLOCK_EXTERNAL), cmd(DPLUnitNarrative::CmdActionExecute), pStore(NULL), pLogic(NULL) {
+		blockType(DPL_BLOCK_EXTERNAL), cmd(DPLUnitNative::CmdActionExecute), pStore(NULL), pLogic(NULL) {
 }
 
 DustProdLightBlock::~DustProdLightBlock() {
@@ -76,7 +68,8 @@ DPLProcessResult DustProdLightBlock::init(DustProdLightEntity *pTask, DustProdLi
 	emapRef[DPL_CTX_COMMAND] = DustProdLightRuntime::pRuntime->resolveEntity(cmd);
 	emapRef[DPL_CTX_SELF] = pSelf;
 
-	pLogic = pSelf->getLogicByCommand(cmd);
+	pLogic =  DustProdLightRuntime::createAction(pSelf->primaryType);
+//	pLogic = pSelf->getLogicByCommand(cmd);
 
 	return DPL_PROCESS_SUCCESS;
 }
@@ -345,6 +338,10 @@ string DustProdLightRuntime::getMetaEntityId(DPLTokenType tokenType, string name
 	}
 	case DPL_TOKEN_UNIT:
 		return getRootEntity(DPL_MBI_STORE_SOURCE)->getString(DPL_MBI_ATT_ENTITY_GLOBALID) + DPL_SEP_STORE + name;
+	case DPL_TOKEN_MODULE: {
+		string str = "Module" ;
+		return str + DPL_SEP_STORE + name;
+	}
 	default:
 		return parent ? getRootEntity(parent)->getString(DPL_MBI_ATT_ENTITY_GLOBALID) + DPL_SEP_ID + name : name;
 	}
@@ -524,17 +521,24 @@ DPLEntity DPLData::getMetaEntity(DPLTokenType tokenType, string name, DPLEntity 
 	return entity;
 }
 
-void DPLMain::registerLogicProvider(DPLModule *pLogicFactory, ...) {
+void DPLMain::registerModule(const char* moduleName, DPLModule *pModule) {
+	DPLEntity eModule = DPLData::getMetaEntity(DPL_TOKEN_MODULE, moduleName);
+	pModule->init(eModule);
 
-	va_list args;
-	va_start(args, pLogicFactory);
-	int mId;
-
-	while (DPL_ENTITY_INVALID != (mId = va_arg(args, int))) {
-		DustProdLightRuntime::pRuntime->logicFactory[mId] = pLogicFactory;
+	for ( int i = DPLData::getRefCount(eModule, DPLUnitNative::RefModuleActions); i-->0; ) {
+		int aId = DPLData::getRef(eModule, DPLUnitNative::RefModuleActions, i);
+		DustProdLightRuntime::pRuntime->logicFactory[aId] = pModule;
 	}
 
-	va_end(args);
+//	va_list args;
+//	va_start(args, pLogicFactory);
+//	int mId;
+//
+//	while (DPL_ENTITY_INVALID != (mId = va_arg(args, int))) {
+//		DustProdLightRuntime::pRuntime->logicFactory[mId] = pLogicFactory;
+//	}
+//
+//	va_end(args);
 }
 
 DPLProcessResult DPLMain::run() {
@@ -543,7 +547,7 @@ DPLProcessResult DPLMain::run() {
 	if (eProc) {
 		DustProdLightEntity *pMainTask = DustProdLightRuntime::pRuntime->resolveEntity(eProc);
 		DustProdLightCore *pCore = DustProdLightRuntime::getCurrentCore();
-		bool dlg = DPLUnitDialog::TypeDialog == pMainTask->primaryType;
+		bool dlg = TypeDialog == pMainTask->primaryType;
 		int ac = dlg ? DPLData::getRefCount(eProc, DPLUnitTools::RefCollectionMembers) : 1;
 
 		DustProdLightBlock blocks[ac];

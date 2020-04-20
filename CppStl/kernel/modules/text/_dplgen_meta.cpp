@@ -1,4 +1,3 @@
-
 #include <_dplgen_module_text.h>
 
 using namespace DPLUnitText;
@@ -25,7 +24,7 @@ const DPLEntity DPLUnitText::ValCharCtrlCR = DPLData::getConst(TypeCharacter, "C
 const DPLEntity DPLUnitText::ValCharCtrlFF = DPLData::getConst(TypeCharacter, "CtrlFF", UnitText);
 const DPLEntity DPLUnitText::ValCharCtrlBS = DPLData::getConst(TypeCharacter, "CtrlBS", UnitText);
 
-const DPLEntity DPLUnitText::LogicCharMatcher = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "CharMatcher", UnitText);
-const DPLEntity DPLUnitText::LogicTokenMatcher = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "TokenMatcher", UnitText);
-const DPLEntity DPLUnitText::LogicNumberSci = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "NumberSci", UnitText);
-const DPLEntity DPLUnitText::LogicNumberRad = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "NumberRad", UnitText);
+const DPLEntity DPLUnitText::AgentCharMatcher = DPLData::getMetaEntity(DPL_TOKEN_AGENT, "CharMatcher", UnitText);
+const DPLEntity DPLUnitText::AgentTokenMatcher = DPLData::getMetaEntity(DPL_TOKEN_AGENT, "TokenMatcher", UnitText);
+const DPLEntity DPLUnitText::AgentNumberSci = DPLData::getMetaEntity(DPL_TOKEN_AGENT, "NumberSci", UnitText);
+const DPLEntity DPLUnitText::AgentNumberRad = DPLData::getMetaEntity(DPL_TOKEN_AGENT, "NumberRad", UnitText);

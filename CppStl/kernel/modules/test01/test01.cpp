@@ -1,10 +1,3 @@
-/*
- * test.cpp
- *
- *  Created on: Feb 12, 2020.
- *      Author: Lorand Kedves
- */
-
 #include <iostream>
 
 #include <_dplgen_module_dpl_stl.h>
@@ -75,61 +68,3 @@ DPLProcessResult HelloWorldSimple::dplActionExecute() {
 	return DPL_PROCESS_SUCCESS;
 //	return (++count < 5) ? DPL_PROCESS_ACCEPT : DPL_PROCESS_SUCCESS;
 }
-
-/*
-void testProc() {
-	cout << endl << "-- testProc --" << endl;
-
-	DPLEntity eProc = DPLData::createEntity(DPLUnitTest01::Test);
-	DPLData::setRef(eProc, DPLUnitModel::RefEntityActions, DPLUnitTools::ActionDump, DPLUnitNarrative::CmdProcess);
-
-	DPLEntity eMsg;
-
-	eMsg = DPLData::getRef(eProc, DPLUnitNarrative::CmdProcess);
-	DPLData::setString(eMsg, DPLUnitText::AttTextString, "Hello world!");
-
-	eMsg = DPLData::getRef(eProc, DPLUnitNarrative::CmdProcess);
-	DPLData::setString(eMsg, DPLUnitText::AttTextString, "Hello world! (2)");
-}
-
-void testSequence() {
-	cout << endl << "-- testSequence --" << endl;
-
-	DPLEntity eDump = DPLData::createEntity(DPLUnitTools::TypeStream);
-	DPLData::setRef(eDump, DPLUnitModel::RefEntityActions, DPLUnitTools::ActionDump, DPLUnitNarrative::CmdProcess);
-	DPLData::setString(eDump, DPLUnitText::AttTextString, "Hello world!");
-
-	DPLEntity eSequence = DPLData::createEntity(DPLUnitDust::TypeBlock);
-	DPLData::setRef(eSequence, DPLUnitModel::RefEntityActions, DPLUnitNarrative::ActionSequence,
-			DPLUnitNarrative::CmdProcess);
-	DPLData::setRef(eSequence, DPLUnitTools::RefCollectionMembers, eDump);
-	DPLData::setRef(eSequence, DPLUnitTools::RefCollectionMembers, eDump);
-
-	DPLData::getRef(eSequence, DPLUnitNarrative::CmdProcess);
-}
-
-void testReadFile() {
-	cout << endl << "-- testReadFile --" << endl;
-
-	DPLEntity eStream = DPLData::createEntity(DPLUnitTools::TypeStream);
-	DPLData::setString(eStream, DPLUnitTools::AttStreamURL, "test1.json");
-	DPLData::setRef(eStream, DPLUnitModel::RefEntityActions, DPLUnitTools::ActionReadStream,
-			DPLUnitNarrative::CmdProcess);
-
-	DPLEntity eDump = DPLData::createEntity(DPLUnitTools::TypeStream);
-	DPLData::setRef(eDump, DPLUnitModel::RefEntityActions, DPLUnitTools::ActionDump, DPLUnitNarrative::CmdProcess);
-
-	DPLEntity eSequence = DPLData::createEntity(DPLUnitDust::TypeBlock);
-	DPLData::setRef(eSequence, DPLUnitModel::RefEntityActions, DPLUnitNarrative::ActionSequence,
-			DPLUnitNarrative::CmdProcess);
-	DPLData::setRef(eSequence, DPLUnitTools::RefCollectionMembers, eStream);
-	DPLData::setRef(eSequence, DPLUnitTools::RefCollectionMembers, eDump);
-
-	DPLEntity eRepeat = DPLData::createEntity(DPLUnitDust::TypeBlock);
-	DPLData::setRef(eRepeat, DPLUnitModel::RefEntityActions, DPLUnitNarrative::ActionRepeat,
-			DPLUnitNarrative::CmdProcess);
-	DPLData::setRef(eRepeat, DPLUnitTools::RefLinkTarget, eSequence);
-
-	DPLData::getRef(eRepeat, DPLUnitNarrative::CmdProcess);
-}
-*/

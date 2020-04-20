@@ -7,7 +7,7 @@ public:
 	virtual ~DPLModuleImpl() {
 	}
 
-	virtual void init() {
+	virtual void init(DPLEntity eModule) {
 		DPLData::setInt(ValCharCtrlBS, AttCharacterChar, 0x62);
 		DPLData::setInt(ValCharCtrlCR, AttCharacterChar, 0x0D);
 		DPLData::setInt(ValCharCtrlFF, AttCharacterChar, 0x0C);
@@ -18,31 +18,33 @@ public:
 		DPLData::setInt(ValCharSolidus, AttCharacterChar, '/');
 		DPLData::setInt(ValCharReverseSolidus, AttCharacterChar, '\\');
 
-		DPLMain::registerLogicProvider(this, LogicCharMatcher, LogicTokenMatcher, LogicNumberSci, LogicNumberRad,
-				DPL_ENTITY_INVALID);
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleActions, AgentCharMatcher);
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleActions, AgentTokenMatcher);
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleActions, AgentNumberSci);
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleActions, AgentNumberRad);
 	}
 
 	virtual DPLNarrativeLogic* createLogic(int logicId) const {
-		if (LogicCharMatcher == logicId) {
+		if (AgentCharMatcher == logicId) {
 			return new CharMatcher();
-		} else if (LogicTokenMatcher == logicId) {
+		} else if (AgentTokenMatcher == logicId) {
 			return new TokenMatcher();
-		} else if (LogicNumberSci == logicId) {
+		} else if (AgentNumberSci == logicId) {
 			return new NumberSci();
-		} else if (LogicNumberRad == logicId) {
+		} else if (AgentNumberRad == logicId) {
 			return new NumberRad();
 		}
 		return NULL;
 	}
 
 	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
-		if (LogicCharMatcher == logicId) {
+		if (AgentCharMatcher == logicId) {
 			delete (CharMatcher*) pLogic;
-		} else if (LogicTokenMatcher == logicId) {
+		} else if (AgentTokenMatcher == logicId) {
 			delete (TokenMatcher*) pLogic;
-		} else if (LogicNumberSci == logicId) {
+		} else if (AgentNumberSci == logicId) {
 			delete (NumberSci*) pLogic;
-		} else if (LogicNumberRad == logicId) {
+		} else if (AgentNumberRad == logicId) {
 			delete (NumberRad*) pLogic;
 		}
 	}

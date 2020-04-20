@@ -1,12 +1,3 @@
-/*
- * dpl_impl_data.h
- *
- *	Value and Entity implementation (not too complicated)
- *
- *  Created on: Feb 12, 2020
- *      Author: Lorand Kedves
- */
-
 #include "data.h"
 #include "proc_runtime.h"
 #include "_dplgen_boot.h"
@@ -71,7 +62,8 @@ bool DustProdLightEntity::chgRef(DPLChange chg, DustProdLightEntity *pToken, DPL
 }
 
 DPLNarrativeLogic* DustProdLightEntity::getLogicByCommand(DPLEntity cmd) {
-	DPLEntity eAction = getRefEntity(DPLUnitModel::RefEntityActions, cmd);
+	DPLEntity eAction = NULL;
+//	DPLEntity eAction = getRefEntity(DPLUnitModel::RefEntityActions, cmd);
 	DPLNarrativeLogic* pAction = NULL;
 
 	if ( pActionByAction ) {
@@ -169,6 +161,9 @@ void DustProdLightEntity::initMetaEntity(DPLEntity entity, DPLTokenType tokenTyp
 	case DPL_TOKEN_UNIT:
 		primaryType = DPL_MBI_TYPE_MODEL_UNIT;
 		break;
+	case DPL_TOKEN_MODULE:
+		primaryType = DPL_MBI_TYPE_DUST_MODULE;
+		break;
 	case DPL_TOKEN_TYPE:
 		primaryType = DPL_MBI_TYPE_IDEA_TYPE;
 		break;
@@ -184,14 +179,14 @@ void DustProdLightEntity::initMetaEntity(DPLEntity entity, DPLTokenType tokenTyp
 	case DPL_TOKEN_REF_MAP:
 		primaryType = DPL_MBI_TYPE_IDEA_REFERENCE;
 		break;
-	case DPL_TOKEN_LOGIC:
-		primaryType = DPL_MBI_TYPE_NARRATIVE_ACTION;
+	case DPL_TOKEN_AGENT:
+		primaryType = DPL_MBI_TYPE_IDEA_AGENT;
 		break;
 	case DPL_TOKEN_SERVICE:
-		primaryType = DPL_MBI_TYPE_IDEA_SERVICE;
+		primaryType = DPL_MBI_TYPE_NATIVE_SERVICE;
 		break;
 	case DPL_TOKEN_COMMAND:
-		primaryType = DPL_MBI_TYPE_IDEA_COMMAND;
+		primaryType = DPL_MBI_TYPE_NATIVE_COMMAND;
 		break;
 	case DPL_TOKEN_ENTITY:
 		primaryType = DPL_ENTITY_INVALID;

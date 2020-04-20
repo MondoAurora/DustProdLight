@@ -9,7 +9,6 @@
 namespace DPLUnitTest01 {
 extern const DPLEntity TestUnit;
 extern const DPLEntity Test;
-extern const DPLEntity TypeHelloWorldSimple;
 
 extern const DPLEntity TestOdd;
 
@@ -36,7 +35,7 @@ extern const DPLEntity Moving;
 extern const DPLEntity MovingVelocity;
 extern const DPLEntity MovingAcceleration;
 
-extern const DPLEntity ActionHelloWorldSimple;
+extern const DPLEntity AgentHelloWorldSimple;
 }
 
 namespace DPLModuleTest01 {

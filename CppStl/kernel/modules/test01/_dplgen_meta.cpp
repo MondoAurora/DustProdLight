@@ -1,11 +1,9 @@
-
 #include <_dplgen_module_test01.h>
 
 using namespace DPLUnitTest01;
 
 const DPLEntity DPLUnitTest01::TestUnit = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "Test");
 const DPLEntity DPLUnitTest01::Test = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "Test", TestUnit);
-const DPLEntity DPLUnitTest01::TypeHelloWorldSimple = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "HelloWorldSimple", TestUnit);
 
 const DPLEntity DPLUnitTest01::TestOdd = DPLData::getMetaEntity(DPL_TOKEN_VAL_BOOL, "Odd", Test);
 
@@ -32,4 +30,4 @@ const DPLEntity DPLUnitTest01::Moving = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "
 const DPLEntity DPLUnitTest01::MovingVelocity = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Velocity", Moving);
 const DPLEntity DPLUnitTest01::MovingAcceleration = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Acceleration", Moving);
 
-const DPLEntity DPLUnitTest01::ActionHelloWorldSimple = DPLData::getMetaEntity(DPL_TOKEN_LOGIC, "HelloWorldSimple", TestUnit);
+const DPLEntity DPLUnitTest01::AgentHelloWorldSimple = DPLData::getMetaEntity(DPL_TOKEN_AGENT, "HelloWorldSimple", TestUnit);

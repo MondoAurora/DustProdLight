@@ -1,12 +1,3 @@
-/*
- * dpl.cpp
- *
- * DustProdLight (STL version) initialization
- *
- *  Created on: Feb 25, 2020
- *      Author: Lorand Kedves
- */
-
 #include <_dplgen_module_dpl_stl.h>
 #include <_dplgen_module_text.h>
 #include <_dplgen_module_test01.h>
@@ -19,15 +10,12 @@ using namespace DPLUnitDust;
 using namespace DPLUnitTools;
 
 DPLEntity initTest01() {
-	DPLEntity eProc = DPLData::createEntity(TypeHelloWorldSimple);
-	DPLData::setRef(eProc, RefEntityActions, ActionHelloWorldSimple, CmdActionExecute);
+	DPLEntity eProc = DPLData::createEntity(AgentHelloWorldSimple);
 
-	DPLEntity eSep = DPLData::createEntity(Test);
-	DPLData::setRef(eSep, RefEntityActions, ActionDump, CmdActionExecute);
+	DPLEntity eSep = DPLData::createEntity(AgentDump);
 	DPLData::setString(eSep, DPLUnitText::AttTextString, "\n=======================\n");
 
-	DPLEntity eMain = DPLData::createEntity(TypeCtrlRepeat);
-	DPLData::setRef(eMain, RefEntityActions, ActionCtrlRepeat, CmdActionExecute);
+	DPLEntity eMain = DPLData::createEntity(AgentRepeat);
 	DPLData::setInt(eMain, DPLUnitTools::AttLimitsIntMax, 5);
 	DPLData::setRef(eMain, DPLUnitTools::RefLinkTarget, eProc);
 	DPLData::setRef(eMain, DPLUnitTools::RefCollectionSeparator, eSep);
@@ -36,12 +24,23 @@ DPLEntity initTest01() {
 }
 
 DPLEntity initFileDump() {
-	DPLEntity eInput = DPLData::createEntity(Test);
+	DPLEntity eInput = DPLData::createEntity(AgentReadStream);
 	DPLData::setString(eInput, AttStreamURL, "test1.json");
-	DPLData::setRef(eInput, RefEntityActions, ActionReadStream, CmdActionExecute);
 
-	DPLEntity eDump = DPLData::createEntity(Test);
-	DPLData::setRef(eDump, RefEntityActions, ActionDump, CmdActionExecute);
+	DPLEntity eDump = DPLData::createEntity(AgentDump);
+
+	DPLEntity eDialog = DPLData::createEntity(TypeDialog);
+	DPLData::setRef(eDialog, RefCollectionMembers, eInput);
+	DPLData::setRef(eDialog, RefCollectionMembers, eDump);
+
+	return eDialog;
+}
+
+DPLEntity parseJson(string fileName) {
+	DPLEntity eInput = DPLData::createEntity(AgentReadStream);
+	DPLData::setString(eInput, AttStreamURL, fileName);
+
+	DPLEntity eDump = DPLData::createEntity(AgentDump);
 
 	DPLEntity eDialog = DPLData::createEntity(TypeDialog);
 	DPLData::setRef(eDialog, RefCollectionMembers, eInput);
@@ -51,14 +50,16 @@ DPLEntity initFileDump() {
 }
 
 void DPLMain::init() {
-	DPLModuleDplStl::Module->init();
-	DPLModuleTest01::Module->init();
+	DPLMain::registerModule("DplStl", DPLModuleDplStl::Module);
+	DPLMain::registerModule("Test01", DPLModuleTest01::Module);
 
 	DPLEntity eMain;
 
 //	eMain = initTest01();
 
-	eMain = initFileDump();
+//	eMain = initFileDump();
+
+	eMain = parseJson("test1.json");
 
 	DPLData::setRef(DPL_CTX_RUNTIME, RefRuntimeMain, eMain);
 }

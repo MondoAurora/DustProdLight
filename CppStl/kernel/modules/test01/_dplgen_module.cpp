@@ -1,4 +1,3 @@
-
 #include "test01.h"
 
 using namespace DPLUnitTest01;
@@ -9,18 +8,12 @@ public:
 
 	}
 
-	virtual void init() {
-		DPLData::setRef(ActionHelloWorldSimple, DPLUnitTools::RefConnectedExtends, DPLUnitNarrative::SvcAction);
-
-		DPLData::setRef(TypeHelloWorldSimple, DPLUnitIdea::RefTypeDefaultActions, ActionHelloWorldSimple);
-
-		DPLMain::registerLogicProvider(this,
-				ActionHelloWorldSimple,
-				DPL_ENTITY_INVALID);
+	virtual void init(DPLEntity eModule) {
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleActions, AgentHelloWorldSimple);
 	}
 
 	virtual DPLNarrativeLogic* createLogic(int logicId) const {
-			if (ActionHelloWorldSimple == logicId) {
+			if (AgentHelloWorldSimple == logicId) {
 				return new HelloWorldSimple();
 			}
 
@@ -28,7 +21,7 @@ public:
 	}
 
 	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
-			if (ActionHelloWorldSimple == logicId) {
+			if (AgentHelloWorldSimple == logicId) {
 				delete (HelloWorldSimple*) pLogic;
 			}
 	}

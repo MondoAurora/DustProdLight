@@ -2,6 +2,7 @@
 #include "dpl_stl.h"
 
 using namespace DPLUnitNarrative;
+using namespace DPLUnitNative;
 using namespace DPLUnitDialog;
 using namespace DPLUnitTools;
 using namespace DPLUnitDust;
@@ -12,35 +13,26 @@ public:
 
 	}
 
-	virtual void init() {
+	virtual void init(DPLEntity eModule) {
 		DustProdLightRuntime::init();
 
-		DPLData::setRef(ActionDump, DPL_MBI_REF_CONNECTED_EXTENDS, SvcAction);
-		DPLData::setRef(ActionReadStream, DPL_MBI_REF_CONNECTED_EXTENDS, SvcAction);
-
-		DPLMain::registerLogicProvider(this,
-				ActionCtrlSequence, ActionCtrlSelect, ActionCtrlRepeat,
-//				ActionExecAtom, ActionExecAgent, ActionExecDialog,
-				ActionReadStream, ActionDump,
-				DPL_ENTITY_INVALID);
+		DPLData::setRef(eModule, RefModuleActions, AgentSequence);
+		DPLData::setRef(eModule, RefModuleActions, AgentSelect);
+		DPLData::setRef(eModule, RefModuleActions, AgentRepeat);
+		DPLData::setRef(eModule, RefModuleActions, AgentReadStream);
+		DPLData::setRef(eModule, RefModuleActions, AgentDump);
 	}
 
 	virtual DPLNarrativeLogic* createLogic(int logicId) const {
-			if (ActionCtrlSequence == logicId) {
+			if (AgentSequence == logicId) {
 				return new ProcActionSequence();
-			} else if ( ActionCtrlSelect == logicId) {
+			} else if ( AgentSelect == logicId) {
 				return new ProcActionSelect();
-			}	else if ( ActionCtrlRepeat == logicId ) {
+			}	else if ( AgentRepeat == logicId ) {
 				return new ProcActionRepeat();
-
-//			}	else if ( ActionExecAgent == logicId ) {
-//				return new DustProdLightAgent();
-//			}	else if ( ActionExecDialog == logicId ) {
-//				return new DustProdLightDialogTokenRing();
-
-			}	else if ( ActionReadStream == logicId ) {
+			}	else if ( AgentReadStream == logicId ) {
 				return new DPLUActionStreamReader();
-			}	else if ( ActionDump == logicId ) {
+			}	else if ( AgentDump == logicId ) {
 				return new DPLUActionDump();
 			}
 
@@ -48,21 +40,15 @@ public:
 	}
 
 	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
-			if (ActionCtrlSequence == logicId) {
+			if (AgentSequence == logicId) {
 				delete (ProcActionSequence*) pLogic;
-			} else if ( ActionCtrlSelect == logicId) {
+			} else if ( AgentSelect == logicId) {
 				delete (ProcActionSelect*) pLogic;
-			} else if ( ActionCtrlRepeat == logicId) {
+			} else if ( AgentRepeat == logicId) {
 				delete (ProcActionRepeat*) pLogic;
-
-//			} else if ( ActionExecAgent == logicId) {
-//				delete (DustProdLightAgent*) pLogic;
-//			} else if ( ActionExecDialog == logicId) {
-//				delete (DustProdLightDialogTokenRing*) pLogic;
-
-			} else if ( ActionReadStream == logicId) {
+			} else if ( AgentReadStream == logicId) {
 				delete (DPLUActionStreamReader*) pLogic;
-			}	else if ( ActionDump == logicId ) {
+			}	else if ( AgentDump == logicId ) {
 				delete (DPLUActionDump*) pLogic;
 			}
 	}

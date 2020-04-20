@@ -6,7 +6,11 @@
 #include <_dplgen_module_dpl_stl.h>
 
 
-namespace DPLUnitJson {}
+namespace DPLUnitJson {
+extern const DPLEntity UnitJson;
+
+extern const DPLEntity AgentJsonParser;
+}
 
 namespace DPLModuleJson {
 extern DPLModule* Module;
