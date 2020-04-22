@@ -54,13 +54,11 @@ DPLProcessResult DustProdLightBlock::init(DustProdLightEntity *pTask, DustProdLi
 		emapRef[DPL_CTX_PARAM] = pRef ? DustProdLightRuntime::pRuntime->resolveEntity(pRef->target) : NULL;
 
 		pRef = mapOptGet(pTask->refs, RefExecAtomCommand);
-//		cmd = pRef ? pRef->target : CmdActionExecute;
 
 		pRef = mapOptGet(pTask->refs, RefExecAtomTarget);
 		pSelf = pRef ? DustProdLightRuntime::pRuntime->resolveEntity(pRef->target) : NULL;
 	} else {
 		pSelf = pTask; // maybe shallow copy?
-//		cmd = CmdActionExecute;
 	}
 
 	pStore = pParent ? pParent->pStore : &DustProdLightRuntime::pRuntime->store;
@@ -70,12 +68,9 @@ DPLProcessResult DustProdLightBlock::init(DustProdLightEntity *pTask, DustProdLi
 		pSelf->primaryType = DustProdLightRuntime::pRuntime->resolveEntity(eRes)->primaryType;
 	}
 
-
-//	emapRef[DPL_CTX_COMMAND] = DustProdLightRuntime::pRuntime->resolveEntity(cmd);
 	emapRef[DPL_CTX_SELF] = pSelf;
 
 	pLogic =  DustProdLightRuntime::createAction(pSelf->primaryType);
-//	pLogic = pSelf->getLogicByCommand(cmd);
 
 	return DPL_PROCESS_SUCCESS;
 }
