@@ -13,7 +13,7 @@ using namespace DPLUnitText;
  https://tools.ietf.org/html/std90
  */
 
-DPLEntity buildJsonParser() {
+DPLEntity buildAlgorithmJsonParser() {
 	DPLEntity eValue = DPLData::createEntity(AgentSelect);
 
 // ws = *( %x20 / %x09 / %x0A / %x0D )
@@ -22,7 +22,7 @@ DPLEntity buildJsonParser() {
 
 	DPLEntity eWS = DPLData::createEntity(AgentRepeat);
 	DPLData::setInt(eWS, AttLimitsIntMin, 0);
-	DPLData::setInt(eWS, RefLinkTarget, eWSChars);
+	DPLData::setRef(eWS, RefLinkTarget, eWSChars);
 
 // value-separator = ws %x2C ws  ; , comma
 	DPLEntity eValSep = DPLData::createEntity(AgentCharMatcher);
@@ -31,17 +31,17 @@ DPLEntity buildJsonParser() {
 // null  = %x6e.75.6c.6c      ; null
 	DPLEntity eTokenNull = DPLData::createEntity(AgentTokenMatcher);
 	DPLData::setString(eTokenNull, AttTextString, "null");
-	DPLData::setInt(eTokenNull, RefLinkTarget, ValEntityNull);
+	DPLData::setRef(eTokenNull, RefLinkTarget, ValEntityNull);
 
 // true  = %x74.72.75.65      ; true
 	DPLEntity eTokenTrue = DPLData::createEntity(AgentTokenMatcher);
 	DPLData::setString(eTokenTrue, AttTextString, "true");
-	DPLData::setInt(eTokenTrue, RefLinkTarget, ValEntityTrue);
+	DPLData::setRef(eTokenTrue, RefLinkTarget, ValEntityTrue);
 
 // false = %x66.61.6c.73.65   ; false
 	DPLEntity eTokenFalse = DPLData::createEntity(AgentTokenMatcher);
 	DPLData::setString(eTokenFalse, AttTextString, "false");
-	DPLData::setInt(eTokenFalse, RefLinkTarget, ValEntityFalse);
+	DPLData::setRef(eTokenFalse, RefLinkTarget, ValEntityFalse);
 
 
 
@@ -117,7 +117,7 @@ DPLEntity buildJsonParser() {
 // string = quotation-mark *char quotation-mark
 	DPLEntity eCharRep = DPLData::createEntity(AgentRepeat);
 	DPLData::setInt(eCharRep, AttLimitsIntMin, 0);
-	DPLData::setInt(eCharRep, RefLinkTarget, eChar);
+	DPLData::setRef(eCharRep, RefLinkTarget, eChar);
 
 	DPLEntity eString = DPLData::createEntity(AgentSequence);
 	DPLData::setRef(eUnesc, RefCollectionMembers, eQuot);
@@ -142,8 +142,8 @@ DPLEntity buildJsonParser() {
 
 	DPLEntity eArrRep = DPLData::createEntity(AgentRepeat);
 	DPLData::setInt(eArrRep, AttLimitsIntMin, 0);
-	DPLData::setInt(eArrRep, RefLinkTarget, eArrC0);
-	DPLData::setInt(eArrRep, RefCollectionSeparator, eValSep);
+	DPLData::setRef(eArrRep, RefLinkTarget, eArrC0);
+	DPLData::setRef(eArrRep, RefCollectionSeparator, eValSep);
 
 // array = begin-array [ value *( value-separator value ) ] end-array
 	DPLEntity eArray = DPLData::createEntity(AgentSequence);
@@ -183,8 +183,8 @@ DPLEntity buildJsonParser() {
 
 	DPLEntity eObjRep = DPLData::createEntity(AgentRepeat);
 	DPLData::setInt(eObjRep, AttLimitsIntMin, 0);
-	DPLData::setInt(eObjRep, RefLinkTarget, eObjMember);
-	DPLData::setInt(eObjRep, RefCollectionSeparator, eValSep);
+	DPLData::setRef(eObjRep, RefLinkTarget, eObjMember);
+	DPLData::setRef(eObjRep, RefCollectionSeparator, eValSep);
 
 // object = begin-object [ member *( value-separator member ) ] end-object
 	DPLEntity eObject = DPLData::createEntity(AgentSequence);

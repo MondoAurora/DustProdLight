@@ -25,7 +25,7 @@ DustProdLightEntity *pRefMsgTarget = NULL;
  *******************************/
 
 DustProdLightBlock::DustProdLightBlock() :
-		blockType(DPL_BLOCK_EXTERNAL), cmd(DPLUnitNative::CmdActionExecute), pStore(NULL), pLogic(NULL) {
+		blockType(DPL_BLOCK_EXTERNAL), pStore(NULL), pLogic(NULL) {
 }
 
 DustProdLightBlock::~DustProdLightBlock() {
@@ -54,18 +54,24 @@ DPLProcessResult DustProdLightBlock::init(DustProdLightEntity *pTask, DustProdLi
 		emapRef[DPL_CTX_PARAM] = pRef ? DustProdLightRuntime::pRuntime->resolveEntity(pRef->target) : NULL;
 
 		pRef = mapOptGet(pTask->refs, RefExecAtomCommand);
-		cmd = pRef ? pRef->target : CmdActionExecute;
+//		cmd = pRef ? pRef->target : CmdActionExecute;
 
 		pRef = mapOptGet(pTask->refs, RefExecAtomTarget);
 		pSelf = pRef ? DustProdLightRuntime::pRuntime->resolveEntity(pRef->target) : NULL;
 	} else {
 		pSelf = pTask; // maybe shallow copy?
-		cmd = CmdActionExecute;
+//		cmd = CmdActionExecute;
 	}
 
 	pStore = pParent ? pParent->pStore : &DustProdLightRuntime::pRuntime->store;
 
-	emapRef[DPL_CTX_COMMAND] = DustProdLightRuntime::pRuntime->resolveEntity(cmd);
+	DPLEntity eRes = mapOptGetDef(DustProdLightRuntime::pRuntime->agentResolution, pSelf->primaryType, DPL_ENTITY_INVALID);
+	if ( eRes ) {
+		pSelf->primaryType = DustProdLightRuntime::pRuntime->resolveEntity(eRes)->primaryType;
+	}
+
+
+//	emapRef[DPL_CTX_COMMAND] = DustProdLightRuntime::pRuntime->resolveEntity(cmd);
 	emapRef[DPL_CTX_SELF] = pSelf;
 
 	pLogic =  DustProdLightRuntime::createAction(pSelf->primaryType);
@@ -530,15 +536,11 @@ void DPLMain::registerModule(const char* moduleName, DPLModule *pModule) {
 		DustProdLightRuntime::pRuntime->logicFactory[aId] = pModule;
 	}
 
-//	va_list args;
-//	va_start(args, pLogicFactory);
-//	int mId;
-//
-//	while (DPL_ENTITY_INVALID != (mId = va_arg(args, int))) {
-//		DustProdLightRuntime::pRuntime->logicFactory[mId] = pLogicFactory;
-//	}
-//
-//	va_end(args);
+	for ( int i = DPLData::getRefCount(eModule, DPLUnitNative::RefModuleAlgorithms); i-->0; ) {
+		int aId = DPLData::getRefKey(eModule, DPLUnitNative::RefModuleAlgorithms, i);
+		int rId = DPLData::getRef(eModule, DPLUnitNative::RefModuleAlgorithms, aId);
+		DustProdLightRuntime::pRuntime->agentResolution[aId] = rId;
+	}
 }
 
 DPLProcessResult DPLMain::run() {

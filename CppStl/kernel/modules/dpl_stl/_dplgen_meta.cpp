@@ -43,7 +43,7 @@ const DPLEntity DPLUnitNative::UnitNative = DPL_MBI_UNIT_NATIVE;
 
 const DPLEntity DPLUnitNative::TypeModule = DPL_MBI_TYPE_DUST_MODULE;
 const DPLEntity DPLUnitNative::RefModuleActions = DPLData::getMetaEntity(DPL_TOKEN_REF_SET, "Actions", DPLUnitNative::TypeModule);
-const DPLEntity DPLUnitNative::RefModuleAlgorithms = DPLData::getMetaEntity(DPL_TOKEN_REF_SET, "Algorithms", DPLUnitNative::TypeModule);
+const DPLEntity DPLUnitNative::RefModuleAlgorithms = DPLData::getMetaEntity(DPL_TOKEN_REF_MAP, "Algorithms", DPLUnitNative::TypeModule);
 
 const DPLEntity DPLUnitNative::TypeService = DPL_MBI_TYPE_NATIVE_SERVICE;
 const DPLEntity DPLUnitNative::TypeCommand = DPL_MBI_TYPE_NATIVE_COMMAND;

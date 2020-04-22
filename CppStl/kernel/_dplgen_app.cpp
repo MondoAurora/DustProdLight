@@ -1,13 +1,17 @@
 #include <_dplgen_module_dpl_stl.h>
 #include <_dplgen_module_text.h>
+#include <_dplgen_module_json.h>
 #include <_dplgen_module_test01.h>
 
 using namespace DPLUnitNarrative;
 using namespace DPLUnitModel;
 using namespace DPLUnitDialog;
-using namespace DPLUnitTest01;
 using namespace DPLUnitDust;
 using namespace DPLUnitTools;
+
+using namespace DPLUnitJson;
+
+using namespace DPLUnitTest01;
 
 DPLEntity initTest01() {
 	DPLEntity eProc = DPLData::createEntity(AgentHelloWorldSimple);
@@ -40,17 +44,20 @@ DPLEntity parseJson(string fileName) {
 	DPLEntity eInput = DPLData::createEntity(AgentReadStream);
 	DPLData::setString(eInput, AttStreamURL, fileName);
 
-	DPLEntity eDump = DPLData::createEntity(AgentDump);
+//	DPLEntity eProc = DPLData::createEntity(AgentDump);
+	DPLEntity eProc = DPLData::createEntity(AgentJsonParser);
 
 	DPLEntity eDialog = DPLData::createEntity(TypeDialog);
 	DPLData::setRef(eDialog, RefCollectionMembers, eInput);
-	DPLData::setRef(eDialog, RefCollectionMembers, eDump);
+	DPLData::setRef(eDialog, RefCollectionMembers, eProc);
 
 	return eDialog;
 }
 
 void DPLMain::init() {
 	DPLMain::registerModule("DplStl", DPLModuleDplStl::Module);
+	DPLMain::registerModule("Text", DPLModuleText::Module);
+	DPLMain::registerModule("Json", DPLModuleJson::Module);
 	DPLMain::registerModule("Test01", DPLModuleTest01::Module);
 
 	DPLEntity eMain;
@@ -66,6 +73,8 @@ void DPLMain::init() {
 
 void DPLMain::shutdown() {
 	DPLModuleDplStl::Module->release();
+	DPLModuleText::Module->release();
+	DPLModuleJson::Module->release();
 	DPLModuleTest01::Module->release();
 }
 

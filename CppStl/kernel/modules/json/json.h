@@ -7,6 +7,6 @@
 #include <_dplgen_module_text.h>
 #include <_dplgen_module_json.h>
 
-
+DPLEntity buildAlgorithmJsonParser();
 
 #endif /* JSON_H_ */

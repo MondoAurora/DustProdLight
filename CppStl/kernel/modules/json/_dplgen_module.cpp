@@ -3,13 +3,14 @@
 
 using namespace DPLUnitJson;
 
-class DPLModuleImpl: public DPLModule {
+class DPLModuleJsonImpl: public DPLModule {
 public:
-	virtual ~DPLModuleImpl() {
+	virtual ~DPLModuleJsonImpl() {
 
 	}
 
-	virtual void init() {
+	virtual void init(DPLEntity eModule) {
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleAlgorithms, buildAlgorithmJsonParser(), AgentJsonParser);
 	}
 
 	virtual DPLNarrativeLogic* createLogic(int logicId) const {
@@ -23,5 +24,5 @@ public:
 	}
 };
 
-DPLModule* DPLModuleJson::Module = new DPLModuleImpl();
+DPLModule* DPLModuleJson::Module = new DPLModuleJsonImpl();
 

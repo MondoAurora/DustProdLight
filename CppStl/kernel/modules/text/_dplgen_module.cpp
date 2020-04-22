@@ -2,9 +2,9 @@
 
 using namespace DPLUnitText;
 
-class DPLModuleImpl: public DPLModule {
+class DPLModuleTextImpl: public DPLModule {
 public:
-	virtual ~DPLModuleImpl() {
+	virtual ~DPLModuleTextImpl() {
 	}
 
 	virtual void init(DPLEntity eModule) {
@@ -53,4 +53,4 @@ public:
 	}
 };
 
-DPLModule* DPLModuleText::Module = new DPLModuleImpl();
+DPLModule* DPLModuleText::Module = new DPLModuleTextImpl();

@@ -29,7 +29,6 @@ class DustProdLightAgent;
 class DustProdLightBlock: public DPLNarrativeLogic {
 private:
 	DPLBlock blockType;
-	DPLEntity cmd;
 
 	map<int, DustProdLightEntity*> emapRef;
 	DustProdLightStore *pStore;
@@ -150,6 +149,7 @@ public:
 class DustProdLightRuntime {
 	static DustProdLightRuntime *pRuntime;
 
+	map<DPLEntity, DPLEntity> agentResolution;
 	map<DPLEntity, DPLModule*> logicFactory;
 
 	DPLNarrativeLogic *pScheduler;
