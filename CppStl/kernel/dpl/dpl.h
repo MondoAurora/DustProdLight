@@ -31,15 +31,27 @@ using namespace std;
 
 typedef int DPLEntity;
 
+#define DPL_REFKEY_ARR_APPEND -1
+#define DPL_ENTITY_APPEND -1
+#define DPL_ERR_UNSPECIFIED -1
+
+#define DPL_CTX_SELF -2
+
+
+#define DPL_SEP_ID "."
+#define DPL_SEP_STORE ":"
+
+
 enum DPLTokenType {
-	DPL_ENTITY_INVALID,
+	DPL_ENTITY_INVALID = 0,
+	DPL_ENTITY_TRUE,
+	DPL_ENTITY_FALSE,
 
-	DPL_TOKEN_STORE,
 	DPL_TOKEN_UNIT,
-	DPL_TOKEN_MODULE,
-
-	DPL_TOKEN_ENTITY,
 	DPL_TOKEN_TYPE,
+	DPL_TOKEN_AGENT,
+	DPL_TOKEN_CONST,
+	DPL_TOKEN_TAG,
 
 	DPL_TOKEN_VAL_BOOL,
 	DPL_TOKEN_VAL_INT,
@@ -51,49 +63,25 @@ enum DPLTokenType {
 	DPL_TOKEN_REF_ARR,
 	DPL_TOKEN_REF_MAP,
 
-	DPL_TOKEN_AGENT,
-	DPL_TOKEN_SERVICE,
-	DPL_TOKEN_COMMAND,
-
 	DPL_TOKEN_
-};
-
-enum DPLContext {
-	DPL_CTX_SELF = DPL_TOKEN_, DPL_CTX_PARAM, DPL_CTX_BLOCK, DPL_CTX_DIALOG, DPL_CTX_RUNTIME, DPL_CTX_
-};
-
-enum DPLBlock {
-	DPL_BLOCK_INTERNAL = DPL_CTX_, DPL_BLOCK_EXTERNAL, DPL_BLOCK_TRANSACTION, DPL_BLOCK_
-};
-
-enum DPLChange {
-	DPL_CHG_REF_SET = DPL_BLOCK_, DPL_CHG_REF_REMOVE, DPL_CHG_REF_CLEAR, DPL_CHG_REF_
-};
-
-enum DPLSignal {
-	DPL_SIGNAL_OVER = DPL_CHG_REF_, DPL_SIGNAL_OUT, DPL_SIGNAL_
 };
 
 enum DPLProcessResult {
 	DPL_PROCESS_NOTIMPLEMENTED = DPL_ENTITY_INVALID,
-	DPL_PROCESS_REJECT = DPL_SIGNAL_, DPL_PROCESS_ACCEPT_PASS, DPL_PROCESS_ACCEPT, DPL_PROCESS_ACCEPT_READ,
+	DPL_PROCESS_REJECT = DPL_TOKEN_,
+	DPL_PROCESS_ACCEPT_PASS,
+	DPL_PROCESS_ACCEPT,
+	DPL_PROCESS_ACCEPT_READ,
 	DPL_PROCESS_READ,
 	DPL_PROCESS_
 };
 
-enum DPLFilterResponse {
-	DPL_FILTER_SKIP = DPL_PROCESS_, DPL_FILTER_PROCESS, DPL_FILTER_VISIT, DPL_FILTER_
+enum DPLChange {
+	DPL_CHG_REF_SET = DPL_PROCESS_, DPL_CHG_REF_REMOVE, DPL_CHG_REF_CLEAR, DPL_CHG_
 };
 
-#define DPL_LAST_CONST DPL_FILTER_
+#define DPL_LAST_CONST DPL_CHG_
 
-#define DPL_REFKEY_ARR_APPEND -1
-#define DPL_ENTITY_APPEND -1
-
-#define DPL_ERR_UNSPECIFIED -1
-
-#define DPL_SEP_ID "."
-#define DPL_SEP_STORE ":"
 
 class DPLError {
 public:
@@ -161,8 +149,8 @@ public:
 	virtual void visitEnd(DPLEntity entity, void *pHint) {
 	}
 
-	virtual DPLFilterResponse shouldProcess(DPLEntity entity, DPLEntity token) {
-		return DPL_FILTER_PROCESS;
+	virtual DPLProcessResult shouldProcess(DPLEntity entity, DPLEntity token) {
+		return DPL_PROCESS_ACCEPT_READ;
 	}
 
 	virtual void processValBool(DPLEntity entity, DPLEntity token, bool val, void *pHint) {
@@ -190,7 +178,7 @@ public:
 class DPLMain {
 public:
 	static void init();
-	static void createBootEntities();
+//	static void createBootEntities();
 	static void registerModule(const char* moduleName, DPLModule *pModule);
 
 	static DPLProcessResult run();
@@ -201,7 +189,7 @@ public:
 class DPLData {
 public:
 // meta access
-	static DPLEntity getMetaEntity(DPLTokenType tokenType, string name, DPLEntity parent = DPL_ENTITY_INVALID);
+	static DPLEntity getMetaEntity(DPLEntity primaryType, string name, DPLEntity parent = DPL_ENTITY_INVALID);
 	static DPLEntity getEntityById(string globalId);
 	static DPLEntity getConst(DPLEntity primaryType, string name, DPLEntity unit);
 
@@ -212,7 +200,7 @@ public:
 	static void getAllTypes(DPLEntity entity, set<DPLEntity>& typeSet);
 
 // Entity creation and access
-	static DPLEntity getEntityByPath(DPLContext ctx, ... );
+	static DPLEntity getEntityByPath(DPLEntity ctx, ... );
 	static DPLEntity createEntity(DPLEntity primaryType);
 	static void visit(DPLEntity root, DPLVisitor *pVisitor, void *pHint);
 

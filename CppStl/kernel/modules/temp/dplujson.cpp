@@ -103,8 +103,8 @@ ostream& DPLUEntityToJSON::writeStr(string str) {
 	return out << "\"";
 }
 
-DPLFilterResponse DPLUEntityToJSON::shouldProcess(DPLEntity entity, DPLEntity token) {
-	return DPL_FILTER_VISIT;
+DPLProcessResult DPLUEntityToJSON::shouldProcess(DPLEntity entity, DPLEntity token) {
+	return DPL_PROCESS_ACCEPT_READ;
 }
 
 void DPLUEntityToJSON::processValBool(DPLEntity entity, DPLEntity token, bool val, void *pHint) {

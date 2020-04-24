@@ -11,8 +11,8 @@
 #include "dpl_impl_json.h"
 
 
-const DPLEntity JsonMeta::DPLJsonUnit = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "TempJson");
-const DPLEntity JsonMeta::DPLJsonTemp = DPLData::getMetaEntity(DPL_TOKEN_TYPE, "TempJson", JsonMeta::DPLJsonUnit);
+const DPLEntity JsonMeta::DPLJsonUnit = DPLData::getMetaEntity(DPLUnitModel::TypeUnit, "TempJson");
+const DPLEntity JsonMeta::DPLJsonTemp = DPLData::getMetaEntity(DPLUnitIdea::TypeType, "TempJson", JsonMeta::DPLJsonUnit);
 
 const DPLEntity JsonMeta::DPLJsonCtxJson = DPLData::getMetaEntity(DPL_TOKEN_ACTION, "CtxJson", JsonMeta::DPLJsonTemp);
 

@@ -46,7 +46,7 @@ public:
 
 class DustProdLightEntity {
 	int localId = -1;
-	DPLTokenType tokenType = DPL_ENTITY_INVALID;
+//	DPLTokenType tokenType = DPL_ENTITY_INVALID;
 
 	DPLEntity store = DPL_ENTITY_INVALID;
 	DPLEntity primaryType = DPL_ENTITY_INVALID;
@@ -61,7 +61,7 @@ class DustProdLightEntity {
 	void updated();
 	void optReloadMeta();
 
-	void initMetaEntity(DPLEntity entity, DPLTokenType tokenType, string name, DPLEntity parent);
+	void initMetaEntity(DPLEntity entity, DPLEntity primaryType, string name, DPLEntity parent);
 
 	friend class DustProdLightRef;
 	friend class DPLData;
@@ -125,7 +125,7 @@ class DustProdLightRef {
 	DPLEntity getTokenByIndex(int idx);
 
 	void optVisit(DPLVisitor *pVisitor, void *pHint);
-	void doVisit(DPLVisitor *pVisitor, int key, void *pHint, DPLFilterResponse fr);
+	void doVisit(DPLVisitor *pVisitor, int key, void *pHint, DPLProcessResult fr);
 
 public:
 	~DustProdLightRef();

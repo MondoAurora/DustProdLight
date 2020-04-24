@@ -26,10 +26,10 @@ void DustProdLightStore::createBootEntity(DPLEntity entity, const char* name, DP
 		pe->tokenType = DPL_TOKEN_STORE;
 		break;
 	case DPL_MBI_TYPE_MODEL_UNIT:
-		pe->tokenType = DPL_TOKEN_UNIT;
+		pe->tokenType = DPLUnitModel::TypeUnit;
 		break;
 	case DPL_MBI_TYPE_IDEA_TYPE:
-		pe->tokenType = DPL_TOKEN_TYPE;
+		pe->tokenType = DPLUnitIdea::TypeType;
 		break;
 	case DPL_MBI_TYPE_IDEA_ATTRIBUTE:
 	case DPL_MBI_TYPE_IDEA_REFERENCE:
@@ -57,7 +57,7 @@ string DustProdLightStore::getMetaEntityId(DPLTokenType tokenType, string name, 
 		return name;
 	case DPL_TOKEN_STORE:
 		return name + DPL_SEP_STORE;
-	case DPL_TOKEN_UNIT:
+	case DPLUnitModel::TypeUnit:
 		return dataLocal[DPL_MBI_STORE_SOURCE].values[DPL_MBI_ATT_ENTITY_GLOBALID].valStr + DPL_SEP_STORE + name;
 	default:
 		return parent ? dataLocal[parent].values[DPL_MBI_ATT_ENTITY_GLOBALID].valStr + DPL_SEP_ID + name : name;
@@ -130,10 +130,10 @@ DPLEntity DustProdLightStore::getMetaEntity(DPLTokenType tokenType, string name,
 		case DPL_TOKEN_STORE:
 			pe->primaryType = DPL_MBI_TYPE_MODEL_STORE;
 			break;
-		case DPL_TOKEN_UNIT:
+		case DPLUnitModel::TypeUnit:
 			pe->primaryType = DPL_MBI_TYPE_MODEL_UNIT;
 			break;
-		case DPL_TOKEN_TYPE:
+		case DPLUnitIdea::TypeType:
 			pe->primaryType = DPL_MBI_TYPE_IDEA_TYPE;
 			break;
 		case DPL_TOKEN_VAL_BOOL:

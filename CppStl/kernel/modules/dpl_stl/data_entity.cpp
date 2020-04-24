@@ -9,8 +9,8 @@ DustProdLightEntity::DustProdLightEntity() {
 }
 
 DustProdLightEntity::DustProdLightEntity(const DustProdLightEntity& e) :
-		localId(e.localId), tokenType(e.tokenType), store(e.store), primaryType(e.primaryType), types(e.types), changed(
-				e.changed), values(e.values) {
+		localId(e.localId), store(e.store), primaryType(e.primaryType), types(e.types),
+		changed(e.changed), values(e.values) {
 	for (EntityRefIterator iter = e.refs.begin(); iter != e.refs.end(); ++iter) {
 		int k = iter->first;
 		DustProdLightRef *pr = iter->second;
@@ -124,9 +124,9 @@ void DustProdLightEntity::getAllTypes(set<DPLEntity>& typeSet) {
 
 void* DustProdLightEntity::optVisit(DPLVisitor *pVisitor, int key, void *pHint) {
 	void *pRet = pHint;
-	DPLFilterResponse fr = pVisitor->shouldProcess(localId, key);
+	DPLProcessResult fr = pVisitor->shouldProcess(localId, key);
 
-	if (DPL_FILTER_SKIP != fr) {
+	if (DPL_PROCESS_REJECT != fr) {
 		pRet = pVisitor->processBeginEntity(localId, 0, pHint);
 
 		for (EntityValIterator iter = values.begin(); iter != values.end(); ++iter) {
@@ -147,57 +147,12 @@ string DustProdLightEntity::getString(DPLEntity token) {
 	return values[token].valStr;
 }
 
-void DustProdLightEntity::initMetaEntity(DPLEntity entity, DPLTokenType tokenType_, string name, DPLEntity parent) {
+void DustProdLightEntity::initMetaEntity(DPLEntity entity, DPLEntity primaryType, string name, DPLEntity parent) {
 	localId = entity;
-	tokenType = tokenType_;
-
-	switch (tokenType) {
-	case DPL_ENTITY_INVALID:
-		primaryType = DPL_ENTITY_INVALID;
-		break;
-	case DPL_TOKEN_STORE:
-		primaryType = DPL_MBI_TYPE_MODEL_STORE;
-		break;
-	case DPL_TOKEN_UNIT:
-		primaryType = DPL_MBI_TYPE_MODEL_UNIT;
-		break;
-	case DPL_TOKEN_MODULE:
-		primaryType = DPL_MBI_TYPE_DUST_MODULE;
-		break;
-	case DPL_TOKEN_TYPE:
-		primaryType = DPL_MBI_TYPE_IDEA_TYPE;
-		break;
-	case DPL_TOKEN_VAL_BOOL:
-	case DPL_TOKEN_VAL_DOUBLE:
-	case DPL_TOKEN_VAL_INT:
-	case DPL_TOKEN_VAL_STRING:
-		primaryType = DPL_MBI_TYPE_IDEA_ATTRIBUTE;
-		break;
-	case DPL_TOKEN_REF_SINGLE:
-	case DPL_TOKEN_REF_SET:
-	case DPL_TOKEN_REF_ARR:
-	case DPL_TOKEN_REF_MAP:
-		primaryType = DPL_MBI_TYPE_IDEA_REFERENCE;
-		break;
-	case DPL_TOKEN_AGENT:
-		primaryType = DPL_MBI_TYPE_IDEA_AGENT;
-		break;
-	case DPL_TOKEN_SERVICE:
-		primaryType = DPL_MBI_TYPE_NATIVE_SERVICE;
-		break;
-	case DPL_TOKEN_COMMAND:
-		primaryType = DPL_MBI_TYPE_NATIVE_COMMAND;
-		break;
-	case DPL_TOKEN_ENTITY:
-		primaryType = DPL_ENTITY_INVALID;
-		break;
-	case DPL_TOKEN_:
-		primaryType = DPL_ENTITY_INVALID;
-		break;
-	}
+	this->primaryType = primaryType;
 
 	types.insert(primaryType);
-	string id = DustProdLightRuntime::getMetaEntityId(tokenType, name, parent);
+	string id = DustProdLightRuntime::getMetaEntityId(primaryType, name, parent);
 	values[DPL_MBI_ATT_ENTITY_GLOBALID].set(DPL_TOKEN_VAL_STRING, &id);
 
 	DustProdLightRuntime::pRuntime->dataGlobal[id] = entity;

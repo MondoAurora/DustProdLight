@@ -82,7 +82,7 @@ public:
 	DPLUEntityToJSON(ostream& os_, bool escJson);
 	virtual ~DPLUEntityToJSON();
 
-	virtual DPLFilterResponse shouldProcess(DPLEntity entity, DPLEntity token);
+	virtual DPLProcessResult shouldProcess(DPLEntity entity, DPLEntity token);
 
 	virtual void visitEnd(DPLEntity entity, void *pHint);
 

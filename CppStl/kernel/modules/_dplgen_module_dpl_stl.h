@@ -21,18 +21,28 @@ namespace DPLUnitIdea {
 extern const DPLEntity UnitIdea;
 
 extern const DPLEntity TypeType;
-extern const DPLEntity TypeAttribute;
-extern const DPLEntity TypeReference;
+//extern const DPLEntity RefTypeAttributes;
+//extern const DPLEntity RefTypeReferences;
 
-extern const DPLEntity TypeAgent;
+extern const DPLEntity TypeAttBool;
+extern const DPLEntity TypeAttInt;
+extern const DPLEntity TypeAttDouble;
+extern const DPLEntity TypeAttString;
+
+extern const DPLEntity TypeRefSingle;
+extern const DPLEntity TypeRefSet;
+extern const DPLEntity TypeRefArr;
+extern const DPLEntity TypeRefMap;
+
+extern const DPLEntity TypeConst;
 extern const DPLEntity TypeTag;
-extern const DPLEntity TypeConstant;
+extern const DPLEntity TypeAgent;
 }
 
 namespace DPLUnitNarrative {
 extern const DPLEntity UnitNarrative;
 
-extern const DPLEntity TypeDialog;
+extern const DPLEntity AgentDialog;
 
 extern const DPLEntity AgentSequence;
 extern const DPLEntity AgentSelect;
@@ -48,16 +58,11 @@ namespace DPLUnitNative {
 extern const DPLEntity UnitNative;
 
 extern const DPLEntity TypeModule;
-extern const DPLEntity RefModuleActions;
+extern const DPLEntity RefModuleAgents;
 extern const DPLEntity RefModuleAlgorithms;
 
 extern const DPLEntity TypeService;
 extern const DPLEntity TypeCommand;
-
-extern const DPLEntity TypeExecAtom;
-extern const DPLEntity RefExecAtomTarget;
-extern const DPLEntity RefExecAtomCommand;
-extern const DPLEntity RefExecAtomParam;
 
 extern const DPLEntity SvcAction;
 extern const DPLEntity CmdActionExecute;
@@ -65,19 +70,24 @@ extern const DPLEntity CmdActionExecute;
 extern const DPLEntity SvcResource;
 extern const DPLEntity CmdResourceInit;
 extern const DPLEntity CmdResourceRelease;
+
+extern const DPLEntity AgentCall;
+extern const DPLEntity RefAgentCallTarget;
+extern const DPLEntity RefAgentCallCommand;
+extern const DPLEntity RefAgentCallParam;
+
+extern const DPLEntity StoreGeneratedSource;
 }
 
 namespace DPLUnitDust {
 extern const DPLEntity UnitDust;
 
-extern const DPLEntity TypeRuntime;
+extern const DPLEntity AgentRuntime;
 extern const DPLEntity RefRuntimeMain;
 
-extern const DPLEntity TypeSystem;
-
-extern const DPLEntity TypeCore;
-
-extern const DPLEntity TypeBlock;
+extern const DPLEntity AgentSystem;
+extern const DPLEntity AgentCore;
+extern const DPLEntity AgentBlock;
 }
 
 namespace DPLUnitTools {

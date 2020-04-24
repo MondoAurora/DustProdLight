@@ -18,10 +18,10 @@ public:
 		DPLData::setInt(ValCharSolidus, AttCharacterChar, '/');
 		DPLData::setInt(ValCharReverseSolidus, AttCharacterChar, '\\');
 
-		DPLData::setRef(eModule, DPLUnitNative::RefModuleActions, AgentCharMatcher);
-		DPLData::setRef(eModule, DPLUnitNative::RefModuleActions, AgentTokenMatcher);
-		DPLData::setRef(eModule, DPLUnitNative::RefModuleActions, AgentNumberSci);
-		DPLData::setRef(eModule, DPLUnitNative::RefModuleActions, AgentNumberRad);
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleAgents, AgentCharMatcher);
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleAgents, AgentTokenMatcher);
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleAgents, AgentNumberSci);
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleAgents, AgentNumberRad);
 	}
 
 	virtual DPLNarrativeLogic* createLogic(int logicId) const {

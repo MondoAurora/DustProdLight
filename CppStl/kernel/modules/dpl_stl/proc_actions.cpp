@@ -8,9 +8,10 @@ using namespace std;
 using namespace DPLUnitText;
 using namespace DPLUnitTools;
 using namespace DPLUnitDialog;
+using namespace DPLUnitNarrative;
 
 DPLProcessResult DPLUActionStreamReader::dplActionExecute() {
-	DPLEntity eDlg = DPLData::getEntityByPath(DPL_CTX_DIALOG, DPL_ENTITY_INVALID);
+	DPLEntity eDlg = DPLData::getEntityByPath(AgentDialog, DPL_ENTITY_INVALID);
 	bool ok;
 
 	if (!inStream.is_open()) {
@@ -48,7 +49,7 @@ void DPLUActionStreamReader::dplRelease() {
 }
 
 DPLProcessResult DPLUActionDump::dplActionExecute() {
-	DPLEntity eDialog = DPLData::getEntityByPath(DPL_CTX_DIALOG, DPL_ENTITY_INVALID);
+	DPLEntity eDialog = DPLData::getEntityByPath(AgentDialog, DPL_ENTITY_INVALID);
 
 	if (DPLData::getBool(eDialog, AttStreamOK, false)) {
 		char c = (char) DPLData::getInt(eDialog, AttCharacterChar, 0);

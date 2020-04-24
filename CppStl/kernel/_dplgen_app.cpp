@@ -33,7 +33,7 @@ DPLEntity initFileDump(string fileName) {
 
 	DPLEntity eDump = DPLData::createEntity(AgentDump);
 
-	DPLEntity eDialog = DPLData::createEntity(TypeDialog);
+	DPLEntity eDialog = DPLData::createEntity(AgentDialog);
 	DPLData::setRef(eDialog, RefCollectionMembers, eInput);
 	DPLData::setRef(eDialog, RefCollectionMembers, eDump);
 
@@ -47,7 +47,7 @@ DPLEntity parseJson(string fileName) {
 //	DPLEntity eProc = DPLData::createEntity(AgentDump);
 	DPLEntity eProc = DPLData::createEntity(AgentJsonParser);
 
-	DPLEntity eDialog = DPLData::createEntity(TypeDialog);
+	DPLEntity eDialog = DPLData::createEntity(AgentDialog);
 	DPLData::setRef(eDialog, RefCollectionMembers, eInput);
 	DPLData::setRef(eDialog, RefCollectionMembers, eProc);
 
@@ -68,7 +68,7 @@ void DPLMain::init() {
 
 //	eMain = parseJson("test1.json");
 
-	DPLData::setRef(DPL_CTX_RUNTIME, RefRuntimeMain, eMain);
+	DPLData::setRef(AgentRuntime, RefRuntimeMain, eMain);
 }
 
 void DPLMain::shutdown() {

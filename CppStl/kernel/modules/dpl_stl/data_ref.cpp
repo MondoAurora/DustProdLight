@@ -34,7 +34,7 @@ DustProdLightRef::DustProdLightRef(DPLEntity ptoken, DPLTokenType ptokentype, DP
 }
 
 DustProdLightRef::DustProdLightRef(DustProdLightEntity* ptoken, DPLEntity psource, DPLEntity ptarget, int pkey) :
-		DustProdLightRef(ptoken->localId, ptoken->tokenType, psource, ptarget, pkey) {
+		DustProdLightRef(ptoken->localId, (DPLTokenType) ptoken->primaryType, psource, ptarget, pkey) {
 }
 
 DustProdLightRef::DustProdLightRef(DustProdLightRef *porig, DPLEntity ptarget, int pkey) :
@@ -187,26 +187,24 @@ DPLEntity DustProdLightRef::getTokenByIndex(int idx) {
 	return 0;
 }
 
-void DustProdLightRef::doVisit(DPLVisitor *pVisitor, int key, void *pHint, DPLFilterResponse fr) {
+void DustProdLightRef::doVisit(DPLVisitor *pVisitor, int key, void *pHint, DPLProcessResult fr) {
 	switch (fr) {
-	case DPL_FILTER_PROCESS:
+	case DPL_PROCESS_READ:
 		pVisitor->processBeginEntity(target, key, pHint);
 		pVisitor->processEndEntity(target, key, pHint);
 		break;
-	case DPL_FILTER_VISIT:
+	case DPL_PROCESS_ACCEPT_READ:
 		DustProdLightRuntime::pRuntime->resolveEntity(target)->optVisit(pVisitor, key, pHint);
 		break;
-	case DPL_FILTER_SKIP:
-		break;
-	case DPL_FILTER_:
+	default:
 		break;
 	}
 }
 
 void DustProdLightRef::optVisit(DPLVisitor *pVisitor, void *pHint) {
-	DPLFilterResponse fr = pVisitor->shouldProcess(source, token);
+	DPLProcessResult fr = pVisitor->shouldProcess(source, token);
 
-	if (DPL_FILTER_SKIP != fr) {
+	if (DPL_PROCESS_ACCEPT_PASS != fr) {
 		pVisitor->processRefBegin(source, token, tokenType, pHint);
 
 		if (collection) {

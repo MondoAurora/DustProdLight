@@ -16,11 +16,11 @@ public:
 	virtual void init(DPLEntity eModule) {
 		DustProdLightRuntime::init();
 
-		DPLData::setRef(eModule, RefModuleActions, AgentSequence);
-		DPLData::setRef(eModule, RefModuleActions, AgentSelect);
-		DPLData::setRef(eModule, RefModuleActions, AgentRepeat);
-		DPLData::setRef(eModule, RefModuleActions, AgentReadStream);
-		DPLData::setRef(eModule, RefModuleActions, AgentDump);
+		DPLData::setRef(eModule, RefModuleAgents, AgentSequence);
+		DPLData::setRef(eModule, RefModuleAgents, AgentSelect);
+		DPLData::setRef(eModule, RefModuleAgents, AgentRepeat);
+		DPLData::setRef(eModule, RefModuleAgents, AgentReadStream);
+		DPLData::setRef(eModule, RefModuleAgents, AgentDump);
 	}
 
 	virtual DPLNarrativeLogic* createLogic(int logicId) const {

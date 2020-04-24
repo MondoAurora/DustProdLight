@@ -9,7 +9,7 @@ public:
 	}
 
 	virtual void init(DPLEntity eModule) {
-		DPLData::setRef(eModule, DPLUnitNative::RefModuleActions, AgentHelloWorldSimple);
+		DPLData::setRef(eModule, DPLUnitNative::RefModuleAgents, AgentHelloWorldSimple);
 	}
 
 	virtual DPLNarrativeLogic* createLogic(int logicId) const {

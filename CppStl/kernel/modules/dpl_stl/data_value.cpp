@@ -35,7 +35,7 @@ void DustProdLightValue::set(DPLTokenType tokenType, const void* pVal) {
 }
 
 void DustProdLightValue::optVisit(DPLVisitor *pVisitor, DPLEntity entity, DPLEntity token, void *pHint) {
-	if (DPL_FILTER_SKIP != pVisitor->shouldProcess(entity, token)) {
+	if (DPL_PROCESS_REJECT != pVisitor->shouldProcess(entity, token)) {
 		switch (tokenType) {
 		case DPL_TOKEN_VAL_BOOL:
 			pVisitor->processValBool(entity, token, valInt, pHint);

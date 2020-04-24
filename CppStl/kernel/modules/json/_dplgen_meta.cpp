@@ -3,6 +3,6 @@
 
 using namespace DPLUnitJson;
 
-const DPLEntity DPLUnitJson::UnitJson = DPLData::getMetaEntity(DPL_TOKEN_UNIT, "Json");
+const DPLEntity DPLUnitJson::UnitJson = DPLData::getMetaEntity(DPLUnitModel::TypeUnit, "Json");
 
-const DPLEntity DPLUnitJson::AgentJsonParser = DPLData::getMetaEntity(DPL_TOKEN_AGENT, "JsonParser", UnitJson);
+const DPLEntity DPLUnitJson::AgentJsonParser = DPLData::getMetaEntity(DPLUnitIdea::TypeAgent, "JsonParser", UnitJson);

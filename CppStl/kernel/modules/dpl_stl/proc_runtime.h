@@ -28,8 +28,6 @@ class DustProdLightAgent;
 
 class DustProdLightBlock: public DPLNarrativeLogic {
 private:
-	DPLBlock blockType;
-
 	map<int, DustProdLightEntity*> emapRef;
 	DustProdLightStore *pStore;
 
@@ -173,11 +171,10 @@ public:
 	static DPLNarrativeLogic *createAction(DPLEntity eAction);
 	static void releaseAction(DPLEntity eAction, DPLNarrativeLogic *pAction);
 
-	DPLEntity resolveCtxEntity(DPLContext ctx);
 	DustProdLightEntity *resolveEntity(DPLEntity e);
 
-	static string getMetaEntityId(DPLTokenType tokenType, string name, DPLEntity parent);
-	static void initMetaEntity(DPLEntity entity, DPLTokenType tokenType, string name, DPLEntity parent =
+	static string getMetaEntityId(DPLEntity primaryType, string name, DPLEntity parent);
+	static DPLEntity initMetaEntity(int entity, DPLEntity primaryType, string name, DPLEntity parent =
 			DPL_ENTITY_INVALID);
 
 	void validateToken(DPLEntity token, DPLTokenType tokenType);
