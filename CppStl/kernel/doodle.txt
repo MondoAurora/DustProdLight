@@ -1,0 +1,18 @@
+
+Agent states
+
+	reading
+		hasResult
+		noResult
+		
+	finished
+		hasResult
+		noResult
+		
+	consumed Yes/No
+	reading Yes/No
+	accept Yes/No
+	
+	input pass/done/read
+	success yes/no
+

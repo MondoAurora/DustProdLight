@@ -40,6 +40,9 @@ public:
 		}
 	}
 
+	inline static bool isReading(DPLProcessResult result) {
+		return (DPL_PROCESS_ACCEPT_READ == result) || (DPL_PROCESS_READ == result);
+	}
 };
 
 class DPLUStringContainer {

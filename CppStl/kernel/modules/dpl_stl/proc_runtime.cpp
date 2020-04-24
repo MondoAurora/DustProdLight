@@ -72,7 +72,7 @@ DPLProcessResult DustProdLightBlock::init(DustProdLightEntity *pTask, DustProdLi
 
 	pLogic =  DustProdLightRuntime::createAction(pSelf->primaryType);
 
-	return DPL_PROCESS_SUCCESS;
+	return DPL_PROCESS_ACCEPT;
 }
 
 DPLProcessResult DustProdLightBlock::dplActionExecute() {
@@ -87,7 +87,7 @@ DPLProcessResult DustProdLightBlock::dplResourceRelease() {
 	pSelf->releaseActions();
 
 	emapRef.clear();
-	return DPL_PROCESS_SUCCESS;
+	return DPL_PROCESS_ACCEPT;
 }
 
 /****************************
@@ -107,10 +107,10 @@ DustProdLightAgent::~DustProdLightAgent() {
 DPLProcessResult DustProdLightAgent::dplActionExecute() {
 	DPLProcessResult ret = stack[stackPos]->dplActionExecute();
 
-	if (DPL_PROCESS_ACCEPT != ret) {
+	if (!DPLUtils::isReading(ret)) {
 		if (0 < stackPos) {
 			--stackPos;
-			ret = DPL_PROCESS_ACCEPT;
+			ret = DPL_PROCESS_READ;
 		}
 	}
 
@@ -120,7 +120,7 @@ DPLProcessResult DustProdLightAgent::dplActionExecute() {
 DPLProcessResult DustProdLightAgent::dplResourceRelease() {
 	stack.clear();
 	stackPos = -1;
-	return DPL_PROCESS_SUCCESS;
+	return DPL_PROCESS_ACCEPT;
 }
 
 void DustProdLightAgent::relayEntry(DustProdLightBlock *pBlockRelay) {
@@ -151,17 +151,17 @@ DPLProcessResult DustProdLightDialog::dplActionExecute() {
 	DPLProcessResult ret = agents[currAgent].dplActionExecute();
 
 	switch (ret) {
-	case DPL_PROCESS_REJECT:
+	case DPL_PROCESS_ACCEPT:
 		if (currAgent) {
 			currAgent = 0;
-			ret = DPL_PROCESS_ACCEPT;
+			ret = DPL_PROCESS_READ;
 		}
 		break;
-	case DPL_PROCESS_SUCCESS:
-		if (currAgent + 1 < agents.size()) {
-			++currAgent;
-			ret = DPL_PROCESS_ACCEPT;
+	case DPL_PROCESS_ACCEPT_PASS:
+		if (++currAgent == agents.size()) {
+			currAgent = 0;
 		}
+		ret = DPL_PROCESS_READ;
 		break;
 	default:
 		// do nothing
@@ -174,7 +174,7 @@ DPLProcessResult DustProdLightDialog::dplActionExecute() {
 DPLProcessResult DustProdLightDialog::dplResourceRelease() {
 	agents.clear();
 	currAgent = 0;
-	return DPL_PROCESS_SUCCESS;
+	return DPL_PROCESS_ACCEPT;
 }
 
 /****************************
@@ -186,7 +186,7 @@ DPLProcessResult DustProdLightDialog::dplResourceRelease() {
 DPLProcessResult DustProdLightCore::dplActionExecute() {
 	while (pDialog) {
 		DPLProcessResult dlgRet = pDialog->dplActionExecute();
-		if (DPL_PROCESS_ACCEPT != dlgRet) {
+		if (!DPLUtils::isReading(dlgRet) ) {
 			pDialog = NULL;
 		}
 
@@ -562,6 +562,6 @@ DPLProcessResult DPLMain::run() {
 
 		return pCore->run(0, blocks, ac);
 	} else {
-		return DPL_PROCESS_SUCCESS;
+		return DPL_PROCESS_ACCEPT_PASS;
 	}
 }

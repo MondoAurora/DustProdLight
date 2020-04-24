@@ -49,8 +49,16 @@ private:
 	bool firstCall = true;
 
 protected:
+	unsigned int pos = 0;
+	bool inSep = false;
+
 	void requestRelay(DPLEntity relay);
-	DPLProcessResult optGetChildResult(DPLProcessResult defRet = DPL_PROCESS_SUCCESS);
+	DPLProcessResult optGetChildResult(DPLProcessResult defRet = DPL_PROCESS_ACCEPT_PASS);
+	DPLProcessResult optRelayChild();
+
+	virtual bool isColl() {
+		return true;
+	}
 
 public:
 	virtual ~ProcActionControl();
@@ -62,10 +70,10 @@ public:
 };
 
 class ProcActionRepeat: public ProcActionControl {
-	unsigned int count = 0;
-	bool inSep = false;
-	unsigned int min = 0;
-	unsigned int max = INT_MAX;
+protected:
+	virtual bool isColl() {
+		return false;
+	}
 
 public:
 	virtual ~ProcActionRepeat() {
@@ -74,9 +82,6 @@ public:
 };
 
 class ProcActionSequence: public ProcActionControl {
-	unsigned int pos = 0;
-	bool inSep = false;
-
 public:
 	virtual ~ProcActionSequence() {
 	}
@@ -84,8 +89,6 @@ public:
 };
 
 class ProcActionSelect: public ProcActionControl {
-	unsigned int pos = 0;
-
 public:
 	virtual ~ProcActionSelect() {
 	}

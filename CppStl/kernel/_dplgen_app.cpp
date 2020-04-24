@@ -27,9 +27,9 @@ DPLEntity initTest01() {
 	return eMain;
 }
 
-DPLEntity initFileDump() {
+DPLEntity initFileDump(string fileName) {
 	DPLEntity eInput = DPLData::createEntity(AgentReadStream);
-	DPLData::setString(eInput, AttStreamURL, "test1.json");
+	DPLData::setString(eInput, AttStreamURL, fileName);
 
 	DPLEntity eDump = DPLData::createEntity(AgentDump);
 
@@ -64,9 +64,9 @@ void DPLMain::init() {
 
 //	eMain = initTest01();
 
-//	eMain = initFileDump();
+	eMain = initFileDump("test1.json");
 
-	eMain = parseJson("test1.json");
+//	eMain = parseJson("test1.json");
 
 	DPLData::setRef(DPL_CTX_RUNTIME, RefRuntimeMain, eMain);
 }

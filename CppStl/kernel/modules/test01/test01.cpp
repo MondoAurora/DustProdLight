@@ -65,6 +65,6 @@ DPLProcessResult HelloWorldSimple::dplActionExecute() {
 
 	dump(e);
 
-	return DPL_PROCESS_SUCCESS;
+	return DPL_PROCESS_ACCEPT;
 //	return (++count < 5) ? DPL_PROCESS_ACCEPT : DPL_PROCESS_SUCCESS;
 }

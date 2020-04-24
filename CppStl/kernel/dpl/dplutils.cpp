@@ -140,7 +140,7 @@ char32_t DPLUCppUtils::toUtf8Char(unsigned int val) {
 
 DPLProcessResult DPLUStringTester::addChar(const char chr) {
 	if (ignoreCase ? (tolower(chr) == (char) tolower(str[pos])) : str[pos] == chr) {
-		return (++pos < len) ? DPL_PROCESS_ACCEPT : DPL_PROCESS_SUCCESS;
+		return (++pos < len) ? DPL_PROCESS_ACCEPT_READ : DPL_PROCESS_ACCEPT;
 	} else {
 		pos = 0;
 		return DPL_PROCESS_REJECT;
@@ -159,7 +159,7 @@ unsigned char DPLUCodeTable::resolve(const char chr, bool reverse, const char no
 
 DPLProcessResult DPLUCharMatcher::addChar(const char chr) {
 	value = table->resolve(chr, reverse);
-	return value ? DPL_PROCESS_SUCCESS : DPL_PROCESS_REJECT;
+	return value ? DPL_PROCESS_ACCEPT : DPL_PROCESS_REJECT;
 }
 
 DPLProcessResult DPLUDump::addCodePoint(char32_t cp) {
@@ -244,7 +244,7 @@ void DPLUStream::process(const char* fName, DPLUCodepointTarget *target) {
 class DPLActionNull : public DPLNarrativeLogic {
 public:
 	virtual DPLProcessResult dplActionExecute() {
-		return DPL_PROCESS_SUCCESS;
+		return DPL_PROCESS_ACCEPT;
 	}
 };
 
