@@ -12,7 +12,7 @@ public:
 		DPLData::setRef(eModule, DPLUnitNative::RefModuleAgents, AgentHelloWorldSimple);
 	}
 
-	virtual DPLNarrativeLogic* createLogic(int logicId) const {
+	virtual DPLNativeLogic* createLogic(int logicId) const {
 			if (AgentHelloWorldSimple == logicId) {
 				return new HelloWorldSimple();
 			}
@@ -20,7 +20,7 @@ public:
 		return NULL;
 	}
 
-	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
+	virtual void releaseLogic(int logicId, DPLNativeLogic* pLogic) const {
 			if (AgentHelloWorldSimple == logicId) {
 				delete (HelloWorldSimple*) pLogic;
 			}

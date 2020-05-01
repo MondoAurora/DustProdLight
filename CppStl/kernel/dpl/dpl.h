@@ -91,9 +91,9 @@ public:
 };
 
 
-class DPLNarrativeResource {
+class DPLNativeResource {
 public:
-	virtual ~DPLNarrativeResource() {
+	virtual ~DPLNativeResource() {
 	}
 
 	virtual DPLProcessResult dplResourceInit() {
@@ -104,9 +104,9 @@ public:
 	}
 };
 
-class DPLNarrativeAction {
+class DPLNativeAction {
 public:
-	virtual ~DPLNarrativeAction() {
+	virtual ~DPLNativeAction() {
 	}
 	virtual DPLProcessResult dplActionExecute() {
 		return DPL_PROCESS_NOTIMPLEMENTED;
@@ -114,9 +114,9 @@ public:
 };
 
 
-class DPLNarrativeLogic : public DPLNarrativeResource, public DPLNarrativeAction {
+class DPLNativeLogic : public DPLNativeResource, public DPLNativeAction {
 public:
-	virtual ~DPLNarrativeLogic() {
+	virtual ~DPLNativeLogic() {
 	}
 };
 
@@ -129,13 +129,13 @@ public:
 	virtual void init(DPLEntity eModule) {}
 	virtual void release() {}
 
-	virtual DPLNarrativeLogic* createLogic(int logicId) const {
+	virtual DPLNativeLogic* createLogic(int logicId) const {
 		return NULL;
 	}
-	virtual DPLProcessResult dispatchCommand(int logicId, DPLNarrativeLogic* pLogic, DPLEntity cmd, DPLEntity param = DPL_ENTITY_INVALID) const {
+	virtual DPLProcessResult dispatchCommand(int logicId, DPLNativeLogic* pLogic, DPLEntity cmd, DPLEntity param = DPL_ENTITY_INVALID) const {
 		return DPL_PROCESS_NOTIMPLEMENTED;
 	}
-	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
+	virtual void releaseLogic(int logicId, DPLNativeLogic* pLogic) const {
 	}
 };
 
@@ -178,7 +178,7 @@ public:
 class DPLMain {
 public:
 	static void init();
-//	static void createBootEntities();
+	static DPLEntity getMainEntity();
 	static void registerModule(const char* moduleName, DPLModule *pModule);
 
 	static DPLProcessResult run();

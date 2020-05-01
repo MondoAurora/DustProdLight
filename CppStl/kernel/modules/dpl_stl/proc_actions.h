@@ -21,14 +21,14 @@
 
 using namespace std;
 
-class DPLUActionDump: public DPLNarrativeLogic {
+class DPLUActionDump: public DPLNativeLogic {
 public:
 	virtual ~DPLUActionDump() {
 	}
 	virtual DPLProcessResult dplActionExecute();
 };
 
-class DPLUActionStreamReader: public DPLNarrativeLogic {
+class DPLUActionStreamReader: public DPLNativeLogic {
 	ifstream inStream;
 	int pos;
 
@@ -43,9 +43,9 @@ public:
 
 
 
-class ProcActionControl: public DPLNarrativeLogic {
+class ProcActionControl: public DPLNativeLogic {
 private:
-	map<DPLEntity, DustProdLightBlock*> mapChildBlocks;
+	map<DPLEntity, DustProdLightState*> mapChildBlocks;
 	bool firstCall = true;
 
 protected:
@@ -65,7 +65,7 @@ public:
 
 	virtual DPLProcessResult dplResourceInit() {
 		firstCall = true;
-		return DPLNarrativeLogic::dplResourceInit();
+		return DPLNativeLogic::dplResourceInit();
 	}
 };
 

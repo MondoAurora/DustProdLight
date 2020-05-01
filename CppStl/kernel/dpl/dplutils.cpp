@@ -241,7 +241,7 @@ void DPLUStream::process(const char* fName, DPLUCodepointTarget *target) {
 	}
 }
 
-class DPLActionNull : public DPLNarrativeLogic {
+class DPLActionNull : public DPLNativeLogic {
 public:
 	virtual DPLProcessResult dplActionExecute() {
 		return DPL_PROCESS_ACCEPT;
@@ -250,6 +250,6 @@ public:
 
 DPLActionNull NULL_ACTION;
 
-DPLNarrativeLogic *DPLUtils::getNullLogic() {
+DPLNativeLogic *DPLUtils::getNullLogic() {
 	return &NULL_ACTION;
 }

@@ -76,12 +76,12 @@ DPLProcessResult DPLUActionDump::dplActionExecute() {
 
 
 void ProcActionControl::requestRelay(DPLEntity relay) {
-	DustProdLightAgent *pAgent = DustProdLightRuntime::getCurrentCore()->getDialog()->getAgent();
-	DustProdLightBlock *pBlockCurrent = pAgent->getBlock();
+	DustProdLightPDA *pAgent = DustProdLightRuntime::getCurrentCore()->getDialog()->getCurrentPda();
+	DustProdLightState *pBlockCurrent = pAgent->getCurrentState();
 
-	DustProdLightBlock *pBlockRelay = mapChildBlocks[relay];
+	DustProdLightState *pBlockRelay = mapChildBlocks[relay];
 	if (!pBlockRelay) {
-		pBlockRelay = new DustProdLightBlock();
+		pBlockRelay = new DustProdLightState();
 		DustProdLightEntity *pe = pBlockCurrent->getEntity(relay);
 		pBlockRelay->init(pe, pBlockCurrent);
 		mapChildBlocks[relay] = pBlockRelay;
@@ -100,8 +100,8 @@ DPLProcessResult ProcActionControl::optGetChildResult(DPLProcessResult defRet ) 
 }
 
 ProcActionControl::~ProcActionControl() {
-	for (BlockIterator iter = mapChildBlocks.begin(); iter != mapChildBlocks.end(); ++iter) {
-		DustProdLightBlock *pb = iter->second;
+	for (StateIterator iter = mapChildBlocks.begin(); iter != mapChildBlocks.end(); ++iter) {
+		DustProdLightState *pb = iter->second;
 		delete pb;
 	}
 }

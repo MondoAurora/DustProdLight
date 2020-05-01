@@ -1,3 +1,4 @@
+#include <_dplgen_module_dpl_stl.h>
 #include <_dplgen_module_text.h>
 
 using namespace DPLUnitText;

@@ -24,22 +24,22 @@ using namespace std;
 typedef map<int, DustProdLightEntity*>::iterator EntityPtrIterator;
 typedef map<int, DustProdLightEntity>::iterator EntityIterator;
 
-class DustProdLightAgent;
+class DustProdLightPDA;
 
-class DustProdLightBlock: public DPLNarrativeLogic {
+class DustProdLightState: public DPLNativeLogic {
 private:
 	map<int, DustProdLightEntity*> emapRef;
 	DustProdLightStore *pStore;
 
-	DPLNarrativeLogic* pLogic;
+	DPLNativeLogic* pLogic;
 
 public:
-	DustProdLightBlock();
-	~DustProdLightBlock();
+	DustProdLightState();
+	~DustProdLightState();
 
 	DustProdLightEntity* getEntity(DPLEntity e) ;
 
-	DPLProcessResult init(DustProdLightEntity *pSelf, DustProdLightBlock *pParent);
+	DPLProcessResult init(DustProdLightEntity *pSelf, DustProdLightState *pParent);
 
 	virtual DPLProcessResult dplActionExecute();
 	virtual DPLProcessResult dplResourceRelease();
@@ -47,33 +47,33 @@ public:
 	friend class DPLData;
 	friend class DPLMain;
 	friend class DustProdLightRuntime;
-	friend class DustProdLightAgent;
+	friend class DustProdLightPDA;
 	friend class ProcActionControl;
 };
 
-typedef map<DPLEntity, DustProdLightBlock*>::const_iterator BlockIterator;
+typedef map<DPLEntity, DustProdLightState*>::const_iterator StateIterator;
 
-class DustProdLightAgent: public DPLNarrativeLogic {
-	map<int, DustProdLightBlock*> stack;
+class DustProdLightPDA: public DPLNativeLogic {
+	map<int, DustProdLightState*> stack;
 	int stackPos = -1;
 
 public:
-	DustProdLightAgent();
-	virtual ~DustProdLightAgent();
+	DustProdLightPDA();
+	virtual ~DustProdLightPDA();
 
 	virtual DPLProcessResult dplActionExecute();
 	virtual DPLProcessResult dplResourceRelease();
 
-	DustProdLightBlock* getBlock() {
+	DustProdLightState* getCurrentState() {
 		return stack[stackPos];
 	}
 
-	void relayEntry(DustProdLightBlock *pBlockRelay);
+	void relayEntry(DustProdLightState *pStateRelay);
 	void relayExit();
 
 	DustProdLightEntity* resolveEntity(DPLEntity entity) {
-		DustProdLightBlock* pB = stack[stackPos];
-		return pB ? pB->getEntity(entity) : NULL;
+		DustProdLightState* pS = stack[stackPos];
+		return pS ? pS->getEntity(entity) : NULL;
 	}
 
 	friend class DustProdLightRuntime;
@@ -81,25 +81,25 @@ public:
 	friend class DustProdLightDialog;
 };
 
-class DustProdLightDialog : public DPLNarrativeLogic {
-	vector<DustProdLightAgent> agents;
-	unsigned int currAgent = 0;
+class DustProdLightDialog : public DPLNativeLogic {
+	vector<DustProdLightPDA> pdas;
+	unsigned int currPDAIdx = 0;
 	DustProdLightEntity *pData;
 
 public:
 	DustProdLightDialog();
 	~DustProdLightDialog();
 
-	DustProdLightAgent* getAgent() {
-		return &agents[currAgent];
+	DustProdLightPDA* getCurrentPda() {
+		return &pdas[currPDAIdx];
 	}
 
-	DustProdLightAgent* getAgent(unsigned int idx) {
-		if ( idx >= agents.size() ) {
-			agents.resize(idx+1);
+	DustProdLightPDA* getPda(unsigned int idx) {
+		if ( idx >= pdas.size() ) {
+			pdas.resize(idx+1);
 		}
 
-		return &agents[idx];
+		return &pdas[idx];
 	}
 
 	void getData(DustProdLightEntity* pData_) {
@@ -118,7 +118,7 @@ public:
 	friend class DustProdLightRuntime;
 };
 
-class DustProdLightCore : public DPLNarrativeLogic {
+class DustProdLightCore : public DPLNativeLogic {
 	DustProdLightDialog *pDialog = NULL;
 	DPLProcessResult lastResult;
 
@@ -134,12 +134,12 @@ public:
 
 	virtual DPLProcessResult dplActionExecute();
 
-	DPLProcessResult run(int dlgIdx, DustProdLightBlock *pBlock, int agentCount = 1);
+	DPLProcessResult run(int dlgIdx, DustProdLightState *pState, int agentCount = 1);
 
 	friend class DPLData;
 	friend class DPLMain;
-	friend class DustProdLightBlock;
-	friend class DustProdLightAgent;
+	friend class DustProdLightState;
+	friend class DustProdLightPDA;
 	friend class DustProdLightRuntime;
 	friend class ProcActionControl;
 };
@@ -150,7 +150,7 @@ class DustProdLightRuntime {
 	map<DPLEntity, DPLEntity> agentResolution;
 	map<DPLEntity, DPLModule*> logicFactory;
 
-	DPLNarrativeLogic *pScheduler;
+	DPLNativeLogic *pScheduler;
 	vector<DustProdLightCore> cores;
 	vector<DustProdLightDialog> dialogs;
 
@@ -168,8 +168,8 @@ public:
 	static void init();
 	static void release();
 
-	static DPLNarrativeLogic *createAction(DPLEntity eAction);
-	static void releaseAction(DPLEntity eAction, DPLNarrativeLogic *pAction);
+	static DPLNativeLogic *createLogic(DPLEntity eAction);
+	static void releaseLogic(DPLEntity eAction, DPLNativeLogic *pAction);
 
 	DustProdLightEntity *resolveEntity(DPLEntity e);
 
@@ -189,8 +189,8 @@ public:
 	friend class DPLMain;
 	friend class DustProdLightEntity;
 	friend class DustProdLightRef;
-	friend class DustProdLightBlock;
-	friend class DustProdLightAgent;
+	friend class DustProdLightState;
+	friend class DustProdLightPDA;
 	friend class DustProdLightCore;
 };
 

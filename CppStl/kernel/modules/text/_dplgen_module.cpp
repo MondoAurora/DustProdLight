@@ -24,7 +24,7 @@ public:
 		DPLData::setRef(eModule, DPLUnitNative::RefModuleAgents, AgentNumberRad);
 	}
 
-	virtual DPLNarrativeLogic* createLogic(int logicId) const {
+	virtual DPLNativeLogic* createLogic(int logicId) const {
 		if (AgentCharMatcher == logicId) {
 			return new CharMatcher();
 		} else if (AgentTokenMatcher == logicId) {
@@ -37,7 +37,7 @@ public:
 		return NULL;
 	}
 
-	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
+	virtual void releaseLogic(int logicId, DPLNativeLogic* pLogic) const {
 		if (AgentCharMatcher == logicId) {
 			delete (CharMatcher*) pLogic;
 		} else if (AgentTokenMatcher == logicId) {

@@ -71,6 +71,8 @@ extern const DPLEntity SvcResource;
 extern const DPLEntity CmdResourceInit;
 extern const DPLEntity CmdResourceRelease;
 
+extern const DPLEntity SvcLogic;
+
 extern const DPLEntity AgentCall;
 extern const DPLEntity RefAgentCallTarget;
 extern const DPLEntity RefAgentCallCommand;

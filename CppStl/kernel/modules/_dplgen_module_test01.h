@@ -3,9 +3,6 @@
 
 #include <dpl.h>
 
-#include <_dplgen_module_dpl_stl.h>
-
-
 namespace DPLUnitTest01 {
 extern const DPLEntity TestUnit;
 extern const DPLEntity Test;

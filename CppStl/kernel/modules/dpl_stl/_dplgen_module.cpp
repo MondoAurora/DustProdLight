@@ -23,7 +23,7 @@ public:
 		DPLData::setRef(eModule, RefModuleAgents, AgentDump);
 	}
 
-	virtual DPLNarrativeLogic* createLogic(int logicId) const {
+	virtual DPLNativeLogic* createLogic(int logicId) const {
 			if (AgentSequence == logicId) {
 				return new ProcActionSequence();
 			} else if ( AgentSelect == logicId) {
@@ -39,7 +39,7 @@ public:
 		return NULL;
 	}
 
-	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
+	virtual void releaseLogic(int logicId, DPLNativeLogic* pLogic) const {
 			if (AgentSequence == logicId) {
 				delete (ProcActionSequence*) pLogic;
 			} else if ( AgentSelect == logicId) {

@@ -63,6 +63,8 @@ const DPLEntity DPLUnitNative::SvcResource = DPLData::getMetaEntity(DPLUnitNativ
 const DPLEntity DPLUnitNative::CmdResourceInit = DPLData::getMetaEntity(DPLUnitNative::TypeCommand, "Init", DPLUnitNative::SvcResource);
 const DPLEntity DPLUnitNative::CmdResourceRelease = DPLData::getMetaEntity(DPLUnitNative::TypeCommand, "Release", DPLUnitNative::SvcResource);
 
+const DPLEntity DPLUnitNative::SvcLogic = DPLData::getMetaEntity(DPLUnitNative::TypeService, "Logic", DPLUnitNative::UnitNative);
+
 const DPLEntity DPLUnitNative::AgentCall = DPLData::getMetaEntity(DPL_TOKEN_AGENT, "Call", DPLUnitNative::UnitNative);
 const DPLEntity DPLUnitNative::RefAgentCallCommand = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Command", DPLUnitNative::AgentCall);
 const DPLEntity DPLUnitNative::RefAgentCallTarget = DPLData::getMetaEntity(DPL_TOKEN_REF_SINGLE, "Target", DPLUnitNative::AgentCall);

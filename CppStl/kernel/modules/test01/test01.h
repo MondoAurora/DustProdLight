@@ -3,10 +3,11 @@
 
 #include <dpl.h>
 
+#include <_dplgen_module_dpl_stl.h>
 #include <_dplgen_module_test01.h>
 
 
-class HelloWorldSimple: public DPLNarrativeLogic {
+class HelloWorldSimple: public DPLNativeLogic {
 	int count = 0;
 	DPLEntity e = DPL_ENTITY_INVALID;
 

@@ -13,11 +13,11 @@ public:
 		DPLData::setRef(eModule, DPLUnitNative::RefModuleAlgorithms, buildAlgorithmJsonParser(), AgentJsonParser);
 	}
 
-	virtual DPLNarrativeLogic* createLogic(int logicId) const {
+	virtual DPLNativeLogic* createLogic(int logicId) const {
 		return NULL;
 	}
 
-	virtual void releaseLogic(int logicId, DPLNarrativeLogic* pLogic) const {
+	virtual void releaseLogic(int logicId, DPLNativeLogic* pLogic) const {
 	}
 
 	virtual void release() {

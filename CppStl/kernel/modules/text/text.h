@@ -6,28 +6,28 @@
 #include <_dplgen_module_dpl_stl.h>
 #include <_dplgen_module_text.h>
 
-class CharMatcher: public DPLNarrativeLogic {
+class CharMatcher: public DPLNativeLogic {
 public:
 	virtual ~CharMatcher() {
 	}
 	virtual DPLProcessResult dplActionExecute();
 };
 
-class TokenMatcher: public DPLNarrativeLogic {
+class TokenMatcher: public DPLNativeLogic {
 public:
 	virtual ~TokenMatcher() {
 	}
 	virtual DPLProcessResult dplActionExecute();
 };
 
-class NumberSci: public DPLNarrativeLogic {
+class NumberSci: public DPLNativeLogic {
 public:
 	virtual ~NumberSci() {
 	}
 	virtual DPLProcessResult dplActionExecute();
 };
 
-class NumberRad: public DPLNarrativeLogic {
+class NumberRad: public DPLNativeLogic {
 public:
 	virtual ~NumberRad() {
 	}

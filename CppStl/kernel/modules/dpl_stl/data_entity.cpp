@@ -61,19 +61,19 @@ bool DustProdLightEntity::chgRef(DPLChange chg, DustProdLightEntity *pToken, DPL
 	return pNewRef;
 }
 
-DPLNarrativeLogic* DustProdLightEntity::getLogicByCommand(DPLEntity cmd) {
+DPLNativeLogic* DustProdLightEntity::getLogicByCommand(DPLEntity cmd) {
 	DPLEntity eAction = NULL;
 //	DPLEntity eAction = getRefEntity(DPLUnitModel::RefEntityActions, cmd);
-	DPLNarrativeLogic* pAction = NULL;
+	DPLNativeLogic* pAction = NULL;
 
 	if ( pActionByAction ) {
 		pAction = (*pActionByAction)[eAction];
 	} else {
-		pActionByAction = new map<DPLEntity, DPLNarrativeLogic*>();
+		pActionByAction = new map<DPLEntity, DPLNativeLogic*>();
 	}
 
 	if ( !pAction ) {
-		pAction = DustProdLightRuntime::createAction(eAction);
+		pAction = DustProdLightRuntime::createLogic(eAction);
 		(*pActionByAction)[eAction] = pAction;
 	}
 
@@ -84,7 +84,7 @@ void DustProdLightEntity::releaseActions() {
 	if (pActionByAction) {
 		for (ActionIterator ait = pActionByAction->begin(); ait != pActionByAction->end(); ++ait) {
 			DPLEntity eAction = ait->first;
-			DPLNarrativeLogic* pAction = ait->second;
+			DPLNativeLogic* pAction = ait->second;
 			DPLModule *pMod = DustProdLightRuntime::pRuntime->logicFactory[eAction];
 			pMod->releaseLogic(eAction, pAction);
 		}

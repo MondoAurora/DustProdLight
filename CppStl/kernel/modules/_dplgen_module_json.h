@@ -3,9 +3,6 @@
 
 #include <dpl.h>
 
-#include <_dplgen_module_dpl_stl.h>
-
-
 namespace DPLUnitJson {
 extern const DPLEntity UnitJson;
 

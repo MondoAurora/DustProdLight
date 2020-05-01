@@ -3,8 +3,6 @@
 
 #include <dpl.h>
 
-#include <_dplgen_module_dpl_stl.h>
-
 namespace DPLUnitText {
 extern const DPLEntity UnitText;
 

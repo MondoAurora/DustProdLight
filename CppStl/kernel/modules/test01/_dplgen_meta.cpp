@@ -1,3 +1,4 @@
+#include <_dplgen_module_dpl_stl.h>
 #include <_dplgen_module_test01.h>
 
 using namespace DPLUnitTest01;

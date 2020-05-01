@@ -56,7 +56,7 @@ class DustProdLightEntity {
 	map<int, DustProdLightValue> values;
 	map<int, DustProdLightRef*> refs;
 
-	map<DPLEntity, DPLNarrativeLogic*> *pActionByAction = NULL;
+	map<DPLEntity, DPLNativeLogic*> *pActionByAction = NULL;
 
 	void updated();
 	void optReloadMeta();
@@ -67,8 +67,8 @@ class DustProdLightEntity {
 	friend class DPLData;
 	friend class DPLMain;
 	friend class DustProdLightRuntime;
-	friend class DustProdLightBlock;
-	friend class DustProdLightAgent;
+	friend class DustProdLightState;
+	friend class DustProdLightPDA;
 	friend class DustProdLightStore;
 
 public:
@@ -89,7 +89,7 @@ public:
 	string getString(DPLEntity token);
 	DPLEntity getRefEntity(DPLEntity token, int key);
 
-	DPLNarrativeLogic *getLogicByCommand(DPLEntity cmd);
+	DPLNativeLogic *getLogicByCommand(DPLEntity cmd);
 	void releaseActions();
 };
 
@@ -98,7 +98,7 @@ typedef vector<DustProdLightRef*>::iterator RefVectorIterator;
 typedef map<int, DustProdLightValue>::iterator EntityValIterator;
 typedef map<int, DustProdLightRef*>::const_iterator EntityRefIterator;
 
-typedef map<DPLEntity, DPLNarrativeLogic*>::iterator ActionIterator;
+typedef map<DPLEntity, DPLNativeLogic*>::iterator ActionIterator;
 
 class DustProdLightRef {
 	DPLEntity token;
@@ -133,8 +133,8 @@ public:
 	friend DustProdLightEntity;
 	friend DPLData;
 	friend class DustProdLightRuntime;
-	friend class DustProdLightBlock;
-	friend class DustProdLightAgent;
+	friend class DustProdLightState;
+	friend class DustProdLightPDA;
 };
 
 class DustProdLightStore {
@@ -149,8 +149,8 @@ public:
 	friend DustProdLightEntity;
 	friend DPLData;
 	friend class DustProdLightRuntime;
-	friend class DustProdLightBlock;
-	friend class DustProdLightAgent;
+	friend class DustProdLightState;
+	friend class DustProdLightPDA;
 };
 
 #endif /* DPL_IMPL_DATA_H_ */
